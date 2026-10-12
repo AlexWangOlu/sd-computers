@@ -64,7 +64,7 @@ export function ComputerSetupModal({ computer, initialStyle, onClose }: { comput
 
   return (
     <Modal title={t(computer ? 'computers.edit' : 'computers.place')} onClose={onClose} width={1080}>
-      <div className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 140px)' }}>
+      <ScrollArea style={{ maxHeight: 'calc(90vh - 140px)' }} viewStyle={{ paddingRight: 'var(--sa-gutter, 0px)' }}>
         <div className="flex gap-4" style={{ height: 432 }}>
           {/* Every prop on offer, pictured. */}
           <div className="flex flex-col min-h-0 shrink-0" style={{ width: 384 }}>
@@ -152,7 +152,7 @@ export function ComputerSetupModal({ computer, initialStyle, onClose }: { comput
                 <Plus size={14} />
               </button>
             </div>
-            <div className="space-y-2 max-h-[150px] overflow-y-auto">
+            <ScrollArea className="max-h-[150px]" viewClassName="space-y-2" viewStyle={{ paddingRight: 'var(--sa-gutter, 0px)' }}>
               {jobs.map((j, i) => (
                 <div className="flex gap-2" key={i}>
                   <input aria-label={t('computers.job_name')} className="sc-input flex-1 min-w-0" value={j.name} onChange={e => setJobs(jobs.map((v, n) => (n === i ? { ...v, name: e.target.value.trim() } : v)))} placeholder="police" maxLength={48} />
@@ -163,13 +163,13 @@ export function ComputerSetupModal({ computer, initialStyle, onClose }: { comput
                 </div>
               ))}
               {!jobs.length && <Hint className="py-1">{t('computers.jobs_empty')}</Hint>}
-            </div>
+            </ScrollArea>
             <Hint className="mt-2">{t('computers.jobs_hint')}</Hint>
           </div>
         </div>
 
         {!computer && <Hint className="mt-3">{t('computers.aim_hint')}</Hint>}
-      </div>
+      </ScrollArea>
       <ModalActions>
         <button type="button" className="sc-btn" onClick={onClose}>
           {t('actions.cancel')}
