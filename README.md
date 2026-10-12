@@ -1,138 +1,325 @@
+<div align="center">
+
 # sd-computers
 
-**SD OS**: a full desktop operating system on any computer in the city. Walk up to a configured
-location or prop, sign in, and use real apps:
+<img width="960" alt="sd-computers banner showing the three desktop styles" src="docs/previews/sd-computers-banner.webp">
 
-| App | What it does |
-| --- | --- |
-| **Mail** | Shared, password-protected `@lsmail.com` accounts (sign up / sign in / multiple accounts), inbox, flagged, drafts, sent, bin, reply / forward, bounces for unknown addresses, live new-mail toasts. |
-| **Event Viewer** | That computer's System Logs: sign-ins and failed PINs, lockouts, apps opened, mail sent, Business Manager actions, hack attempts and breaches, plus anything other resources write. Filterable; clearing it leaves a "log was cleared by X" entry (event 1102). |
-| **Command Prompt** | A real-feeling `cmd.exe` (`ipconfig`, `systeminfo`, `ping`, `tasklist`…) that launches the hacking minigames: free practice (`hack maze hard`) and configured breach targets (`targets`, `breach fleeca-ledger`) that pay rewards server-side. |
-| **Business Manager** | The boss menu: roster with online/on-duty status, promote/demote/fire, hire nearby players (they get an accept prompt), society balance chart, deposit / withdraw, statement. Only shown to that job's bosses. |
-| **Messages / Notes** | Only with sd-phone: the phone's texts and notes on the desktop (see "sd-phone link" below). |
-| **Notepad / Calculator / Settings** | Notes that follow the character to every computer; a full standard calculator; wallpaper, accent colour and dark/light mode (saved per character). |
+---
 
-Lock screen with optional per-computer PIN (checked server-side, with lockout), welcome / shutdown
-screens, centred taskbar, Start menu with search, draggable / resizable / snap-to-maximize windows,
-calendar and quick-settings flyouts, toast notifications. Ten hacking minigames from sd-deaddrop,
-with the same server-side anti-cheat (proof-of-play floors, ordered milestones, server-seeded
-puzzles).
+sd-computers puts a working desktop on any computer in your city. Players walk up to a configured location or prop, sign in and use real apps: Mail, an Event Viewer with that machine's own logs, a Command Prompt that launches hacking minigames, and a Business Manager for bosses. It runs on QBOX and QBCORE, and on ESX without the Business Manager.
+
+Every computer opens in one of three original desktop styles, picked per computer. Admins place new computers in game with `/computeradmin`, without touching a config file.
+
+[![Stars](https://img.shields.io/github/stars/Samuels-Development/sd-computers?label=Stars&logo=github)](https://github.com/Samuels-Development/sd-computers)
+[![Discord](https://img.shields.io/discord/842045164951437383?label=Discord&logo=discord&logoColor=white)](https://discord.gg/FzPehMQaBQ)
+[![Documentation](https://img.shields.io/badge/Docs-docs.samueldev.shop-94DD0C)](https://docs.samueldev.shop)
+
+![Framework](https://img.shields.io/badge/Framework-QBox%20%7C%20QBCore%20%7C%20ESX-3b82f6)
+![Target](https://img.shields.io/badge/Target-ox__target%20%7C%20qb--target%20%7C%20qtarget-3b82f6)
+![Pairs with](https://img.shields.io/badge/Pairs%20with-sd--phone-3b82f6)
+
+[**Documentation**](https://docs.samueldev.shop) · [**Store**](https://fivem.samueldev.shop) · [**Discord**](https://discord.gg/FzPehMQaBQ)
+
+</div>
+
+---
+
+## Support Me
+
+If you're enjoying sd-computers and want to support my work, consider picking up a script from [Samuel's Development](https://fivem.samueldev.shop). Every purchase helps me keep building and improving resources like sd-computers. Browse Petty Crimes, Advanced Crafting, Horde, Smash Down, and more to find something for your server.
+
+## Screenshots
+
+Captured from the browser build using sample data. Click any image for the full 1920×1080 version.
+
+**Jump to:** [SD OS Pro](#sd-os-pro-modern) · [SD OS Harbor](#sd-os-harbor-mac) · [SD Desktop 3.11](#sd-desktop-311-retro) · [Hacking minigames](#hacking-minigames) · [Admin panel](#admin-panel-computeradmin) · [Props](#props)
+
+### SD OS Pro (`modern`)
+
+A current desktop: centred taskbar, Start menu with search, rounded translucent windows, dark and light themes.
+
+<p align="center"><a href="docs/previews/modern/desktop.webp"><img src="docs/previews/modern/desktop.webp" alt="SD OS Pro desktop" width="960" /></a></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/lock.webp"><img src="docs/previews/thumbs/modern/lock.webp" alt="SD OS Pro: Lock screen" width="250" /></a><br /><sub>Lock screen</sub></td>
+    <td align="center"><a href="docs/previews/modern/signin.webp"><img src="docs/previews/thumbs/modern/signin.webp" alt="SD OS Pro: Sign in" width="250" /></a><br /><sub>Sign in</sub></td>
+    <td align="center"><a href="docs/previews/modern/start.webp"><img src="docs/previews/thumbs/modern/start.webp" alt="SD OS Pro: Start menu" width="250" /></a><br /><sub>Start menu</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/mail.webp"><img src="docs/previews/thumbs/modern/mail.webp" alt="SD OS Pro: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+    <td align="center"><a href="docs/previews/modern/mail-compose.webp"><img src="docs/previews/thumbs/modern/mail-compose.webp" alt="SD OS Pro: New mail" width="250" /></a><br /><sub>New mail</sub></td>
+    <td align="center"><a href="docs/previews/modern/messages.webp"><img src="docs/previews/thumbs/modern/messages.webp" alt="SD OS Pro: Messages" width="250" /></a><br /><sub>Messages</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/notes.webp"><img src="docs/previews/thumbs/modern/notes.webp" alt="SD OS Pro: Notes" width="250" /></a><br /><sub>Notes</sub></td>
+    <td align="center"><a href="docs/previews/modern/notepad.webp"><img src="docs/previews/thumbs/modern/notepad.webp" alt="SD OS Pro: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+    <td align="center"><a href="docs/previews/modern/boss.webp"><img src="docs/previews/thumbs/modern/boss.webp" alt="SD OS Pro: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/boss-employees.webp"><img src="docs/previews/thumbs/modern/boss-employees.webp" alt="SD OS Pro: Employees" width="250" /></a><br /><sub>Employees</sub></td>
+    <td align="center"><a href="docs/previews/modern/boss-hiring.webp"><img src="docs/previews/thumbs/modern/boss-hiring.webp" alt="SD OS Pro: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
+    <td align="center"><a href="docs/previews/modern/boss-finances.webp"><img src="docs/previews/thumbs/modern/boss-finances.webp" alt="SD OS Pro: Finances" width="250" /></a><br /><sub>Finances</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/logs.webp"><img src="docs/previews/thumbs/modern/logs.webp" alt="SD OS Pro: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
+    <td align="center"><a href="docs/previews/modern/logs-security.webp"><img src="docs/previews/thumbs/modern/logs-security.webp" alt="SD OS Pro: Security log" width="250" /></a><br /><sub>Security log</sub></td>
+    <td align="center"><a href="docs/previews/modern/cmd.webp"><img src="docs/previews/thumbs/modern/cmd.webp" alt="SD OS Pro: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/calculator.webp"><img src="docs/previews/thumbs/modern/calculator.webp" alt="SD OS Pro: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
+    <td align="center"><a href="docs/previews/modern/settings.webp"><img src="docs/previews/thumbs/modern/settings.webp" alt="SD OS Pro: Settings" width="250" /></a><br /><sub>Settings</sub></td>
+    <td align="center"><a href="docs/previews/modern/settings-personalization.webp"><img src="docs/previews/thumbs/modern/settings-personalization.webp" alt="SD OS Pro: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+  </tr>
+</table>
+</div>
+
+### SD OS Harbor (`mac`)
+
+Top menu bar, a magnifying dock, traffic-light window buttons and a search overlay.
+
+<p align="center"><a href="docs/previews/mac/desktop.webp"><img src="docs/previews/mac/desktop.webp" alt="SD OS Harbor desktop" width="960" /></a></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/boot.webp"><img src="docs/previews/thumbs/mac/boot.webp" alt="SD OS Harbor: Boot" width="250" /></a><br /><sub>Boot</sub></td>
+    <td align="center"><a href="docs/previews/mac/lock.webp"><img src="docs/previews/thumbs/mac/lock.webp" alt="SD OS Harbor: Lock screen" width="250" /></a><br /><sub>Lock screen</sub></td>
+    <td align="center"><a href="docs/previews/mac/start.webp"><img src="docs/previews/thumbs/mac/start.webp" alt="SD OS Harbor: Search" width="250" /></a><br /><sub>Search</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/mail.webp"><img src="docs/previews/thumbs/mac/mail.webp" alt="SD OS Harbor: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+    <td align="center"><a href="docs/previews/mac/mail-compose.webp"><img src="docs/previews/thumbs/mac/mail-compose.webp" alt="SD OS Harbor: New mail" width="250" /></a><br /><sub>New mail</sub></td>
+    <td align="center"><a href="docs/previews/mac/messages.webp"><img src="docs/previews/thumbs/mac/messages.webp" alt="SD OS Harbor: Messages" width="250" /></a><br /><sub>Messages</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/notes.webp"><img src="docs/previews/thumbs/mac/notes.webp" alt="SD OS Harbor: Notes" width="250" /></a><br /><sub>Notes</sub></td>
+    <td align="center"><a href="docs/previews/mac/notepad.webp"><img src="docs/previews/thumbs/mac/notepad.webp" alt="SD OS Harbor: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+    <td align="center"><a href="docs/previews/mac/boss.webp"><img src="docs/previews/thumbs/mac/boss.webp" alt="SD OS Harbor: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/boss-employees.webp"><img src="docs/previews/thumbs/mac/boss-employees.webp" alt="SD OS Harbor: Employees" width="250" /></a><br /><sub>Employees</sub></td>
+    <td align="center"><a href="docs/previews/mac/boss-hiring.webp"><img src="docs/previews/thumbs/mac/boss-hiring.webp" alt="SD OS Harbor: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
+    <td align="center"><a href="docs/previews/mac/boss-finances.webp"><img src="docs/previews/thumbs/mac/boss-finances.webp" alt="SD OS Harbor: Finances" width="250" /></a><br /><sub>Finances</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/logs.webp"><img src="docs/previews/thumbs/mac/logs.webp" alt="SD OS Harbor: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
+    <td align="center"><a href="docs/previews/mac/logs-security.webp"><img src="docs/previews/thumbs/mac/logs-security.webp" alt="SD OS Harbor: Security log" width="250" /></a><br /><sub>Security log</sub></td>
+    <td align="center"><a href="docs/previews/mac/cmd.webp"><img src="docs/previews/thumbs/mac/cmd.webp" alt="SD OS Harbor: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/calculator.webp"><img src="docs/previews/thumbs/mac/calculator.webp" alt="SD OS Harbor: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
+    <td align="center"><a href="docs/previews/mac/settings.webp"><img src="docs/previews/thumbs/mac/settings.webp" alt="SD OS Harbor: Settings" width="250" /></a><br /><sub>Settings</sub></td>
+    <td align="center"><a href="docs/previews/mac/settings-personalization.webp"><img src="docs/previews/thumbs/mac/settings-personalization.webp" alt="SD OS Harbor: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+  </tr>
+</table>
+</div>
+
+### SD Desktop 3.11 (`retro`)
+
+A 1991 shell inside a beige CRT: DOS boot, teal desktop, bevelled grey windows that snap open in chunky steps, and synthesized period sounds.
+
+<p align="center"><a href="docs/previews/retro/desktop.webp"><img src="docs/previews/retro/desktop.webp" alt="SD Desktop 3.11 desktop" width="960" /></a></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/boot.webp"><img src="docs/previews/thumbs/retro/boot.webp" alt="SD Desktop 3.11: DOS boot" width="250" /></a><br /><sub>DOS boot</sub></td>
+    <td align="center"><a href="docs/previews/retro/splash.webp"><img src="docs/previews/thumbs/retro/splash.webp" alt="SD Desktop 3.11: Splash" width="250" /></a><br /><sub>Splash</sub></td>
+    <td align="center"><a href="docs/previews/retro/lock.webp"><img src="docs/previews/thumbs/retro/lock.webp" alt="SD Desktop 3.11: Log on" width="250" /></a><br /><sub>Log on</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/mail.webp"><img src="docs/previews/thumbs/retro/mail.webp" alt="SD Desktop 3.11: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+    <td align="center"><a href="docs/previews/retro/mail-compose.webp"><img src="docs/previews/thumbs/retro/mail-compose.webp" alt="SD Desktop 3.11: New mail" width="250" /></a><br /><sub>New mail</sub></td>
+    <td align="center"><a href="docs/previews/retro/messages.webp"><img src="docs/previews/thumbs/retro/messages.webp" alt="SD Desktop 3.11: Messages" width="250" /></a><br /><sub>Messages</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/notes.webp"><img src="docs/previews/thumbs/retro/notes.webp" alt="SD Desktop 3.11: Notes" width="250" /></a><br /><sub>Notes</sub></td>
+    <td align="center"><a href="docs/previews/retro/notepad.webp"><img src="docs/previews/thumbs/retro/notepad.webp" alt="SD Desktop 3.11: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+    <td align="center"><a href="docs/previews/retro/boss.webp"><img src="docs/previews/thumbs/retro/boss.webp" alt="SD Desktop 3.11: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/boss-employees.webp"><img src="docs/previews/thumbs/retro/boss-employees.webp" alt="SD Desktop 3.11: Employees" width="250" /></a><br /><sub>Employees</sub></td>
+    <td align="center"><a href="docs/previews/retro/boss-hiring.webp"><img src="docs/previews/thumbs/retro/boss-hiring.webp" alt="SD Desktop 3.11: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
+    <td align="center"><a href="docs/previews/retro/boss-finances.webp"><img src="docs/previews/thumbs/retro/boss-finances.webp" alt="SD Desktop 3.11: Finances" width="250" /></a><br /><sub>Finances</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/logs.webp"><img src="docs/previews/thumbs/retro/logs.webp" alt="SD Desktop 3.11: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
+    <td align="center"><a href="docs/previews/retro/logs-security.webp"><img src="docs/previews/thumbs/retro/logs-security.webp" alt="SD Desktop 3.11: Security log" width="250" /></a><br /><sub>Security log</sub></td>
+    <td align="center"><a href="docs/previews/retro/cmd.webp"><img src="docs/previews/thumbs/retro/cmd.webp" alt="SD Desktop 3.11: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/calculator.webp"><img src="docs/previews/thumbs/retro/calculator.webp" alt="SD Desktop 3.11: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
+    <td align="center"><a href="docs/previews/retro/settings.webp"><img src="docs/previews/thumbs/retro/settings.webp" alt="SD Desktop 3.11: Settings" width="250" /></a><br /><sub>Settings</sub></td>
+    <td align="center"><a href="docs/previews/retro/settings-personalization.webp"><img src="docs/previews/thumbs/retro/settings-personalization.webp" alt="SD Desktop 3.11: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+  </tr>
+</table>
+</div>
+
+### Hacking minigames
+
+Ten minigames, launched from Command Prompt or from your own scripts. Shown here in SD OS Pro; the games are the same in every style.
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/hacking/maze.webp"><img src="docs/previews/thumbs/hacking/maze.webp" alt="Hacking: Network Maze" width="250" /></a><br /><sub>Network Maze</sub></td>
+    <td align="center"><a href="docs/previews/hacking/capture.webp"><img src="docs/previews/thumbs/hacking/capture.webp" alt="Hacking: Node Capture" width="250" /></a><br /><sub>Node Capture</sub></td>
+    <td align="center"><a href="docs/previews/hacking/cipher.webp"><img src="docs/previews/thumbs/hacking/cipher.webp" alt="Hacking: Cipher Lock" width="250" /></a><br /><sub>Cipher Lock</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/hacking/snake.webp"><img src="docs/previews/thumbs/hacking/snake.webp" alt="Hacking: Data Worm" width="250" /></a><br /><sub>Data Worm</sub></td>
+    <td align="center"><a href="docs/previews/hacking/firewall.webp"><img src="docs/previews/thumbs/hacking/firewall.webp" alt="Hacking: Firewall Defense" width="250" /></a><br /><sub>Firewall Defense</sub></td>
+    <td align="center"><a href="docs/previews/hacking/evasion.webp"><img src="docs/previews/thumbs/hacking/evasion.webp" alt="Hacking: Highway Evasion" width="250" /></a><br /><sub>Highway Evasion</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/hacking/typing.webp"><img src="docs/previews/thumbs/hacking/typing.webp" alt="Hacking: Code Injection" width="250" /></a><br /><sub>Code Injection</sub></td>
+    <td align="center"><a href="docs/previews/hacking/signal.webp"><img src="docs/previews/thumbs/hacking/signal.webp" alt="Hacking: Signal Replay" width="250" /></a><br /><sub>Signal Replay</sub></td>
+    <td align="center"><a href="docs/previews/hacking/pipe.webp"><img src="docs/previews/thumbs/hacking/pipe.webp" alt="Hacking: Packet Routing" width="250" /></a><br /><sub>Packet Routing</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/hacking/breakout.webp"><img src="docs/previews/thumbs/hacking/breakout.webp" alt="Hacking: ICE Breaker" width="250" /></a><br /><sub>ICE Breaker</sub></td>
+    <td align="center"><a href="docs/previews/hacking/programs.webp"><img src="docs/previews/thumbs/hacking/programs.webp" alt="Hacking: Program list" width="250" /></a><br /><sub>Program list</sub></td>
+    <td align="center"><a href="docs/previews/hacking/standalone.webp"><img src="docs/previews/thumbs/hacking/standalone.webp" alt="Hacking: Standalone window" width="250" /></a><br /><sub>Standalone window</sub></td>
+  </tr>
+</table>
+</div>
+
+### Admin panel (`/computeradmin`)
+
+Every computer on the server in one list, and the tool that places new ones.
+
+<p align="center"><a href="docs/previews/admin/computers.webp"><img src="docs/previews/admin/computers.webp" alt="Admin panel, Computers tab" width="960" /></a></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/admin/overview.webp"><img src="docs/previews/thumbs/admin/overview.webp" alt="Admin panel: Overview" width="250" /></a><br /><sub>Overview</sub></td>
+    <td align="center"><a href="docs/previews/admin/place.webp"><img src="docs/previews/thumbs/admin/place.webp" alt="Admin panel: Place computer" width="250" /></a><br /><sub>Place computer</sub></td>
+    <td align="center"><a href="docs/previews/admin/place-retro.webp"><img src="docs/previews/thumbs/admin/place-retro.webp" alt="Admin panel: Prop and style" width="250" /></a><br /><sub>Prop and style</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/admin/edit.webp"><img src="docs/previews/thumbs/admin/edit.webp" alt="Admin panel: Change computer" width="250" /></a><br /><sub>Change computer</sub></td>
+    <td align="center"><a href="docs/previews/admin/delete.webp"><img src="docs/previews/thumbs/admin/delete.webp" alt="Admin panel: Delete" width="250" /></a><br /><sub>Delete</sub></td>
+    <td align="center"><a href="docs/previews/admin/placement-hud.webp"><img src="docs/previews/thumbs/admin/placement-hud.webp" alt="Admin panel: Placement gizmo" width="250" /></a><br /><sub>Placement gizmo</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/admin/styles-modern.webp"><img src="docs/previews/thumbs/admin/styles-modern.webp" alt="Admin panel: Styles: SD OS Pro" width="250" /></a><br /><sub>Styles: SD OS Pro</sub></td>
+    <td align="center"><a href="docs/previews/admin/styles-mac.webp"><img src="docs/previews/thumbs/admin/styles-mac.webp" alt="Admin panel: Styles: SD OS Harbor" width="250" /></a><br /><sub>Styles: SD OS Harbor</sub></td>
+    <td align="center"><a href="docs/previews/admin/styles-retro.webp"><img src="docs/previews/thumbs/admin/styles-retro.webp" alt="Admin panel: Styles: SD Desktop" width="250" /></a><br /><sub>Styles: SD Desktop</sub></td>
+  </tr>
+</table>
+</div>
+
+### Props
+
+The thirteen props a computer can be placed as out of the box. Add any streamed prop in `configs/shared/admin.lua`.
+
+<p align="center"><a href="docs/previews/props.webp"><img src="docs/previews/props.webp" alt="The thirteen placeable computer props" width="960" /></a></p>
+
+---
+
+> [!TIP]
+> **Running [sd-phone](https://github.com/Samuels-Development/sd-phone)? The computers pick it up.**
+> A computer becomes another screen for the character's phone: Mail switches to the phone's own
+> mailboxes, and two more apps appear, Messages and Notes, showing the phone's text threads and
+> notes. Nothing to pair. sd-computers is complete without it. [More below](#sd-phone-link-optional).
+
+## Apps
+
+| | |
+|---|---|
+| **Mail** | Shared, password-protected `@lsmail.com` accounts (sign up, sign in, multiple accounts), inbox, flagged, drafts, sent, bin, reply and forward, bounces for unknown addresses, live new-mail toasts |
+| **Event Viewer** | That computer's System Logs: sign-ins and failed PINs, lockouts, apps opened, mail sent, Business Manager actions, hack attempts and breaches, plus anything other resources write. Filterable; clearing it leaves a "log was cleared by X" entry (event 1102) |
+| **Command Prompt** | A real-feeling `cmd.exe` (`ipconfig`, `systeminfo`, `ping`, `tasklist` and more) that launches the hacking minigames: free practice (`hack maze hard`) and configured breach targets (`targets`, `breach fleeca-ledger`) that pay rewards server-side |
+| **Business Manager** | The boss menu: roster with online and on-duty status, promote, demote and fire, hire nearby players (they get an accept prompt), society balance chart, deposit and withdraw, statement. Only shown to that job's bosses |
+| **Messages / Notes** | Only with sd-phone: the phone's texts and notes on the desktop |
+| **Notepad / Calculator / Settings** | Notes that follow the character to every computer; a full standard calculator; wallpaper, accent colour and dark or light mode, saved per character |
+
+Around the apps: a lock screen with an optional per-computer PIN (checked server-side, with lockout), welcome and shutdown screens, draggable, resizable, snap-to-maximize windows, calendar and quick-settings flyouts, and toast notifications.
 
 ## Three looks, one computer
 
-Every computer runs the same apps against the same server; its **style** decides the shell around them:
+Every computer runs the same apps against the same server. Its **style** decides the shell around them:
 
 | Style | Name on screen | Feel |
-| --- | --- | --- |
-| `modern` | SD OS Pro | centred taskbar + Start menu, rounded translucent windows, dark/light |
-| `retro` | SD Desktop 3.11 | a 1991 shell inside a beige CRT: DOS boot, teal desktop, bevelled grey windows that snap open in chunky steps, synthesized period sounds |
-| `mac` | SD OS Harbor | top menu bar, magnifying dock, traffic-light window buttons, search overlay |
+|---|---|---|
+| `modern` | SD OS Pro | Centred taskbar and Start menu, rounded translucent windows, dark or light |
+| `retro` | SD Desktop 3.11 | A 1991 shell inside a beige CRT: DOS boot, teal desktop, bevelled grey windows that snap open in chunky steps, synthesized period sounds |
+| `mac` | SD OS Harbor | Top menu bar, magnifying dock, traffic-light window buttons, search overlay |
 
-Pick it per computer with `style = 'retro'` in `configs/shared/computers.lua` (unset = `Desktop.DefaultStyle`),
-or force it per open from a script: `exports['sd-computers']:OpenComputer(id, coords, { style = 'mac' })`.
-Each style has its own OS name, wallpapers and accent palette (`Desktop.Styles`), and every character's
-wallpaper / accent / light-dark choice is saved **per style**. All three are original designs - no real
-OS logos, names, wallpapers or fonts.
+Pick it per computer with `style = 'retro'` in `configs/shared/computers.lua` (unset = `Desktop.DefaultStyle`), or force it per open from a script:
 
-## sd-phone link (optional)
+```lua
+exports['sd-computers']:OpenComputer(id, coords, { style = 'mac' })
+```
 
-sd-computers is complete on its own. If **sd-phone** is running too, a computer becomes another
-screen for the character's phone:
+Each style has its own OS name, wallpapers and accent palette (`Desktop.Styles`), and every character's wallpaper, accent and light or dark choice is saved **per style**. All three are original designs: no real OS logos, names, wallpapers or fonts.
 
-| | With sd-phone | Without |
-| --- | --- | --- |
-| **Mail** | the phone's mail: the same `@lifeinvader.com` accounts, inbox (plus Spam), attachments, phone notifications and badges | built-in `@lsmail.com` Mail |
-| **Messages** | new app: the phone's text threads - read, reply, start a thread to a number or contact; incoming texts toast on the desktop | not installed |
-| **Notes** | new app: the phone's notes - edit the text, view their photos and sketches | not installed |
+## Hacking
 
-- Needs sd-phone's link file `server/compat/computers.lua` (shipped with sd-phone, one line in its
-  fxmanifest). It runs the phone's own handlers, so a text sent from a desk validates, notifies and
-  threads exactly like one typed on the phone.
-- Detected live: start or stop sd-phone at any time and the next computer you open follows. An
-  sd-phone without the link file is treated as "not installed" (one console warning).
-- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), `Mail` / `Messages` / `Notes` switches,
-  `RequirePhone` (Messages/Notes only for players carrying a phone - default on).
-- Per computer: `phone = false` in `computers.lua` keeps Messages/Notes off that machine (a police
-  terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
-- `SendMail`, `MailAddressExists` and `GetMailAddresses` follow the switch too: while linked they
-  work on the phone's mailboxes (the ones players actually read).
-- sd-phone side: `set sd_phone_computerlink "sd-computers"` lists the resources allowed to drive the
-  link (default sd-computers only; `"off"` disables it).
+Command Prompt is the way into the minigames:
 
-## Requirements
+| Command | What it does |
+|---|---|
+| `hack` | Lists the programs |
+| `hack <program> [easy\|medium\|hard]` | A practice run. Logged, no reward |
+| `targets` | The hosts reachable from this computer, with their stages, status and item requirement |
+| `breach <command>` | Every stage of a target, in order. The server pays the reward |
 
-- `ox_lib`, `oxmysql`, a target resource (`ox_target`, `qb-target` or `qtarget`)
-- Framework: Qbox or QBCore (ESX works for everything except the Business Manager, which hides itself)
-- Society funds: `sd-banking` or `Renewed-Banking` (optional - the Finances tab hides without one)
-- `sd-phone` (optional - see "sd-phone link" above)
+| Key | Program | Game |
+|---|---|---|
+| `maze` | net-maze.exe | Network Maze |
+| `capture` | node-grab.exe | Node Capture |
+| `cipher` | cipher-lock.exe | Cipher Lock |
+| `snake` | data-worm.exe | Data Worm |
+| `firewall` | fw-defense.exe | Firewall Defense |
+| `evasion` | highway-evade.exe | Highway Evasion |
+| `typing` | code-inject.exe | Code Injection |
+| `signal` | sig-replay.exe | Signal Replay |
+| `pipe` | pipe-route.exe | Packet Routing |
+| `breakout` | ice-break.exe | ICE Breaker |
 
-Tables are created automatically on first start: `computers_profiles`, `computers_logs`,
-`computers_placed`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`.
-
-## Install
-
-1. Drop `sd-computers` into your resources and `ensure sd-computers` after ox_lib / oxmysql / your
-   framework / your target / your banking.
-2. The UI is pre-built in `web/build`. To change it: `cd web && npm install && npm run build`.
-
-## Configuration
-
-Scope-by-folder, like the other sd-* resources: `configs/shared` ships to clients,
-`configs/server` never does.
-
-| File | What's in it |
-| --- | --- |
-| `configs/config.lua` | Locale, Debug, bridge debug prints |
-| `configs/shared/computers.lua` | **The computers.** Each is a location (`coords`/`size`/`rotation`) or a `model` (every prop of that model). Optional `groups` lock, `boss` (a job name, or `true` = the signed-in player's own job), `style`, `apps` list. |
-| `configs/shared/desktop.lua` | Default style, app list + window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name/build, wallpapers, accent colours, default theme, retro's CRT monitor + sounds toggles |
-| `configs/shared/interact.lua` | Target label/icon/distance, typing animation, walk-away distance, debug `/computer_pos` |
-| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, and the props a computer can be placed as |
-| `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
-| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, Messages + Notes apps, RequirePhone |
-| `configs/shared/hacks.lua` | Minigame catalogue + easy/medium/hard presets, practice on/off |
-| `configs/shared/boss.lua` | Business Manager on/off, hire radius, deposit sources, withdraw target |
-| `configs/server/security.lua` | **PINs per computer** + wrong-PIN lockout |
-| `configs/server/targets.lua` | **Breach targets**: which computers, the minigame steps, item requirement, cooldowns, police alert, rewards (items / money / mail / your own server event) |
-| `configs/server/hacks.lua` | Anti-cheat tuning, token / proof lifetimes |
-| `configs/server/logs.lua` | Retention, who may clear logs, which events get written |
-| `configs/server/mail.lua` | Rate limits, mailbox size |
-| `configs/server/boss.lua` | Banking backend (`auto`), max transfer |
-
-The example coordinates (MRPD front desk, Pillbox reception) are from this server's qbx_police /
-qbx_ambulancejob configs; check them in game. With `Debug = true`, aim at a keyboard and run
-`/computer_pos`: it copies a ready-made `coords = vec3(...)` line.
+The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof-of-play floors, ordered milestones and server-seeded puzzles. Breach targets live in `configs/server/targets.lua`: which computers, the minigame steps, item requirement, cooldowns, police alert and rewards (items, money, mail or your own server event).
 
 ## Admin panel
 
-`/computeradmin` (admins) opens a panel listing every computer on the server - who is sitting at
-which, its style, its job lock - and places new ones without touching a config file:
+`/computeradmin` (admins) opens a panel listing every computer on the server, who is sitting at which, its style and its job lock, and places new ones without touching a config file:
 
-1. **Place computer**: pick the prop it stands as (`configs/shared/admin.lua` > `Props`), the style
-   it opens in (`modern` / `retro` / `mac`, or the server default), a name, and optionally the jobs
-   that may use it.
-2. The placement gizmo takes over - the same one sd-bombs and sd-scooters use. The prop starts
-   sitting on whatever you were looking at; move and turn it, **Enter** places it.
+1. **Place computer**: pick the prop it stands as (`configs/shared/admin.lua` > `Props`), the style it opens in (`modern`, `retro`, `mac`, or the server default), a name, and optionally the jobs that may use it.
+2. The placement gizmo takes over, the same one sd-bombs and sd-scooters use. The prop starts sitting on whatever you were looking at; move and turn it, **Enter** places it.
 3. It is live at once for everyone, with the same "Use Computer" option as any other computer.
 
-A placed computer can be changed (name, prop, style, jobs), moved with the gizmo, teleported to
-and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. They
-are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their
-System Logs.
+A placed computer can be changed (name, prop, style, jobs), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
 
-Permissions are aces, like sd-bombs: `Group` (default `group.admin`) gets the command and the
-edit ace `sd_computers.edit`; an optional `ViewGroup` can open the panel but not change anything.
-To let another principal edit: `add_ace group.mod sd_computers.edit allow` (and
-`add_ace group.mod command.computeradmin allow` to open it).
+Permissions are aces, like sd-bombs: `Group` (default `group.admin`) gets the command and the edit ace `sd_computers.edit`; an optional `ViewGroup` can open the panel but not change anything. To let another principal edit:
 
-## Controls
+```cfg
+add_ace group.mod command.computeradmin allow
+add_ace group.mod sd_computers.edit allow
+```
 
-**Esc** on the lock screen or an empty desktop stands you up; Start > Power > Shut down
-does the same with the shutdown screen. **Ctrl+Esc** opens Start, **Alt+F4** closes the focused
-window. Walking away closes the computer.
+## sd-phone link (optional)
 
-## Exports
+sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-Development/sd-phone)** is running too, a computer becomes another screen for the character's phone:
 
-### Server
+| | With sd-phone | Without |
+|---|---|---|
+| **Mail** | The phone's mail: the same `@lifeinvader.com` accounts, inbox (plus Spam), attachments, phone notifications and badges | Built-in `@lsmail.com` Mail |
+| **Messages** | New app: the phone's text threads. Read, reply, start a thread to a number or contact; incoming texts toast on the desktop | Not installed |
+| **Notes** | New app: the phone's notes. Edit the text, view their photos and sketches | Not installed |
+
+- Needs sd-phone's link file `server/compat/computers.lua` (shipped with sd-phone, one line in its fxmanifest). It runs the phone's own handlers, so a text sent from a desk validates, notifies and threads exactly like one typed on the phone.
+- Detected live: start or stop sd-phone at any time and the next computer you open follows. An sd-phone without the link file is treated as "not installed" (one console warning).
+- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), `Mail` / `Messages` / `Notes` switches, `RequirePhone` (Messages and Notes only for players carrying a phone, default on).
+- Per computer: `phone = false` in `computers.lua` keeps Messages and Notes off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
+- `SendMail`, `MailAddressExists` and `GetMailAddresses` follow the switch too: while linked they work on the phone's mailboxes (the ones players actually read).
+- sd-phone side: `set sd_phone_computerlink "sd-computers"` lists the resources allowed to drive the link (default sd-computers only; `"off"` disables it).
+
+## For developers
+
+### Server exports
 
 ```lua
 -- Run a hack on a player and get a VERIFIED result (yields until they win, lose or quit).
@@ -153,10 +340,13 @@ exports['sd-computers']:GetMailAddresses(citizenid) -- addresses a character is 
 exports['sd-computers']:GetComputers() -- { id, label, hostname, coords?, model?, placed?, prop? }[] (placed = from the admin panel)
 ```
 
-Event fired after every successful breach: `AddEventHandler('sd-computers:server:breachCompleted', function(src, info) end)`
-with `info = { target, computer, instance }` (each target can also name its own event).
+Fired after every successful breach, with `info = { target, computer, instance }` (each target can also name its own event):
 
-### Client
+```lua
+AddEventHandler('sd-computers:server:breachCompleted', function(src, info) end)
+```
+
+### Client exports
 
 ```lua
 -- Open a computer from another script (a laptop item, a phone app...). Model computers take the
@@ -169,26 +359,99 @@ exports['sd-computers']:OpenComputer('public_pc', nil, { style = 'retro' })
 local won, proof = exports['sd-computers']:StartHack({ game = 'pipe', difficulty = 'medium', title = 'Vault Door' })
 ```
 
-Games: `maze`, `capture`, `cipher`, `snake`, `firewall`, `evasion`, `typing`, `signal`, `pipe`, `breakout`.
+## Compatibility
+
+| Layer | Supported |
+|---|---|
+| Frameworks | QBox, QBCore. ESX works for everything except the Business Manager, which hides itself |
+| Target | ox_target, qb-target, qtarget |
+| Society funds | sd-banking, Renewed-Banking (optional; the Finances tab hides without one) |
+| Phone | sd-phone (optional) |
+
+## Installation
+
+### Dependencies
+
+| Resource | What it is for |
+| --- | --- |
+| [ox_lib](https://github.com/CommunityOx/ox_lib) | Shared library |
+| [oxmysql](https://github.com/CommunityOx/oxmysql) | Database access |
+| A target resource | `ox_target`, `qb-target` or `qtarget`, for the "Use Computer" option |
+
+### 1. Start the resource
+
+Drop `sd-computers` into your resources folder and start it after ox_lib, oxmysql, your framework, your target and your banking:
+
+```cfg
+ensure ox_lib
+ensure oxmysql
+ensure sd-computers
+```
+
+Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`.
+
+The UI ships pre-built in `web/build`, so a plain download or clone runs as is.
+
+### 2. Set up your computers
+
+Computers come from two places, and you can use both:
+
+- `configs/shared/computers.lua`: each entry is a location (`coords` / `size` / `rotation`) or a `model` (every prop of that model in the world).
+- `/computeradmin` in game: place one on any desk and it is live at once.
+
+The example coordinates (MRPD front desk, Pillbox reception) are from qbx_police and qbx_ambulancejob; check them in game. With `Debug = true`, aim at a keyboard and run `/computer_pos`: it copies a ready-made `coords = vec3(...)` line.
+
+### 3. Set your PINs and breach targets
+
+Both live in `configs/server/`, which never ships to clients: PINs per computer in `security.lua`, breach targets and their rewards in `targets.lua`. Change the example PIN before going live.
+
+## Configuration
+
+Scope-by-folder, like the other sd-* resources: `configs/shared` ships to clients, `configs/server` never does.
+
+| File | What's in it |
+| --- | --- |
+| `configs/config.lua` | Locale, Debug, bridge debug prints |
+| `configs/shared/computers.lua` | **The computers.** Each is a location (`coords`/`size`/`rotation`) or a `model` (every prop of that model). Optional `groups` lock, `boss` (a job name, or `true` = the signed-in player's own job), `style`, `apps` list |
+| `configs/shared/desktop.lua` | Default style, app list and window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name and build, wallpapers, accent colours, default theme, retro's CRT monitor and sounds toggles |
+| `configs/shared/interact.lua` | Target label, icon and distance, typing animation, walk-away distance, debug `/computer_pos` |
+| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, and the props a computer can be placed as |
+| `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
+| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, Messages and Notes apps, RequirePhone |
+| `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
+| `configs/shared/boss.lua` | Business Manager on or off, hire radius, deposit sources, withdraw target |
+| `configs/server/security.lua` | **PINs per computer** and wrong-PIN lockout |
+| `configs/server/targets.lua` | **Breach targets**: which computers, the minigame steps, item requirement, cooldowns, police alert, rewards (items, money, mail or your own server event) |
+| `configs/server/hacks.lua` | Anti-cheat tuning, token and proof lifetimes |
+| `configs/server/logs.lua` | Retention, who may clear logs, which events get written |
+| `configs/server/mail.lua` | Rate limits, mailbox size |
+| `configs/server/boss.lua` | Banking backend (`auto`), max transfer |
+
+## Controls
+
+| Key | What it does |
+|---|---|
+| <kbd>Esc</kbd> | On the lock screen or an empty desktop, stands you up |
+| <kbd>Ctrl</kbd> + <kbd>Esc</kbd> | Opens Start |
+| <kbd>Alt</kbd> + <kbd>F4</kbd> | Closes the focused window |
+
+Start > Power > Shut down stands you up too, with the shutdown screen. Walking away closes the computer.
 
 ## How the security works
 
-- Every app action goes through one server callback (`server/computers/rpc.lua`) that checks the
-  player has this computer open, is signed in, is still in reach, still passes its job lock, and has
-  that app - before any handler runs.
+- Every app action goes through one server callback (`server/computers/rpc.lua`) that checks the player has this computer open, is signed in, is still in reach, still passes its job lock, and has that app, before any handler runs.
 - PINs and breach rewards live only in `configs/server/`. The client never sees them.
-- Location computers are distance-checked against their config coords. Model (prop) computers
-  can't be: world props aren't networked, so the prop's position comes from the client. That's
-  fine for public PCs, but put valuable breach targets on location computers.
-- A hack win is never trusted: the server mints the run (and, for maze / pipe / typing / signal,
-  generates the puzzle), requires every milestone in order at human pace, refuses anything faster
-  than the difficulty's minimum play time, and only then pays out. These are sd-deaddrop's
-  `proof.lua` / `challenge.lua`.
+- Location computers are distance-checked against their config coords. Model (prop) computers can't be: world props aren't networked, so the prop's position comes from the client. That's fine for public PCs, but put valuable breach targets on location computers.
+- A hack win is never trusted: the server mints the run (and, for maze, pipe, typing and signal, generates the puzzle), requires every milestone in order at human pace, refuses anything faster than the difficulty's minimum play time, and only then pays out. These are sd-deaddrop's `proof.lua` / `challenge.lua`.
 
-## Development
+## Building from source
 
-`cd web && npm run dev` opens the whole OS in a browser with mock data (dev PIN `1031`). Hashes:
-`#desktop` skips the lock screen, `#mail` / `#boss` / `#logs` / `#cmd` ... open an app, `#lib` shows a
-standalone StartHack window. App contracts and UI conventions: `web/FRONTEND.md`.
-The admin panel is a page of its own: `http://localhost:<port>/admin.html` shows it with mock
-computers (placing "runs the gizmo" by hiding the panel for a moment).
+The UI is already built in `web/build`. To change it:
+
+```bash
+cd web
+npm install
+npm run build
+```
+
+`npm run dev` opens the whole OS in a browser with mock data (dev PIN `1031`). Hashes: `#desktop` skips the lock screen, `#mail` / `#boss` / `#logs` / `#cmd` and so on open an app, `#lib` shows a standalone StartHack window, and `?style=retro` or `?style=mac` switches the look. The admin panel is a page of its own: `http://localhost:<port>/admin.html` shows it with mock computers (placing "runs the gizmo" by hiding the panel for a moment). App contracts and UI conventions are in `web/FRONTEND.md`.
