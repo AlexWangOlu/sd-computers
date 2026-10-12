@@ -1,0 +1,604 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Colour tokens. .os-root carries data-theme; the accent variables are written
+   inline by src/os/theme.ts from the user's accent choice. */
+.os-root,
+.lib-root {
+  --success: #6ccb5f;
+  --caution: #fce100;
+  --critical: #ff99a4;
+}
+.os-root[data-theme='dark'],
+.lib-root {
+  color-scheme: dark;
+  --win-bg: #202020;
+  --layer: #272727;
+  --card: rgba(255, 255, 255, 0.0512);
+  --card-hover: rgba(255, 255, 255, 0.0837);
+  --control: rgba(255, 255, 255, 0.0605);
+  --control-hover: rgba(255, 255, 255, 0.0837);
+  --control-press: rgba(255, 255, 255, 0.0326);
+  --subtle-hover: rgba(255, 255, 255, 0.0605);
+  --stroke: rgba(255, 255, 255, 0.0698);
+  --stroke-strong: rgba(255, 255, 255, 0.1);
+  --flyout: rgba(40, 40, 40, 0.94);
+  --taskbar: rgba(28, 28, 28, 0.84);
+  --text-1: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.786);
+  --text-3: rgba(255, 255, 255, 0.544);
+  --text-dis: rgba(255, 255, 255, 0.3628);
+  --input: rgba(255, 255, 255, 0.0605);
+  --input-focus: #1f1f1f;
+}
+.os-root[data-theme='light'] {
+  color-scheme: light;
+  --success: #0f7b0f;
+  --caution: #9d5d00;
+  --critical: #c42b1c;
+  --win-bg: #f3f3f3;
+  --layer: #fbfbfb;
+  --card: rgba(255, 255, 255, 0.7);
+  --card-hover: rgba(249, 249, 249, 0.5);
+  --control: rgba(255, 255, 255, 0.7);
+  --control-hover: rgba(249, 249, 249, 0.5);
+  --control-press: rgba(249, 249, 249, 0.3);
+  --subtle-hover: rgba(0, 0, 0, 0.0373);
+  --stroke: rgba(0, 0, 0, 0.0578);
+  --stroke-strong: rgba(0, 0, 0, 0.1);
+  --flyout: rgba(252, 252, 252, 0.94);
+  --taskbar: rgba(238, 238, 238, 0.86);
+  --text-1: rgba(0, 0, 0, 0.896);
+  --text-2: rgba(0, 0, 0, 0.6063);
+  --text-3: rgba(0, 0, 0, 0.4458);
+  --text-dis: rgba(0, 0, 0, 0.3614);
+  --input: rgba(255, 255, 255, 0.7);
+  --input-focus: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  font-family: 'Inter Variable', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.os-root {
+  font-family: 'Inter Variable', system-ui, sans-serif;
+  color: var(--text-1);
+  font-size: 14px;
+}
+
+.os-root input,
+.os-root textarea,
+.os-root select,
+.lib-root input {
+  user-select: text;
+}
+
+/* Thin overlay-style scrollbars. */
+.os-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-3) transparent;
+}
+.os-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.os-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.os-scroll::-webkit-scrollbar-thumb {
+  background: var(--text-3);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  opacity: 0.6;
+}
+.os-scroll::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+}
+.os-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* The minigames' own log panes use dd-scroll (copied from sd-deaddrop). */
+.dd-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 229, 43, 0.35) transparent;
+}
+.dd-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.dd-scroll::-webkit-scrollbar-thumb {
+  background: rgba(136, 229, 43, 0.3);
+  border-radius: 8px;
+}
+
+/* Acrylic surfaces (taskbar, start menu, flyouts). */
+.acrylic {
+  background: var(--flyout);
+  backdrop-filter: blur(48px) saturate(160%);
+}
+.acrylic-bar {
+  background: var(--taskbar);
+  backdrop-filter: blur(48px) saturate(150%);
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────── */
+
+/* Things arriving decelerate, things leaving accelerate. */
+:root {
+  --ease-out: cubic-bezier(0.1, 0.9, 0.2, 1);
+  --ease-in: cubic-bezier(0.7, 0, 1, 0.5);
+}
+
+/* Baseline: every interactive element eases its state changes (hover, press, focus, selection,
+   disabled, theme/accent switches) instead of snapping. :where() keeps it at zero specificity, so
+   any transition-* utility or style rule still wins. Retro opts out: its controls snap, like the
+   era's did. */
+:where(.os-root:not([data-style='retro']), .lib-root)
+  :where(button, a, input, textarea, select, label, [role='button'], [role='switch'], [role='menuitem'], [class*='hover:'], [class*='focus:'], [class*='active:'], [class*='ctl-']) {
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    fill 150ms ease-out,
+    stroke 150ms ease-out,
+    opacity 150ms ease-out,
+    box-shadow 150ms ease-out,
+    outline-color 150ms ease-out,
+    transform 150ms var(--ease-out);
+}
+/* Kit buttons give a little under the pointer. */
+:where(.os-root[data-style='modern'], .lib-root) :where(.ctl-btn, .ctl-iconbtn):active {
+  transform: scale(0.97);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fadeIn 250ms ease-out;
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.fade-out {
+  animation: fadeOut 250ms ease-in forwards;
+}
+
+/* Windows. */
+@keyframes winOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes winClose {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+@keyframes winMin {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(40%) scale(0.6);
+  }
+}
+@keyframes winRestore {
+  from {
+    opacity: 0;
+    transform: translateY(40%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.win-enter {
+  animation: winOpen 180ms var(--ease-out);
+}
+/* Back from the taskbar: the minimize, reversed. */
+.win-restore {
+  animation: winRestore 220ms var(--ease-out);
+}
+.win-exit-close {
+  animation: winClose 130ms ease-in forwards;
+  pointer-events: none;
+}
+.win-exit-min {
+  animation: winMin 180ms var(--ease-in) forwards;
+  pointer-events: none;
+}
+/* Maximize / restore: the frame morphs between the two rects. Only on for the toggle itself -
+   drags and resizes write these same properties every pointermove and must stay 1:1. */
+.win-morph {
+  transition:
+    left 220ms var(--ease-out),
+    top 220ms var(--ease-out),
+    width 220ms var(--ease-out),
+    height 220ms var(--ease-out),
+    border-radius 220ms var(--ease-out),
+    box-shadow 150ms ease-out;
+}
+
+/* Flyouts rising from the taskbar (Start, calendar, quick settings). */
+@keyframes flyUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes flyOut {
+  to {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+.fly-up {
+  animation: flyUp 220ms var(--ease-out);
+}
+
+/* Menus and popovers: grow out of their anchor (pair with an origin-* utility). */
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+@keyframes popOut {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+.pop-in {
+  animation: popIn 150ms var(--ease-out);
+}
+
+/* Content swapped into a pane (a settings page, a tab, the opened message). */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.page-in {
+  animation: riseIn 240ms var(--ease-out);
+}
+/* A chat bubble that just arrived or was just sent. */
+@keyframes msgIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+.msg-in {
+  animation: msgIn 260ms var(--ease-out);
+}
+/* A group arriving one after another (desktop icons, cards on a page). */
+.stagger > * {
+  animation: riseIn 320ms var(--ease-out) backwards;
+}
+.stagger > :nth-child(2) { animation-delay: 30ms; }
+.stagger > :nth-child(3) { animation-delay: 60ms; }
+.stagger > :nth-child(4) { animation-delay: 90ms; }
+.stagger > :nth-child(5) { animation-delay: 120ms; }
+.stagger > :nth-child(6) { animation-delay: 150ms; }
+.stagger > :nth-child(7) { animation-delay: 180ms; }
+.stagger > :nth-child(8) { animation-delay: 210ms; }
+.stagger > :nth-child(9) { animation-delay: 240ms; }
+.stagger > :nth-child(10) { animation-delay: 270ms; }
+.stagger > :nth-child(n + 11) { animation-delay: 300ms; }
+
+/* Dialogs settle in from slightly oversized, over a fading shade. */
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+@keyframes dialogOut {
+  to {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+}
+.dialog-in {
+  animation: dialogIn 200ms var(--ease-out);
+}
+
+/* Toasts slide in from the right edge; on the way out they slide back, then the stack closes up. */
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes toastOut {
+  55% {
+    opacity: 0;
+    transform: translateX(56px);
+    margin-bottom: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(56px);
+    /* Its own height plus the stack's gap (8px here; a style with another gap sets --exit-gap). */
+    margin-bottom: calc(0px - var(--exit-gap, 8px) - var(--exit-h));
+  }
+}
+.toast-in {
+  animation: toastIn 260ms var(--ease-out);
+}
+
+/* Taskbar buttons of apps that aren't pinned: the centred row opens up for them (40px + 4px gap). */
+@keyframes taskIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+    margin-right: -44px;
+  }
+}
+@keyframes taskOut {
+  to {
+    opacity: 0;
+    transform: scale(0.4);
+    margin-right: -44px;
+  }
+}
+.task-in {
+  animation: taskIn 220ms var(--ease-out);
+}
+/* The selection pill on a navigation item. */
+@keyframes pillIn {
+  from {
+    opacity: 0;
+    transform: scaleY(0.2);
+  }
+}
+.pill-in {
+  animation: pillIn 180ms var(--ease-out);
+}
+
+/* Calendar flyout: the month grid follows the direction you paged. */
+@keyframes calNext {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes calPrev {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+.cal-next {
+  animation: calNext 220ms var(--ease-out);
+}
+.cal-prev {
+  animation: calPrev 220ms var(--ease-out);
+}
+
+/* Kit controls that appear mid-task arrive instead of popping (retro and mac restyle their own). */
+:where(.os-root:not([data-style='retro'])) .ctl-dialog {
+  animation: dialogIn 200ms var(--ease-out);
+}
+:where(.os-root:not([data-style='retro'])) .ctl-infobar {
+  animation: riseIn 220ms var(--ease-out);
+}
+:where(.os-root:not([data-style='retro'])) .ctl-empty {
+  animation: fadeIn 300ms ease-out;
+}
+:where(.os-root:not([data-style='retro'])) .ctl-badge {
+  animation: popIn 180ms var(--ease-out);
+}
+
+/* ── Shell phases (modern) ──────────────────────────────────────────────────
+   Computer.tsx keeps the outgoing screen mounted under the incoming one while it fades in
+   (.phase-layer / .phase-in / .phase-out), so boot, lock, welcome, desktop and shutdown dissolve
+   into each other. The rules below are each screen's own choreography on top of that. */
+.phase-layer {
+  position: absolute;
+  inset: 0;
+}
+.phase-in {
+  animation: fadeIn 420ms ease-out;
+}
+.phase-out {
+  pointer-events: none;
+}
+
+@keyframes bootLogo {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+}
+.boot-logo {
+  animation: bootLogo 800ms var(--ease-out) backwards;
+}
+.boot-ring {
+  animation: fadeIn 500ms 350ms ease-out backwards;
+}
+
+/* Lock face: the clock drops into place. */
+@keyframes lockFace {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+}
+.lock-face {
+  animation: lockFace 700ms 80ms var(--ease-out) backwards;
+}
+/* Signed in: the PIN box clears out so only avatar + name carry over into Welcome. */
+.phase-out .lock-actions {
+  animation: fadeOut 180ms ease-in forwards;
+}
+
+.welcome-row,
+.shutdown-row {
+  animation: riseIn 420ms 120ms var(--ease-out) backwards;
+}
+/* Welcome -> desktop: the user lifts away while the wallpaper below comes into focus. */
+@keyframes stageOut {
+  to {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+.phase-out .welcome-stage {
+  animation: stageOut 320ms ease-in forwards;
+}
+
+/* Desktop: the wallpaper settles from the sign-in screen's zoom, the taskbar rises. */
+@keyframes deskWall {
+  from {
+    transform: scale(1.08);
+  }
+}
+.desk-wall {
+  animation: deskWall 800ms var(--ease-out) backwards;
+}
+@keyframes taskRise {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes taskFall {
+  to {
+    transform: translateY(100%);
+  }
+}
+.task-rise {
+  animation: taskRise 420ms 140ms var(--ease-out) backwards;
+}
+.phase-out .task-rise {
+  animation: taskFall 260ms var(--ease-in) forwards;
+}
+
+/* ── Exit ghosts (hooks/useExitFx.ts) ───────────────────────────────────────
+   The clone of something React just removed, playing its way out. !important: the clone still
+   carries the original's enter classes, and the styles' own versions of those. */
+.exit-ghost {
+  pointer-events: none !important;
+}
+.exit-ghost * {
+  animation: none !important;
+  transition: none !important;
+}
+.exit-ghost.fade-out {
+  animation: fadeOut 160ms ease-in forwards !important;
+}
+.exit-ghost.fade-out > .ctl-dialog,
+.exit-ghost.fade-out > .dialog-in {
+  animation: dialogOut 160ms ease-in forwards !important;
+}
+.exit-ghost.fade-out > .win-enter {
+  animation: winClose 160ms ease-in forwards !important;
+}
+.exit-ghost.fly-out {
+  animation: flyOut 150ms var(--ease-in) forwards !important;
+}
+.exit-ghost.pop-out {
+  animation: popOut 110ms ease-in forwards !important;
+}
+.exit-ghost.toast-out {
+  animation: toastOut 340ms ease-in forwards !important;
+}
+.exit-ghost.task-out {
+  animation: taskOut 180ms ease-in forwards !important;
+}
+/* Dark <-> light or a new accent: a snapshot of the whole OS as it was, dissolving into the new
+   look (dissolveOver, called from Computer.tsx). */
+.exit-ghost.look-out {
+  animation: fadeOut 360ms ease forwards !important;
+}
+/* The previous wallpaper, dissolving into the one just picked. */
+.exit-ghost.wall-out {
+  animation: fadeOut 480ms ease-in-out forwards !important;
+}
+/* A closed tab: fades while its neighbours slide over the room it took (its width + the 2px gap). */
+@keyframes tabOut {
+  to {
+    opacity: 0;
+    margin-right: calc(-2px - var(--exit-w));
+  }
+}
+.exit-ghost.tab-out {
+  animation: tabOut 170ms ease-in forwards !important;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.shake {
+  animation: shake 360ms ease-in-out;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 900ms linear infinite, fadeIn 240ms ease-out;
+}
+
+@keyframes caretBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.caret {
+  animation: caretBlink 1s steps(1) infinite;
+}

@@ -1,0 +1,56 @@
+import { Bell, Info, Monitor, Power, Sun, Volume2 } from 'lucide-react';
+import { useOS } from '@/store/os';
+import { t } from '@/i18n';
+import { Select, Toggle } from '@/ui/controls';
+import { Group, MonitorPreview, PageHeader, Row, Slider } from '../ui';
+import { useLocal } from '../local';
+import type { Go } from '../nav';
+
+/** System: the device hero (monitor with the live wallpaper) and the everyday hardware rows. */
+export default function SystemPage({ go }: { go: Go }) {
+  const computer = useOS(s => s.payload!.computer);
+  const local = useLocal();
+
+  return (
+    <>
+      <PageHeader title={t('ui.settings.nav_system')} />
+
+      <div className="flex items-center gap-6 mb-6 min-w-0">
+        <MonitorPreview width={168} />
+        <div className="min-w-0">
+          <div className="text-subtitle font-semibold text-t1 truncate">{computer.hostname}</div>
+          <div className="text-body text-t2 truncate">{computer.label}</div>
+          <button type="button" onClick={() => go('about')} className="mt-1 text-body text-accent-text hover:underline">
+            {t('ui.settings.system_device_details')}
+          </button>
+        </div>
+      </div>
+
+      <Group>
+        <Row icon={<Monitor size={20} strokeWidth={1.5} />} title={t('ui.settings.display')} description={t('ui.settings.display_desc')}>
+          <Sun size={16} className="text-t2" />
+          <Slider className="w-[160px]" value={local.brightness} onChange={v => local.set({ brightness: v })} label={t('ui.settings.display_brightness')} />
+        </Row>
+        <Row icon={<Volume2 size={20} strokeWidth={1.5} />} title={t('ui.settings.sound')} description={t('ui.settings.sound_desc')}>
+          <span className="w-7 text-right tabular-nums">{local.volume}</span>
+          <Slider className="w-[160px]" value={local.volume} onChange={v => local.set({ volume: v })} label={t('ui.settings.sound_volume')} />
+        </Row>
+        <Row icon={<Bell size={20} strokeWidth={1.5} />} title={t('ui.settings.notifications')} description={t('ui.settings.notifications_desc')}>
+          <Toggle
+            checked={local.notifications}
+            onChange={v => local.set({ notifications: v })}
+            label={local.notifications ? t('ui.settings.on') : t('ui.settings.off')}
+          />
+        </Row>
+        <Row icon={<Power size={20} strokeWidth={1.5} />} title={t('ui.settings.power')} description={t('ui.settings.power_desc')}>
+          <Select className="w-[200px]" value={local.power} onChange={e => local.set({ power: e.target.value as typeof local.power })}>
+            <option value="efficiency">{t('ui.settings.power_efficiency')}</option>
+            <option value="balanced">{t('ui.settings.power_balanced')}</option>
+            <option value="performance">{t('ui.settings.power_performance')}</option>
+          </Select>
+        </Row>
+        <Row icon={<Info size={20} strokeWidth={1.5} />} title={t('ui.settings.about')} description={t('ui.settings.about_desc')} onClick={() => go('about')} />
+      </Group>
+    </>
+  );
+}

@@ -1,0 +1,1798 @@
+/* ============================================================================================
+ * Retro style (SD Desktop) - scoped to .os-root[data-style='retro'].
+ *
+ * Part 1 is the shell's own chrome (rt-*: CRT monitor, POST boot, splash, Log On, menu bar,
+ * desktop icons, early-90s windows, message boxes, toasts, status bar). Part 2 re-skins the
+ * shared apps through the ctl-* markers and the Tailwind tokens, inside .rt-skin (every window's
+ * client area except the black console and the minigame canvases).
+ *
+ * The look is ported from frp_mdt: silver #c0c0c0 face, 2px bevels, the user's accent (navy by
+ * default) on ACTIVE title bars and selections, WHITE inactive title bars, dotted focus, square
+ * bevelled scrollbars, a 2x2 dithered teal desktop, and windows that snap open in chunky steps.
+ * Fonts are bundled open fonts: Pixelify Sans (UI) and VT323 (terminal/mono).
+ * ========================================================================================== */
+
+/* ── Tokens ─────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'][data-theme] {
+  color-scheme: light;
+  --face: #c0c0c0;
+  --face-lt: #dfdfdf;
+  --hilite: #ffffff;
+  --shadow: #808080;
+  --dkshadow: #404040;
+  --frame: #000000;
+  --paper: #ffffff;
+  --ink: #000000;
+  --rt-font: 'Pixelify Sans', 'Courier New', monospace;
+  --rt-mono: 'VT323', 'Courier New', monospace;
+  --notepad-font: var(--rt-mono); /* Notepad's editor reads this (inline font-family var) */
+
+  /* The shared app tokens, repainted grey. */
+  --success: #007000;
+  --caution: #806000;
+  --critical: #b00000;
+  --win-bg: #c0c0c0;
+  --layer: #ffffff;
+  --card: #ffffff;
+  --card-hover: #ececec;
+  --control: #c0c0c0;
+  --control-hover: #c0c0c0;
+  --control-press: #a8a8a8;
+  --subtle-hover: #d6d6d6;
+  --stroke: #808080;
+  --stroke-strong: #404040;
+  --flyout: #c0c0c0;
+  --taskbar: #c0c0c0;
+  --text-1: #000000;
+  --text-2: #303030;
+  --text-3: #5a5a5a;
+  --text-dis: #808080;
+  --input: #ffffff;
+  --input-focus: #ffffff;
+  /* Selections and the default fill are the user's accent itself (theme.ts darkens it for the
+     modern light theme; a '91 selection bar is the pure colour). */
+  --accent-fill: var(--accent) !important;
+  --accent-fill-hover: var(--accent) !important;
+
+  font-family: var(--rt-font);
+  font-size: 13px;
+  color: #000;
+  -webkit-font-smoothing: none;
+}
+.os-root[data-style='retro'] ::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Bevel primitives ───────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-p {
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+.os-root[data-style='retro'] .rt-strong {
+  font-weight: 700;
+}
+.os-root[data-style='retro'] .rt-dim {
+  color: #404040;
+}
+.os-root[data-style='retro'] .rt-gap {
+  margin-top: 10px;
+}
+.os-root[data-style='retro'] .rt-mono {
+  font-family: var(--rt-mono);
+  font-size: 18px;
+  line-height: 1.05;
+}
+.os-root[data-style='retro'] .rt-hr {
+  border: none;
+  border-top: 1px solid var(--shadow);
+  border-bottom: 1px solid var(--hilite);
+  margin: 8px 0;
+}
+
+/* =============================================================================================
+ * PART 1 - THE SHELL
+ * =========================================================================================== */
+
+/* ── Monitor chassis ────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: retroMdtIn 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes retroMdtIn {
+  from {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* The game dims but stays visible around the chassis. */
+.os-root[data-style='retro'] .rt-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 10, 0.42), rgba(0, 0, 10, 0.16) 75%, rgba(0, 0, 10, 0.05));
+}
+/* Browser dev: no game behind it, so give the monitor a dim room to sit in. */
+.os-root[data-style='retro'] .rt-stage.is-dev .rt-backdrop {
+  background: #10141a;
+}
+.os-root[data-style='retro'] .rt-monitor {
+  position: relative;
+  padding: 18px 20px 0;
+  border-radius: 20px;
+  background: linear-gradient(172deg, #ddd7c9 0%, #cfc9ba 55%, #b9b2a1 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px rgba(70, 62, 48, 0.35),
+    inset 2px 0 2px rgba(255, 255, 255, 0.18),
+    inset -2px 0 3px rgba(70, 62, 48, 0.18),
+    0 24px 60px rgba(0, 0, 0, 0.55);
+}
+.os-root[data-style='retro'] .rt-tube {
+  position: relative;
+  /* As tall as the viewport allows once bezel + chin are paid for; 4:3 sets the width and the vw
+     term keeps it on screen in narrow windows. */
+  height: min(calc(94vh - 66px), calc((96vw - 40px) * 3 / 4));
+  aspect-ratio: 4 / 3;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 3px #8d8676,
+    0 2px 0 3px rgba(255, 255, 255, 0.35),
+    inset 0 0 3px 1px #000,
+    inset 0 0 42px rgba(0, 0, 0, 0.9);
+}
+.os-root[data-style='retro'] .rt-fullscreen {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
+/* The screen: every phase renders in here; the desktop is its container. */
+.os-root[data-style='retro'] .rt-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #000;
+  animation: retroTubeBloom 0.55s ease-out 0.08s backwards;
+}
+@keyframes retroTubeBloom {
+  from {
+    filter: brightness(2.1) saturate(0.65);
+  }
+  to {
+    filter: brightness(1) saturate(1);
+  }
+}
+/* Scanlines + corner falloff over everything on the tube. Decor only. */
+.os-root[data-style='retro'] .rt-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 0px, rgba(0, 0, 0, 0.08) 1px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 10, 0.28) 100%);
+}
+.os-root[data-style='retro'] .rt-fullscreen .rt-scan {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 0px, rgba(0, 0, 0, 0.06) 1px, transparent 1px, transparent 3px);
+}
+/* Glass glare: one diagonal sheet and a faint bottom bounce. */
+.os-root[data-style='retro'] .rt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  border-radius: inherit;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.02) 28%, transparent 44%),
+    radial-gradient(130% 90% at 50% 112%, transparent 62%, rgba(255, 255, 255, 0.045));
+}
+.os-root[data-style='retro'] .rt-chin {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px 4px 10px;
+}
+.os-root[data-style='retro'] .rt-brand {
+  font-family: var(--rt-font);
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #797263;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+.os-root[data-style='retro'] .rt-brand b {
+  color: #5d5748;
+  font-weight: 700;
+}
+.os-root[data-style='retro'] .rt-brand-sub {
+  font-size: 10px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+.os-root[data-style='retro'] .rt-chin-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.os-root[data-style='retro'] .rt-knob {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #cfc9ba, #96907f 70%);
+  box-shadow: inset 0 -1px 2px rgba(60, 54, 42, 0.6), 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.os-root[data-style='retro'] .rt-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-left: 4px;
+  background: #35e05a;
+  box-shadow: 0 0 6px 1px rgba(53, 224, 90, 0.8), inset 0 0 2px rgba(0, 80, 20, 0.8);
+  /* Warms from amber to green with the tube. */
+  animation: retroLedWarm 1.5s ease-out backwards;
+}
+.os-root[data-style='retro'] .rt-led.is-down {
+  animation: retroLedDown 2s steps(1) forwards;
+}
+@keyframes retroLedWarm {
+  0%,
+  60% {
+    background: #d0a53a;
+    box-shadow: 0 0 5px 1px rgba(208, 165, 58, 0.8);
+  }
+  100% {
+    background: #35e05a;
+    box-shadow: 0 0 6px 1px rgba(53, 224, 90, 0.8);
+  }
+}
+/* Disk-busy amber flicker while settings save, then dark. */
+@keyframes retroLedDown {
+  0%,
+  20%,
+  40% {
+    background: #d0a53a;
+    box-shadow: 0 0 5px 1px rgba(208, 165, 58, 0.8);
+  }
+  10%,
+  30%,
+  50% {
+    background: #35e05a;
+    box-shadow: 0 0 6px 1px rgba(53, 224, 90, 0.8);
+  }
+  60%,
+  100% {
+    background: #6a6455;
+    box-shadow: none;
+  }
+}
+.os-root[data-style='retro'] .rt-power {
+  width: 34px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #d7d1c2, #aba493);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 3px rgba(60, 54, 42, 0.5),
+    0 1px 1px rgba(0, 0, 0, 0.25);
+}
+.os-root[data-style='retro'] .rt-power:active {
+  background: linear-gradient(180deg, #b3ac9b, #a29b8a);
+  box-shadow: inset 0 2px 3px rgba(60, 54, 42, 0.55);
+}
+
+/* ── Boot: POST text ────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-boot {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  color: #aaaaaa;
+  font-family: var(--rt-mono);
+  font-size: clamp(16px, 2.15vh, 22px);
+  line-height: 1.12;
+  padding: 22px 28px;
+  overflow: hidden;
+  white-space: pre;
+}
+.os-root[data-style='retro'] .rt-post-sys {
+  color: #ffffff;
+}
+.os-root[data-style='retro'] .rt-post-ok {
+  color: #55ff55;
+}
+.os-root[data-style='retro'] .rt-post-warn {
+  color: #ffff55;
+}
+.os-root[data-style='retro'] .rt-post-dim {
+  color: #555555;
+}
+.os-root[data-style='retro'] .rt-post-input {
+  color: #e8e8e8;
+}
+.os-root[data-style='retro'] .rt-boot-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 0.85em;
+  background: #aaaaaa;
+  vertical-align: -0.05em;
+  animation: retroBlink 0.8s steps(1) infinite;
+}
+.os-root[data-style='retro'] .rt-boot-skip {
+  position: absolute;
+  bottom: 14px;
+  right: 20px;
+  color: #444;
+  font-size: 0.85em;
+}
+@keyframes retroBlink {
+  50% {
+    opacity: 0;
+  }
+}
+/* CRT turn-on: a blinding line at tube centre unfolds to full height while the glow settles. */
+.os-root[data-style='retro'] .rt-crt-on {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #dfeeff 0%, #9fb4c4 40%, #23282c 100%);
+  transform-origin: center;
+  animation: retroCrtOn 0.5s cubic-bezier(0.15, 0.7, 0.2, 1) forwards;
+}
+@keyframes retroCrtOn {
+  0% {
+    transform: scaleY(0.004);
+    filter: brightness(7);
+  }
+  45% {
+    transform: scaleY(0.015);
+    filter: brightness(5.5);
+  }
+  100% {
+    transform: scaleY(1);
+    filter: brightness(1);
+    opacity: 0.9;
+  }
+}
+/* The flash's hand-off: the same glow breathing out to black under the first POST lines. */
+.os-root[data-style='retro'] .rt-crt-decay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(ellipse at center, #dfeeff 0%, #9fb4c4 40%, #23282c 100%);
+  animation: retroCrtDecay 0.95s cubic-bezier(0.3, 0.1, 0.35, 1) forwards;
+}
+@keyframes retroCrtDecay {
+  0% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.os-root[data-style='retro'] .rt-boot-glow {
+  animation: retroAfterGlow 0.5s ease-out;
+}
+@keyframes retroAfterGlow {
+  from {
+    filter: brightness(2.4);
+  }
+  to {
+    filter: brightness(1);
+  }
+}
+
+/* ── Splash ─────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-splash {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #fff;
+  animation: retroAfterGlow 0.4s ease-out;
+}
+.os-root[data-style='retro'] .rt-splash-logo {
+  image-rendering: pixelated;
+  animation: retroLogoIn 0.5s steps(6) backwards;
+}
+@keyframes retroLogoIn {
+  from {
+    transform: scale(0.15);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.os-root[data-style='retro'] .rt-splash-title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  animation: retroFadeUp 0.4s 0.3s ease-out backwards;
+}
+.os-root[data-style='retro'] .rt-splash-sub {
+  font-family: var(--rt-mono);
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: #c0c0c0;
+  animation: retroFadeUp 0.4s 0.45s ease-out backwards;
+}
+@keyframes retroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.os-root[data-style='retro'] .rt-blocks {
+  display: flex;
+  gap: 3px;
+}
+.os-root[data-style='retro'] .rt-blocks span {
+  width: 15px;
+  height: 11px;
+  border: 1px solid #343a5c;
+}
+.os-root[data-style='retro'] .rt-blocks span.is-on {
+  background: linear-gradient(180deg, #4f8dff, #2a3fb8);
+  border-color: #6a9cff;
+}
+.os-root[data-style='retro'] .rt-splash-blocks {
+  margin-top: 18px;
+}
+/* The same blocks inside a grey message box. */
+.os-root[data-style='retro'] .rt-blocks-dlg {
+  margin-top: 10px;
+  gap: 2px;
+}
+.os-root[data-style='retro'] .rt-blocks-dlg span {
+  flex: 1;
+  height: 12px;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+.os-root[data-style='retro'] .rt-blocks-dlg span.is-on {
+  background: var(--accent);
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+
+/* ── Log On / Welcome / Shutdown screens ────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-lock {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  animation: retroDeskIn 0.35s ease-out;
+}
+.os-root[data-style='retro'] .rt-lock-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  text-align: center;
+  color: #fff;
+  font-family: var(--rt-mono);
+  font-size: 20px;
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  pointer-events: none;
+}
+.os-root[data-style='retro'] .rt-logon-locked {
+  color: #a00000;
+  font-weight: 700;
+}
+@keyframes retroDeskIn {
+  from {
+    opacity: 0.2;
+    filter: brightness(1.9);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+.os-root[data-style='retro'] .rt-shutdown {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+}
+.os-root[data-style='retro'] .rt-picture {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+/* CRT power-off: the picture squashes to a bright line, the line to a dot, the dot dies. */
+.os-root[data-style='retro'] .rt-picture.is-off {
+  animation: retroCrtOff 0.55s cubic-bezier(0.6, 0, 0.9, 0.4) forwards;
+}
+.os-root[data-style='retro'] .rt-picture.is-off::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #f4f8ff;
+  animation: retroWhiten 0.55s ease-in forwards;
+}
+@keyframes retroCrtOff {
+  0% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  45% {
+    transform: scale(1, 0.006);
+    filter: brightness(3);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.003, 0.006);
+    filter: brightness(6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.003, 0.006);
+    filter: brightness(6);
+    opacity: 0;
+  }
+}
+@keyframes retroWhiten {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.os-root[data-style='retro'] .rt-crt-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #cfe8ff 35%, rgba(160, 200, 255, 0) 70%);
+  opacity: 0;
+  animation: retroDot 0.75s 0.36s ease-out forwards;
+}
+@keyframes retroDot {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+/* ── Desktop ────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-desktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--face);
+  animation: retroDeskIn 0.35s ease-out;
+}
+/* The desk: its own stacking context, so no window can ever climb over the menu bar. */
+.os-root[data-style='retro'] .rt-desk {
+  position: relative;
+  z-index: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Menu bar */
+.os-root[data-style='retro'] .rt-menubar {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  height: 22px;
+  background: var(--face);
+  border-bottom: 1px solid var(--shadow);
+  box-shadow: 0 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-menubar-slot {
+  position: relative;
+  display: flex;
+}
+.os-root[data-style='retro'] .rt-menubar-item {
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: #000;
+  cursor: default;
+}
+.os-root[data-style='retro'] .rt-menubar-item.is-system {
+  padding: 0 5px;
+}
+.os-root[data-style='retro'] .rt-menubar-item.is-open {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-menubar-item:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+.os-root[data-style='retro'] .rt-menubar-trailing {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+}
+.os-root[data-style='retro'] .rt-menubar-clock {
+  font-family: var(--rt-mono);
+  font-size: 19px;
+  line-height: 1;
+}
+
+/* Drop-down menus (bar + control menu) */
+.os-root[data-style='retro'] .rt-menu {
+  position: absolute;
+  z-index: 50;
+  min-width: 200px;
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+  padding: 2px;
+}
+.os-root[data-style='retro'] .rt-menu-drop,
+.os-root[data-style='retro'] .rt-ctl-menu {
+  top: 100%;
+  left: 0;
+}
+.os-root[data-style='retro'] .rt-menu hr {
+  border: none;
+  border-top: 1px solid var(--shadow);
+  border-bottom: 1px solid var(--hilite);
+  margin: 3px 1px;
+}
+.os-root[data-style='retro'] .rt-mi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 3px 20px 3px 22px;
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 13px;
+  color: #000;
+  text-align: left;
+  white-space: nowrap;
+  cursor: default;
+}
+.os-root[data-style='retro'] .rt-mi-label {
+  flex: 1;
+}
+.os-root[data-style='retro'] .rt-mi-check {
+  position: absolute;
+  left: 7px;
+  font-weight: 700;
+}
+.os-root[data-style='retro'] .rt-mi:hover:not(:disabled),
+.os-root[data-style='retro'] .rt-mi:focus-visible {
+  background: var(--accent);
+  color: #fff;
+  outline: none;
+}
+.os-root[data-style='retro'] .rt-mi:disabled {
+  color: var(--shadow);
+  text-shadow: 1px 1px 0 var(--hilite);
+}
+
+/* Desktop icons: launchers top-left, minimized windows bottom-left */
+.os-root[data-style='retro'] .rt-icons {
+  position: absolute;
+  inset: 0;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  pointer-events: none;
+}
+.os-root[data-style='retro'] .rt-icon {
+  pointer-events: auto;
+  width: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 2px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  cursor: default;
+}
+.os-root[data-style='retro'] .rt-icon-img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+.os-root[data-style='retro'] .rt-icon-lbl {
+  max-width: 100%;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000, -1px -1px 0 #000;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Selected (click) or keyboard-focused: the dotted marquee, white so it reads on any pattern. */
+.os-root[data-style='retro'] .rt-icon.is-sel,
+.os-root[data-style='retro'] .rt-icon:focus-visible {
+  outline: 1px dotted #fff;
+  outline-offset: 0;
+}
+/* The launch acknowledgement: two hard inverts of the icon. */
+.os-root[data-style='retro'] .rt-icon.is-launching .rt-icon-img {
+  animation: retroIconLaunch 0.34s both;
+}
+@keyframes retroIconLaunch {
+  0%,
+  24% {
+    filter: invert(1) brightness(1.4);
+  }
+  25%,
+  49% {
+    filter: none;
+  }
+  50%,
+  74% {
+    filter: invert(1) brightness(1.4);
+  }
+  75%,
+  100% {
+    filter: none;
+  }
+}
+.os-root[data-style='retro'] .rt-minrow {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 6px;
+  pointer-events: none;
+}
+.os-root[data-style='retro'] .rt-min-icon {
+  width: 78px;
+}
+
+/* Status bar */
+.os-root[data-style='retro'] .rt-statusbar {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--face);
+  border-top: 1px solid var(--hilite);
+  font-family: var(--rt-mono);
+  font-size: 18px;
+  line-height: 16px;
+}
+.os-root[data-style='retro'] .rt-cell {
+  max-width: 30%;
+  padding: 1px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top: 1px solid var(--shadow);
+  border-left: 1px solid var(--shadow);
+  border-right: 1px solid var(--hilite);
+  border-bottom: 1px solid var(--hilite);
+}
+.os-root[data-style='retro'] .rt-cell.is-grow {
+  flex: 1;
+  max-width: none;
+}
+
+/* Toasts */
+.os-root[data-style='retro'] .rt-toasts {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 9500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.os-root[data-style='retro'] .rt-win.rt-toast {
+  position: relative;
+  width: 300px;
+  max-width: calc(100vw - 16px);
+  transform-origin: bottom right;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+.os-root[data-style='retro'] .rt-toast.is-clickable {
+  cursor: pointer;
+}
+.os-root[data-style='retro'] .rt-toast-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px 10px;
+}
+.os-root[data-style='retro'] .rt-toast-text {
+  flex: 1;
+  min-width: 0;
+}
+.os-root[data-style='retro'] .rt-toast-title {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-root[data-style='retro'] .rt-toast-msg {
+  margin-top: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Window frames ────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+  /* Period zoom rectangles, approximated: windows snap open through a few chunky scale steps. */
+  animation: retroZoomSteps 0.16s steps(4);
+}
+.os-root[data-style='retro'] .rt-win.is-max {
+  box-shadow: none;
+}
+.os-root[data-style='retro'] .rt-win-inner {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-top: 2px solid var(--hilite);
+  border-left: 2px solid var(--hilite);
+  border-right: 2px solid var(--shadow);
+  border-bottom: 2px solid var(--shadow);
+}
+.os-root[data-style='retro'] .rt-title {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  height: 20px;
+  background: #fff;
+  color: #000;
+  user-select: none;
+}
+.os-root[data-style='retro'] .rt-win.is-active > .rt-win-inner > .rt-title {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-title-text {
+  flex: 1;
+  min-width: 0;
+  padding: 0 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.os-root[data-style='retro'] .rt-ctl-wrap {
+  position: relative;
+  display: flex;
+  flex: none;
+}
+.os-root[data-style='retro'] .rt-sysbtn {
+  width: 20px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--face);
+  border: 1px solid #000;
+  border-top: none;
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow);
+  cursor: default;
+}
+.os-root[data-style='retro'] .rt-sysbtn:active {
+  box-shadow: inset 1px 1px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-sysbtn:active .rt-glyph {
+  transform: translate(1px, 1px);
+}
+.os-root[data-style='retro'] .rt-title > .rt-sysbtn:last-child {
+  border-right: none;
+}
+.os-root[data-style='retro'] .rt-title > .rt-sysbtn + .rt-sysbtn {
+  border-left: none;
+}
+/* The control-menu box is flat grey with the bar glyph; it inverts while its menu is open. */
+.os-root[data-style='retro'] .rt-ctlbox {
+  border-left: none;
+  box-shadow: none;
+}
+.os-root[data-style='retro'] .rt-ctlbox.is-open {
+  background: var(--shadow);
+}
+.os-root[data-style='retro'] .rt-glyph {
+  display: block;
+  image-rendering: pixelated;
+}
+.os-root[data-style='retro'] .rt-client {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--face);
+}
+.os-root[data-style='retro'] .rt-grip {
+  position: absolute;
+  z-index: 5;
+}
+/* Mid-drag/resize the frame rides on its own layer and the contents sleep. */
+.os-root[data-style='retro'] .rt-win.is-gesture {
+  will-change: transform;
+}
+.os-root[data-style='retro'] .rt-win.is-gesture .rt-client {
+  pointer-events: none;
+  user-select: none;
+}
+@keyframes retroZoomSteps {
+  from {
+    transform: scale(0.3);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+/* Close/minimize replay the zoom backwards - collapsing to centre, or shrinking toward the
+   minimized-icon row at the bottom-left. `forwards` holds the last frame until finalize(). */
+.os-root[data-style='retro'] .rt-win.rt-exit-close {
+  animation: retroWinExitClose 0.16s steps(4) forwards;
+  pointer-events: none;
+}
+.os-root[data-style='retro'] .rt-win.rt-exit-min {
+  animation: retroWinExitMin 0.18s steps(4) forwards;
+  transform-origin: bottom left;
+  pointer-events: none;
+}
+@keyframes retroWinExitClose {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+@keyframes retroWinExitMin {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.06);
+    opacity: 0;
+  }
+}
+
+/* ── Message boxes ──────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-dlg-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 9600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.os-root[data-style='retro'] .rt-dlg-shade.is-bare {
+  pointer-events: none;
+}
+.os-root[data-style='retro'] .rt-dlg-shade.is-bare > .rt-dlg {
+  pointer-events: auto;
+}
+.os-root[data-style='retro'] .rt-win.rt-dlg {
+  position: relative;
+  max-width: 92%;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+.os-root[data-style='retro'] .rt-dlg-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px 8px;
+}
+.os-root[data-style='retro'] .rt-dlg-icon {
+  flex: none;
+  padding-top: 2px;
+}
+.os-root[data-style='retro'] .rt-dlg-text {
+  flex: 1;
+  min-width: 0;
+}
+.os-root[data-style='retro'] .rt-dlg-btns {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 16px 14px;
+}
+.os-root[data-style='retro'] .rt-keys {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  align-items: baseline;
+}
+
+/* Shell buttons + fields */
+.os-root[data-style='retro'] .rt-btn {
+  min-width: 76px;
+  padding: 4px 14px 5px;
+  font: inherit;
+  font-size: 13px;
+  color: #000;
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow:
+    inset 1px 1px 0 var(--hilite),
+    inset -1px -1px 0 var(--shadow),
+    inset 2px 2px 0 var(--face),
+    inset -2px -2px 0 var(--shadow);
+  cursor: default;
+}
+.os-root[data-style='retro'] .rt-btn.is-default {
+  font-weight: 700;
+  box-shadow:
+    0 0 0 1px #000,
+    inset 1px 1px 0 var(--hilite),
+    inset -1px -1px 0 var(--shadow),
+    inset 2px 2px 0 var(--face),
+    inset -2px -2px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-btn:active:not(:disabled) {
+  box-shadow: 0 0 0 1px #000, inset 1px 1px 0 var(--shadow);
+  padding: 5px 13px 4px 15px;
+}
+.os-root[data-style='retro'] .rt-btn:focus {
+  outline: 1px dotted #000;
+  outline-offset: -5px;
+}
+.os-root[data-style='retro'] .rt-btn:disabled {
+  color: var(--shadow);
+  text-shadow: 1px 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-form {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 8px;
+  margin: 8px 0 8px;
+}
+.os-root[data-style='retro'] .rt-label {
+  font-size: 13px;
+}
+.os-root[data-style='retro'] .rt-field {
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+  padding: 1px 5px 0;
+  font-family: var(--rt-mono);
+  font-size: 20px;
+  line-height: 20px;
+  color: #000;
+  background: #fff;
+  border: 1px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 var(--face-lt);
+  outline: none;
+  user-select: text;
+}
+.os-root[data-style='retro'] .rt-field.is-readonly,
+.os-root[data-style='retro'] .rt-field:disabled {
+  background: var(--face);
+  color: #303030;
+}
+
+/* =============================================================================================
+ * PART 2 - THE APPS (inside .rt-skin)
+ * =========================================================================================== */
+
+.os-root[data-style='retro'] .rt-skin {
+  font-family: var(--rt-font);
+  font-size: 13px;
+  color: #000;
+}
+.os-root[data-style='retro'] .rt-skin .font-ui,
+.os-root[data-style='retro'] .rt-skin .font-display {
+  font-family: var(--rt-font);
+}
+.os-root[data-style='retro'] .rt-skin .font-mono {
+  font-family: var(--rt-mono);
+  font-size: 18px;
+}
+
+/* Type scale: a notch smaller and flatter than the modern one. */
+.os-root[data-style='retro'] .rt-skin .text-caption {
+  font-size: 12px;
+  line-height: 15px;
+}
+.os-root[data-style='retro'] .rt-skin .text-body {
+  font-size: 13px;
+  line-height: 18px;
+}
+.os-root[data-style='retro'] .rt-skin .text-subtitle {
+  font-size: 17px;
+  line-height: 22px;
+}
+.os-root[data-style='retro'] .rt-skin .text-title {
+  font-size: 22px;
+  line-height: 28px;
+}
+.os-root[data-style='retro'] .rt-skin .text-hero {
+  font-size: 30px;
+  line-height: 36px;
+}
+
+/* Square everything (circles stay circles: avatars, status dots). */
+.os-root[data-style='retro'] .rt-skin [class*='rounded']:not(.rounded-full),
+.os-root[data-style='retro'] .rt-skin .rounded-full.border {
+  border-radius: 0;
+}
+/* No soft shadows, no glass: hard 2px drop under floating things only. */
+.os-root[data-style='retro'] .rt-skin .shadow-card,
+.os-root[data-style='retro'] .rt-skin .shadow-win,
+.os-root[data-style='retro'] .rt-skin .shadow-win-inactive {
+  box-shadow: none;
+}
+.os-root[data-style='retro'] .rt-skin .shadow-flyout {
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+.os-root[data-style='retro'] .rt-skin .acrylic,
+.os-root[data-style='retro'] .rt-skin .acrylic-bar {
+  background: var(--face);
+  backdrop-filter: none;
+  border: 1px solid #000;
+}
+.os-root[data-style='retro'] .rt-skin [class*='transition'] {
+  transition: none;
+}
+/* Menus pop, they don't fade or fly (the settings page fold is re-added below) - and what closes
+   is simply gone: no exit ghosts (hooks/useExitFx.ts). */
+.os-root[data-style='retro'] .rt-skin .fade-in,
+.os-root[data-style='retro'] .rt-skin .fly-up,
+.os-root[data-style='retro'] .rt-skin .pop-in,
+.os-root[data-style='retro'] .rt-skin .page-in,
+.os-root[data-style='retro'] .rt-skin .dialog-in,
+.os-root[data-style='retro'] .rt-skin .pill-in,
+.os-root[data-style='retro'] .rt-skin .msg-in,
+.os-root[data-style='retro'] .rt-skin .stagger > * {
+  animation: none;
+}
+.os-root[data-style='retro'] .exit-ghost {
+  display: none !important;
+}
+
+/* Embossed separators: a grey line with a white one under it. */
+.os-root[data-style='retro'] .rt-skin .h-px.bg-stroke,
+.os-root[data-style='retro'] .rt-skin .h-px.bg-stroke-strong {
+  background: var(--shadow);
+  box-shadow: 0 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin .w-px.bg-stroke,
+.os-root[data-style='retro'] .rt-skin .w-px.bg-stroke-strong {
+  background: var(--shadow);
+  box-shadow: 1px 0 0 var(--hilite);
+}
+
+/* Modal overlays inside a window: a dithered grey-out instead of a dimmed blur. */
+.os-root[data-style='retro'] .rt-skin .bg-black\/40 {
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='%23000' fill-opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+  image-rendering: pixelated;
+}
+
+/* Keyboard focus: the dotted rectangle. */
+.os-root[data-style='retro'] .rt-skin button:focus-visible,
+.os-root[data-style='retro'] .rt-skin [role='button']:focus-visible,
+.os-root[data-style='retro'] .rt-skin [role='tab']:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -3px;
+}
+
+/* ── Controls (src/ui/controls.tsx markers) ─────────────────────────────────────────────── */
+
+/* Button: raised bevel; pressed = sunken. */
+.os-root[data-style='retro'] .rt-skin .ctl-btn {
+  font-family: var(--rt-font);
+  font-size: 13px;
+  font-weight: 400;
+  color: #000;
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow:
+    inset 1px 1px 0 var(--hilite),
+    inset -1px -1px 0 var(--shadow),
+    inset 2px 2px 0 var(--face),
+    inset -2px -2px 0 var(--shadow);
+  transition: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn:hover {
+  background: var(--face);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn:active:not(:disabled) {
+  box-shadow: inset 1px 1px 0 var(--shadow), inset -1px -1px 0 var(--face);
+  padding-top: 2px;
+}
+/* Accent = the default button: bold, with the extra black frame. */
+.os-root[data-style='retro'] .rt-skin .ctl-btn-accent {
+  color: #000;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 1px #000,
+    inset 1px 1px 0 var(--hilite),
+    inset -1px -1px 0 var(--shadow),
+    inset 2px 2px 0 var(--face),
+    inset -2px -2px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn-accent:active:not(:disabled) {
+  box-shadow: 0 0 0 1px #000, inset 1px 1px 0 var(--shadow), inset -1px -1px 0 var(--face);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn-danger {
+  color: #900000;
+  font-weight: 700;
+}
+/* Subtle = flat toolbar button that rises on hover. */
+.os-root[data-style='retro'] .rt-skin .ctl-btn-subtle {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn-subtle:hover:not(:disabled) {
+  background: var(--face);
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn-subtle:active:not(:disabled) {
+  box-shadow: inset 1px 1px 0 var(--shadow), inset -1px -1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn:disabled {
+  opacity: 1;
+  color: var(--shadow);
+  text-shadow: 1px 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-btn:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -5px;
+}
+
+/* Icon button: flat until hovered, then a thin raised bevel; a toggled one sits pressed in. */
+.os-root[data-style='retro'] .rt-skin .ctl-iconbtn {
+  color: #000;
+  background: transparent;
+  transition: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-iconbtn:hover:not(:disabled) {
+  background: var(--face);
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-iconbtn:active:not(:disabled),
+.os-root[data-style='retro'] .rt-skin .ctl-iconbtn.bg-subtle {
+  background: var(--face-lt);
+  box-shadow: inset 1px 1px 0 var(--shadow), inset -1px -1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-iconbtn:disabled {
+  opacity: 1;
+  color: var(--shadow);
+}
+
+/* Text fields (and every hand-rolled input that uses the --input surface): sunken white well. */
+.os-root[data-style='retro'] .rt-skin .ctl-field,
+.os-root[data-style='retro'] .rt-skin [class*='bg-[var(--input)]'] {
+  font-family: var(--rt-font);
+  color: #000;
+  background-color: #fff;
+  border: 1px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 var(--face-lt);
+  transition: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-field:focus,
+.os-root[data-style='retro'] .rt-skin [class*='bg-[var(--input)]']:focus,
+.os-root[data-style='retro'] .rt-skin [class*='bg-[var(--input)]']:focus-within {
+  background-color: #fff;
+  border-width: 1px;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-field::placeholder,
+.os-root[data-style='retro'] .rt-skin input::placeholder {
+  color: #808080;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-field:disabled,
+.os-root[data-style='retro'] .rt-skin .ctl-field[readonly] {
+  opacity: 1;
+  color: #404040;
+  background-color: var(--face);
+}
+/* Combo box: white well + a bevelled drop button. */
+.os-root[data-style='retro'] .rt-skin .ctl-select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 24px;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='4'%3E%3Cpath d='M0 0h7L3.5 4z' fill='%23000'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='28' viewBox='0 0 18 28' preserveAspectRatio='none' shape-rendering='crispEdges'%3E%3Crect width='18' height='28' fill='%23000'/%3E%3Crect width='17' height='27' fill='%23808080'/%3E%3Crect width='16' height='26' fill='%23fff'/%3E%3Crect x='1' y='1' width='15' height='25' fill='%23c0c0c0'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat;
+  background-position: right 6px center, right 1px top 1px;
+  background-size: 7px 4px, 17px calc(100% - 2px);
+}
+.os-root[data-style='retro'] .rt-skin option {
+  background: #fff;
+  color: #000;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-textarea {
+  font-family: var(--rt-font);
+}
+
+/* Toggle switch -> a sunken checkbox with a pixel tick. */
+.os-root[data-style='retro'] .rt-skin .ctl-toggle {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  background-color: #fff;
+  border: 1px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 var(--face-lt);
+  transition: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-toggle > span {
+  display: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-toggle.is-on {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M6 0h1v1H6zM5 1h2v1H5zM0 2h1v1H0zM4 2h3v1H4zM0 3h2v1H0zM3 3h3v1H3zM0 4h5v1H0zM1 5h3v1H1zM2 6h1v1H2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 7px 7px;
+}
+
+/* Spinner: ink, and it turns in chunky steps. */
+.os-root[data-style='retro'] .rt-skin .ctl-spinner {
+  color: #000 !important;
+  animation: spin 0.9s steps(8) infinite;
+}
+
+/* InfoBar: a bordered, slightly raised box with a severity stripe. */
+.os-root[data-style='retro'] .rt-skin .ctl-infobar {
+  background: var(--face);
+  border: 1px solid #000;
+  border-left-width: 5px;
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow), 2px 2px 0 rgba(0, 0, 0, 0.25);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-infobar-info {
+  border-left-color: var(--accent);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-infobar-success {
+  border-left-color: #007000;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-infobar-warning {
+  border-left-color: #c09000;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-infobar-error {
+  border-left-color: #b00000;
+}
+
+/* Card: a raised grey panel (pressed when it's a clickable row). */
+.os-root[data-style='retro'] .rt-skin .ctl-card {
+  background: var(--face);
+  border: 1px solid;
+  border-color: var(--hilite) #000 #000 var(--hilite);
+  box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--face-lt);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-card:hover {
+  background: var(--face);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-card.cursor-pointer:active {
+  border-color: #000 var(--hilite) var(--hilite) #000;
+  box-shadow: inset 1px 1px 0 var(--shadow);
+}
+
+/* Navigation item: the selection bar in the accent, white text. */
+.os-root[data-style='retro'] .rt-skin .ctl-nav {
+  color: #000;
+  transition: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-nav.is-selected {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-nav.is-selected * {
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-nav.is-selected > .absolute:first-child {
+  display: none;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-nav.is-selected .ctl-badge {
+  background: #fff;
+  color: var(--accent);
+}
+
+/* Badge: square, accent, terminal digits. */
+.os-root[data-style='retro'] .rt-skin .ctl-badge {
+  height: 16px;
+  min-width: 18px;
+  padding: 0 4px;
+  border-radius: 0;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--rt-mono);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+/* Dialog: a bevelled window with an accent title strip, buttons centred like a message box. */
+.os-root[data-style='retro'] .rt-skin .ctl-dialog-shade {
+  background-color: transparent;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-dialog {
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow: inset 2px 2px 0 var(--hilite), inset -2px -2px 0 var(--shadow), 2px 2px 0 rgba(0, 0, 0, 0.45);
+  animation: retroZoomSteps 0.16s steps(4);
+}
+.os-root[data-style='retro'] .rt-skin .ctl-dialog-title {
+  margin: -22px -22px 14px;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+.os-root[data-style='retro'] .rt-skin .ctl-dialog-actions {
+  justify-content: center;
+  background: transparent;
+  border-top: none;
+  padding-top: 4px;
+  padding-bottom: 16px;
+}
+
+/* ── Lists & tables ─────────────────────────────────────────────────────────────────────── */
+/* Header cells: little raised bevels, normal weight, ink. */
+.os-root[data-style='retro'] .rt-skin th {
+  height: 24px;
+  background: var(--face);
+  color: #000;
+  font-weight: 400;
+  border-right: 1px solid var(--shadow);
+  border-bottom: 1px solid #000;
+  box-shadow: inset 1px 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin td.border-b {
+  border-bottom: 1px dotted #a0a0a0;
+}
+
+/* ── Scrollbars: square, bevelled, grey, with arrow buttons ─────────────────────────────── */
+.os-root[data-style='retro'] .rt-skin .os-scroll {
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-track {
+  background-color: var(--face);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='1' height='1' fill='%23ffffff'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-thumb {
+  background: var(--face);
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: var(--face);
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 var(--hilite), inset -1px -1px 0 var(--shadow);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button:active {
+  box-shadow: inset 1px 1px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M4 2 L7 6 L1 6 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M4 6 L1 2 L7 2 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2 4 L6 1 L6 7 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M6 4 L2 1 L2 7 Z' fill='%23000'/%3E%3C/svg%3E");
+}
+.os-root[data-style='retro'] .rt-skin ::-webkit-scrollbar-corner {
+  background: var(--face);
+}
+
+/* ── Floating menus inside apps (Notepad, Event Viewer, Mail account menu) ───────────────── */
+.os-root[data-style='retro'] .rt-skin .acrylic button:not(.ctl-btn):not(.ctl-iconbtn):hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin .acrylic button:not(.ctl-btn):not(.ctl-iconbtn):hover:not(:disabled) * {
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin .acrylic .h-8 {
+  height: 24px;
+}
+.os-root[data-style='retro'] .rt-skin .acrylic [class*='bg-subtle'].h-8 {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Per-app touches ────────────────────────────────────────────────────────────────────── */
+
+/* Floating sheets that are really dialogs (Mail sign-in card, Event Viewer dialogs). */
+.os-root[data-style='retro'] .rt-skin .shadow-flyout.bg-layer {
+  background: var(--face);
+  border: 1px solid #000;
+  box-shadow: inset 2px 2px 0 var(--hilite), inset -2px -2px 0 var(--shadow), 2px 2px 0 rgba(0, 0, 0, 0.45);
+  animation: retroZoomSteps 0.16s steps(4);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='logs'] .shadow-flyout.bg-layer > div:first-child {
+  margin: 2px 2px 10px;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='logs'] .shadow-flyout.bg-layer > div:last-child {
+  justify-content: center;
+  background: transparent;
+  border-top: none;
+}
+
+/* Mail: the message list is a white well; the selected message gets the accent bar. */
+.os-root[data-style='retro'] .rt-skin[data-app='mail'] [data-mail-list] {
+  margin: 0 8px 8px;
+  background: #fff;
+  border: 2px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='mail'] [data-id][aria-selected='true'] {
+  background: var(--accent);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='mail'] [data-id][aria-selected='true'] * {
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='mail'] [data-id] {
+  border-bottom-style: dotted;
+  border-bottom-color: #a0a0a0;
+}
+/* Opening a message or the composer redraws the pane with the CRT fold. */
+.os-root[data-style='retro'] .rt-skin[data-app='mail'] section > .flex-1 > .h-full {
+  transform-origin: center;
+  animation: retroEditorIn 0.2s steps(5) both;
+}
+@keyframes retroEditorIn {
+  from {
+    transform: scaleY(0.04);
+    filter: brightness(2.6) contrast(1.3);
+    opacity: 0.7;
+  }
+  to {
+    transform: scaleY(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+}
+
+/* Business Manager: a grey dialog-like dashboard with raised panels; tables sit in white wells. */
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] main.bg-layer {
+  background: var(--face);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] .bg-card,
+.os-root[data-style='retro'] .rt-skin[data-app='settings'] .bg-card {
+  background: var(--face);
+  border: 1px solid;
+  border-color: var(--hilite) #000 #000 var(--hilite);
+  box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--face-lt);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] .bg-card:hover,
+.os-root[data-style='retro'] .rt-skin[data-app='settings'] .bg-card:hover {
+  background: var(--face);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] .overflow-auto.bg-layer {
+  border: 2px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] th.bg-layer {
+  background: var(--face);
+}
+
+/* Settings: each page redraws with the CRT fold. */
+.os-root[data-style='retro'] .rt-skin[data-app='settings'] main.fade-in {
+  transform-origin: top center;
+  animation: retroEditorIn 0.2s steps(5) both;
+}
+
+/* Event Viewer: grid header as bevelled header cells; the menu bar's open item in the accent. */
+.os-root[data-style='retro'] .rt-skin[data-app='logs'] .sticky.grid {
+  background: var(--face);
+  border-bottom: 1px solid #000;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='logs'] .sticky.grid > div {
+  color: #000;
+  border-right: 1px solid var(--shadow);
+  box-shadow: inset 1px 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='logs'] .bg-control-press {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Notepad: a proper menu bar strip and sunken status cells. */
+.os-root[data-style='retro'] .rt-skin[data-app='notepad'] .h-10.border-b {
+  height: 24px;
+  padding: 0 2px;
+  background: var(--face);
+  border-bottom: 1px solid var(--shadow);
+  box-shadow: 0 1px 0 var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='notepad'] .h-10.border-b button.h-8 {
+  height: 20px;
+  padding: 0 8px;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='notepad'] .h-10.border-b button.h-8.bg-subtle {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='notepad'] .border-t.h-8 {
+  height: 26px;
+  gap: 2px;
+  padding: 2px;
+  border-top-color: var(--hilite);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='notepad'] .border-t.h-8 > div {
+  height: 20px;
+  border: 1px solid;
+  border-color: var(--shadow) var(--hilite) var(--hilite) var(--shadow);
+}
+
+/* Calculator: keys are real bevel buttons; the readout uses the terminal digits. */
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] button.group {
+  background: var(--face);
+  color: #000;
+  border: 1px solid #000;
+  box-shadow:
+    inset 1px 1px 0 var(--hilite),
+    inset -1px -1px 0 var(--shadow),
+    inset 2px 2px 0 var(--face),
+    inset -2px -2px 0 var(--shadow);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] button.group:active:not(:disabled) {
+  box-shadow: inset 1px 1px 0 var(--shadow), inset -1px -1px 0 var(--face);
+}
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] button.group.bg-accent {
+  background: var(--accent);
+  color: #fff;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] button.group > span.absolute {
+  display: none;
+}
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] .whitespace-nowrap.leading-none,
+.os-root[data-style='retro'] .rt-skin[data-app='calculator'] .text-\[20px\].font-display {
+  font-family: var(--rt-mono);
+  font-weight: 400;
+}
+
+/* ── Starfield twinkle (wallpaper) ──────────────────────────────────────────────────────── */
+.os-root[data-style='retro'] .rt-twinkle {
+  animation: retroTwinkle 2.4s steps(1) infinite;
+}
+@keyframes retroTwinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.25;
+  }
+  70% {
+    opacity: 0.7;
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .os-root[data-style='retro'] .rt-stage,
+  .os-root[data-style='retro'] .rt-screen,
+  .os-root[data-style='retro'] .rt-led,
+  .os-root[data-style='retro'] .rt-crt-on,
+  .os-root[data-style='retro'] .rt-crt-decay,
+  .os-root[data-style='retro'] .rt-boot-glow,
+  .os-root[data-style='retro'] .rt-boot-caret,
+  .os-root[data-style='retro'] .rt-splash,
+  .os-root[data-style='retro'] .rt-splash-logo,
+  .os-root[data-style='retro'] .rt-splash-title,
+  .os-root[data-style='retro'] .rt-splash-sub,
+  .os-root[data-style='retro'] .rt-lock,
+  .os-root[data-style='retro'] .rt-desktop,
+  .os-root[data-style='retro'] .rt-win,
+  .os-root[data-style='retro'] .rt-twinkle,
+  .os-root[data-style='retro'] .rt-icon.is-launching .rt-icon-img,
+  .os-root[data-style='retro'] .rt-skin .ctl-dialog,
+  .os-root[data-style='retro'] .rt-skin[data-app='mail'] section > .flex-1 > .h-full,
+  .os-root[data-style='retro'] .rt-skin[data-app='settings'] main.fade-in {
+    animation: none;
+  }
+  /* Exit animations must still FIRE (animationend finalizes the window) - just instantly. */
+  .os-root[data-style='retro'] .rt-win.rt-exit-close,
+  .os-root[data-style='retro'] .rt-win.rt-exit-min {
+    animation-duration: 0.01s;
+  }
+}

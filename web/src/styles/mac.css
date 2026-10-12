@@ -1,0 +1,1401 @@
+/* Mac-style (SD OS Harbor) - token overrides, the Harbor shell chrome and the app re-skin, all
+   scoped to .os-root[data-style=mac]. Keyframes are prefixed mac-. Chromium 103: no :has(),
+   color-mix(), dvh, container queries. */
+
+/* ════════════════════════════════════════════════════════════════════════════════════════════
+   1. Tokens
+   ════════════════════════════════════════════════════════════════════════════════════════════ */
+
+.os-root[data-style='mac'] {
+  font-size: 13px;
+}
+
+.os-root[data-style='mac'][data-theme='light'] {
+  color-scheme: light;
+  --success: #1f8f3a;
+  --caution: #b15c00;
+  --critical: #d93025;
+  /* Window chrome + sidebars: translucent over the frame's backdrop blur (vibrancy). */
+  --win-bg: rgba(233, 233, 236, 0.8);
+  --layer: #ffffff;
+  --card: rgba(0, 0, 0, 0.032);
+  --card-hover: rgba(0, 0, 0, 0.056);
+  --control: #ffffff;
+  --control-hover: #f8f8f9;
+  --control-press: #e5e5e8;
+  --subtle-hover: rgba(0, 0, 0, 0.056);
+  --stroke: rgba(0, 0, 0, 0.085);
+  --stroke-strong: rgba(0, 0, 0, 0.15);
+  --flyout: rgba(243, 243, 245, 0.84);
+  --taskbar: rgba(243, 243, 245, 0.62);
+  --text-1: rgba(0, 0, 0, 0.86);
+  --text-2: rgba(0, 0, 0, 0.56);
+  --text-3: rgba(0, 0, 0, 0.38);
+  --text-dis: rgba(0, 0, 0, 0.26);
+  --input: #ffffff;
+  --input-focus: #ffffff;
+
+  --mac-solid: #f1f1f3;
+  --mac-sheet: #f6f6f7;
+  --mac-shade: rgba(0, 0, 0, 0.16);
+  --mac-window-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.24), 0 22px 60px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.12);
+  --mac-window-shadow-off: 0 0 0 0.5px rgba(0, 0, 0, 0.16), 0 12px 32px rgba(0, 0, 0, 0.16), 0 3px 8px rgba(0, 0, 0, 0.07);
+  --mac-window-rim: rgba(255, 255, 255, 0.28);
+  --mac-menubar: rgba(246, 246, 248, 0.58);
+  --mac-menubar-text: rgba(0, 0, 0, 0.86);
+  --mac-menubar-hover: rgba(0, 0, 0, 0.1);
+  --mac-menu-border: rgba(0, 0, 0, 0.14);
+  --mac-menu-rim: rgba(255, 255, 255, 0.5);
+  --mac-dock: rgba(246, 246, 248, 0.4);
+  --mac-dock-border: rgba(255, 255, 255, 0.45);
+  --mac-dock-sep: rgba(0, 0, 0, 0.18);
+  --mac-dock-dot: rgba(0, 0, 0, 0.6);
+  --mac-tip: rgba(238, 238, 240, 0.94);
+  --mac-tip-text: rgba(0, 0, 0, 0.84);
+  --mac-light-off: #d3d3d6;
+  --mac-field-border: rgba(0, 0, 0, 0.14);
+  --mac-btn-border: rgba(0, 0, 0, 0.12);
+  --mac-switch-off: rgba(0, 0, 0, 0.11);
+  --mac-nav-sel-off: rgba(0, 0, 0, 0.075);
+  --mac-scroll: rgba(0, 0, 0, 0.3);
+  --mac-scroll-hover: rgba(0, 0, 0, 0.48);
+  --mac-calc-num: #fdfdfe;
+  --mac-calc-op: #e3e3e7;
+  --mac-chevrons: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='11' viewBox='0 0 7 11'%3E%3Cpath d='M1 4l2.5-2.5L6 4M1 7l2.5 2.5L6 7' fill='none' stroke='%23000' stroke-opacity='.55' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.os-root[data-style='mac'][data-theme='dark'] {
+  color-scheme: dark;
+  --success: #32d15a;
+  --caution: #ffcc33;
+  --critical: #ff6b61;
+  --win-bg: rgba(44, 44, 47, 0.8);
+  --layer: #1f1f21;
+  --card: rgba(255, 255, 255, 0.05);
+  --card-hover: rgba(255, 255, 255, 0.08);
+  --control: rgba(255, 255, 255, 0.13);
+  --control-hover: rgba(255, 255, 255, 0.17);
+  --control-press: rgba(255, 255, 255, 0.09);
+  --subtle-hover: rgba(255, 255, 255, 0.08);
+  --stroke: rgba(255, 255, 255, 0.085);
+  --stroke-strong: rgba(255, 255, 255, 0.14);
+  --flyout: rgba(40, 40, 43, 0.8);
+  --taskbar: rgba(30, 30, 32, 0.62);
+  --text-1: rgba(255, 255, 255, 0.9);
+  --text-2: rgba(255, 255, 255, 0.58);
+  --text-3: rgba(255, 255, 255, 0.38);
+  --text-dis: rgba(255, 255, 255, 0.25);
+  --input: rgba(255, 255, 255, 0.06);
+  --input-focus: rgba(255, 255, 255, 0.08);
+
+  --mac-solid: #2b2b2e;
+  --mac-sheet: #2a2a2d;
+  --mac-shade: rgba(0, 0, 0, 0.34);
+  --mac-window-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.9), 0 22px 60px rgba(0, 0, 0, 0.55), 0 6px 16px rgba(0, 0, 0, 0.3);
+  --mac-window-shadow-off: 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 12px 32px rgba(0, 0, 0, 0.36), 0 3px 8px rgba(0, 0, 0, 0.2);
+  --mac-window-rim: rgba(255, 255, 255, 0.13);
+  --mac-menubar: rgba(26, 26, 28, 0.5);
+  --mac-menubar-text: rgba(255, 255, 255, 0.92);
+  --mac-menubar-hover: rgba(255, 255, 255, 0.17);
+  --mac-menu-border: rgba(0, 0, 0, 0.7);
+  --mac-menu-rim: rgba(255, 255, 255, 0.13);
+  --mac-dock: rgba(42, 42, 46, 0.42);
+  --mac-dock-border: rgba(255, 255, 255, 0.15);
+  --mac-dock-sep: rgba(255, 255, 255, 0.22);
+  --mac-dock-dot: rgba(255, 255, 255, 0.75);
+  --mac-tip: rgba(50, 50, 54, 0.94);
+  --mac-tip-text: rgba(255, 255, 255, 0.9);
+  --mac-light-off: #4a4a4e;
+  --mac-field-border: rgba(255, 255, 255, 0.12);
+  --mac-btn-border: rgba(255, 255, 255, 0.06);
+  --mac-switch-off: rgba(255, 255, 255, 0.16);
+  --mac-nav-sel-off: rgba(255, 255, 255, 0.1);
+  --mac-scroll: rgba(255, 255, 255, 0.3);
+  --mac-scroll-hover: rgba(255, 255, 255, 0.48);
+  --mac-calc-num: rgba(255, 255, 255, 0.16);
+  --mac-calc-op: rgba(255, 255, 255, 0.08);
+  --mac-chevrons: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='11' viewBox='0 0 7 11'%3E%3Cpath d='M1 4l2.5-2.5L6 4M1 7l2.5 2.5L6 7' fill='none' stroke='%23fff' stroke-opacity='.7' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Text selection in the accent (the CMD console and hack windows keep their own look). */
+.os-root[data-style='mac'] .mac-body:not([data-app='cmd']):not([data-app='hack']) ::selection {
+  background: var(--mac-focus, rgba(10, 132, 255, 0.35));
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════════
+   2. Shell chrome
+   ════════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* ── App tiles ─────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 22.5%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 0, 0, 0.16), 0 4px 10px rgba(0, 0, 0, 0.13);
+}
+.os-root[data-style='mac'] .mac-icon > svg {
+  width: 70%;
+  height: 70%;
+}
+.os-root[data-style='mac'] .mac-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 48%);
+  pointer-events: none;
+}
+
+/* Minimized-window thumbnail in the dock. */
+.os-root[data-style='mac'] .mac-mini {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.os-root[data-style='mac'] .mac-mini-card {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 12%;
+  bottom: 12%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8%;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.28);
+}
+.os-root[data-style='mac'] .mac-mini-bar {
+  flex: 0 0 18%;
+  display: flex;
+  align-items: center;
+  gap: 4%;
+  padding-left: 8%;
+  background: rgba(128, 128, 128, 0.14);
+}
+.os-root[data-style='mac'] .mac-mini-bar i {
+  display: block;
+  width: 7%;
+  height: 0;
+  padding-bottom: 7%;
+  border-radius: 50%;
+}
+.os-root[data-style='mac'] .mac-mini-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10%;
+  padding: 12% 10%;
+}
+.os-root[data-style='mac'] .mac-mini-lines i {
+  display: block;
+  height: 10%;
+  border-radius: 2px;
+  background: rgba(128, 128, 128, 0.3);
+}
+.os-root[data-style='mac'] .mac-mini-lines i:nth-child(2) {
+  width: 72%;
+}
+.os-root[data-style='mac'] .mac-mini-lines i:nth-child(3) {
+  width: 46%;
+}
+
+.os-root[data-style='mac'] .mac-spinner {
+  animation: mac-spin 1s steps(12) infinite;
+}
+
+/* ── Menu bar ──────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-menubar {
+  background: var(--mac-menubar);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: 0 0.5px 0 rgba(0, 0, 0, 0.12);
+  color: var(--mac-menubar-text);
+  font-size: 13px;
+  user-select: none;
+}
+.os-root[data-style='mac'] .mac-menubar-in {
+  animation: mac-menubar-in 460ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.os-root[data-style='mac'] .mac-mb-item {
+  height: 22px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  color: inherit;
+  font-weight: 460;
+  white-space: nowrap;
+}
+.os-root[data-style='mac'] .mac-mb-item.font-semibold {
+  font-weight: 700;
+}
+.os-root[data-style='mac'] .mac-mb-item.is-open,
+.os-root[data-style='mac'] .mac-mb-item:active {
+  background: var(--mac-menubar-hover);
+}
+.os-root[data-style='mac'] .mac-mb-mark {
+  padding: 0 10px 0 9px;
+}
+.os-root[data-style='mac'] .mac-mb-status {
+  height: 22px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 460;
+  white-space: nowrap;
+}
+.os-root[data-style='mac'] .mac-mb-clock {
+  gap: 9px;
+  padding-right: 4px;
+}
+
+/* ── Menus (menu bar, desktop, dock) ───────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-menu {
+  padding: 5px;
+  border-radius: 8px;
+  background: var(--flyout);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: inset 0 0 0 0.5px var(--mac-menu-rim), 0 0 0 0.5px var(--mac-menu-border), 0 10px 30px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.08);
+  color: var(--text-1);
+  font-size: 13px;
+  user-select: none;
+}
+.os-root[data-style='mac'] .mac-menu-item {
+  width: 100%;
+  height: 22px;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 4px;
+  color: var(--text-1);
+  text-align: left;
+  white-space: nowrap;
+}
+.os-root[data-style='mac'] .mac-menu-item:hover:not(:disabled) {
+  background: var(--accent-fill);
+  color: var(--accent-on);
+}
+.os-root[data-style='mac'] .mac-menu-item:disabled {
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .mac-menu-mark {
+  width: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.os-root[data-style='mac'] .mac-menu-shortcut {
+  margin-left: 28px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+.os-root[data-style='mac'] .mac-menu-item:hover:not(:disabled) .mac-menu-shortcut {
+  color: inherit;
+  opacity: 0.8;
+}
+.os-root[data-style='mac'] .mac-menu-sep {
+  height: 1px;
+  margin: 5px 9px;
+  background: var(--stroke-strong);
+}
+.os-root[data-style='mac'] .mac-pop {
+  animation: mac-pop 130ms ease-out;
+  transform-origin: top left;
+}
+.os-root[data-style='mac'] .mac-pop.mac-pop-up {
+  transform-origin: bottom center;
+}
+
+/* ── Dock ──────────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-dock {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  border-radius: 18px;
+  background: var(--mac-dock);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  box-shadow: inset 0 0 0 1px var(--mac-dock-border), 0 0 0 0.5px rgba(0, 0, 0, 0.14), 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: mac-dock-in 520ms 60ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.os-root[data-style='mac'] .mac-dock-item {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: calc(var(--mac-dock-icon) * var(--s, 1));
+  height: calc(var(--mac-dock-icon) * var(--s, 1));
+  transition: width 240ms cubic-bezier(0.25, 0.8, 0.3, 1), height 240ms cubic-bezier(0.25, 0.8, 0.3, 1);
+  cursor: default;
+}
+.os-root[data-style='mac'] .mac-dock.is-hover .mac-dock-item {
+  transition-duration: 70ms;
+}
+.os-root[data-style='mac'] .mac-dock-tile {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.os-root[data-style='mac'] .mac-dock-item:active .mac-dock-tile {
+  filter: brightness(0.82);
+}
+.os-root[data-style='mac'] .mac-dock-tile.is-bouncing {
+  animation: mac-bounce 1s cubic-bezier(0.3, 0.6, 0.5, 1);
+}
+.os-root[data-style='mac'] .mac-dock-dot {
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--mac-dock-dot);
+}
+.os-root[data-style='mac'] .mac-dock-sep {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 1px;
+  margin: 3px 5px;
+  background: var(--mac-dock-sep);
+}
+.os-root[data-style='mac'] .mac-dock-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 13px);
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--mac-tip);
+  color: var(--mac-tip-text);
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 90ms;
+  box-shadow: 0 0 0 0.5px var(--mac-menu-border), 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+.os-root[data-style='mac'] .mac-dock-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: var(--mac-tip);
+}
+.os-root[data-style='mac'] .mac-dock-item:hover .mac-dock-tip {
+  opacity: 1;
+}
+
+/* ── Desktop icons ─────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-desk-icon {
+  width: 96px;
+  margin: 3px 2px;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  outline: none;
+}
+.os-root[data-style='mac'] .mac-desk-tile {
+  padding: 5px;
+  border-radius: 10px;
+}
+.os-root[data-style='mac'] .mac-desk-icon.is-selected .mac-desk-tile {
+  background: rgba(0, 0, 0, 0.26);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.os-root[data-style='mac'] .mac-desk-label {
+  max-width: 92px;
+  padding: 0 5px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: center;
+  /* Layered shadow so white labels stay readable on pale wallpapers (Dunes' sky). */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 0.75), 0 0 8px rgba(0, 0, 0, 0.45);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.os-root[data-style='mac'] .mac-desk-icon.is-selected .mac-desk-label {
+  background: var(--accent-fill);
+  color: var(--accent-on);
+  text-shadow: none;
+}
+
+/* ── Windows ───────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 10px;
+  pointer-events: auto;
+  box-shadow: var(--mac-window-shadow-off);
+  -webkit-backdrop-filter: blur(40px) saturate(170%);
+  backdrop-filter: blur(40px) saturate(170%);
+  transform-origin: center;
+}
+.os-root[data-style='mac'] .mac-window.is-active {
+  box-shadow: var(--mac-window-shadow);
+}
+.os-root[data-style='mac'] .mac-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--mac-window-rim);
+  pointer-events: none;
+}
+.os-root[data-style='mac'] .mac-window.is-opening {
+  animation: mac-win-open 220ms cubic-bezier(0.2, 0.85, 0.25, 1.04);
+}
+.os-root[data-style='mac'] .mac-window.is-closing {
+  animation: mac-win-close 170ms cubic-bezier(0.4, 0, 0.8, 0.4) forwards;
+  pointer-events: none;
+}
+.os-root[data-style='mac'] .mac-window.is-minimizing {
+  animation: mac-genie 380ms cubic-bezier(0.55, 0, 0.75, 0.45) forwards;
+  pointer-events: none;
+}
+.os-root[data-style='mac'] .mac-window.is-zooming {
+  transition: left 260ms cubic-bezier(0.2, 0.8, 0.2, 1), top 260ms cubic-bezier(0.2, 0.8, 0.2, 1), width 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.os-root[data-style='mac'] .mac-titlebar {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  background: var(--win-bg);
+  user-select: none;
+}
+.os-root[data-style='mac'] .mac-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0 86px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 560;
+  color: var(--text-1);
+  pointer-events: none;
+}
+.os-root[data-style='mac'] .mac-window:not(.is-active) .mac-title {
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .mac-body {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* Traffic lights: colour + glyph on hover, grey dots on inactive windows. */
+.os-root[data-style='mac'] .mac-lights {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 12px;
+}
+.os-root[data-style='mac'] .mac-light {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
+}
+.os-root[data-style='mac'] .mac-light svg {
+  opacity: 0;
+}
+.os-root[data-style='mac'] .mac-lights:hover .mac-light:not(:disabled) svg {
+  opacity: 1;
+}
+.os-root[data-style='mac'] .mac-light-close {
+  background: #ff5f57;
+  color: #7a0b07;
+}
+.os-root[data-style='mac'] .mac-light-min {
+  background: #febc2e;
+  color: #8a5300;
+}
+.os-root[data-style='mac'] .mac-light-zoom {
+  background: #28c840;
+  color: #075c12;
+}
+.os-root[data-style='mac'] .mac-light:active:not(:disabled) {
+  filter: brightness(0.82);
+}
+.os-root[data-style='mac'] .mac-window:not(.is-active) .mac-lights:not(:hover) .mac-light,
+.os-root[data-style='mac'] .mac-light:disabled {
+  background: var(--mac-light-off);
+}
+
+/* ── Search ────────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-search {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 17%;
+  width: min(640px, calc(100% - 48px));
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--flyout);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: inset 0 0 0 0.5px var(--mac-menu-rim), 0 0 0 0.5px var(--mac-menu-border), 0 24px 70px rgba(0, 0, 0, 0.35);
+  color: var(--text-1);
+}
+.os-root[data-style='mac'] .mac-search-in {
+  animation: mac-search-in 170ms cubic-bezier(0.2, 0.9, 0.3, 1.04);
+}
+.os-root[data-style='mac'] .mac-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-1);
+  font-size: 22px;
+  font-weight: 300;
+}
+.os-root[data-style='mac'] .mac-search-input::placeholder {
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .mac-search-list {
+  max-height: min(430px, 52vh);
+  overflow-y: auto;
+  padding: 4px 6px 6px;
+  border-top: 1px solid var(--stroke);
+}
+.os-root[data-style='mac'] .mac-search-head {
+  padding: 8px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .mac-search-row {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-radius: 8px;
+  color: var(--text-1);
+  font-size: 14px;
+}
+.os-root[data-style='mac'] .mac-search-row.is-selected {
+  background: var(--accent-fill);
+  color: var(--accent-on);
+}
+.os-root[data-style='mac'] .mac-search-kind {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .mac-search-row.is-selected .mac-search-kind {
+  color: inherit;
+  opacity: 0.8;
+}
+.os-root[data-style='mac'] .mac-search-glyph {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: var(--subtle-hover);
+  color: var(--text-1);
+}
+.os-root[data-style='mac'] .mac-search-row.is-selected .mac-search-glyph {
+  background: rgba(255, 255, 255, 0.22);
+  color: inherit;
+}
+
+/* ── Notification banners ──────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: var(--flyout);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+  backdrop-filter: blur(36px) saturate(180%);
+  box-shadow: inset 0 0 0 0.5px var(--mac-menu-rim), 0 0 0 0.5px var(--mac-menu-border), 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: mac-toast-in 420ms cubic-bezier(0.2, 0.9, 0.25, 1.04);
+  --exit-gap: 10px; /* the banner stack's gap, for the shared toast-out exit (styles.css) */
+}
+.os-root[data-style='mac'] .mac-toast-close {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--mac-sheet);
+  color: var(--text-2);
+  box-shadow: 0 0 0 0.5px var(--mac-menu-border), 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.os-root[data-style='mac'] .mac-toast:hover .mac-toast-close {
+  opacity: 1;
+}
+
+/* ── Lock screen ───────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-fade {
+  animation: mac-fade 500ms ease-out both;
+}
+.os-root[data-style='mac'] .mac-lock-shade {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0) 58%, rgba(0, 0, 0, 0.3));
+}
+.os-root[data-style='mac'] .mac-lock-top {
+  animation: mac-lock-top 640ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.os-root[data-style='mac'] .mac-lock-user {
+  animation: mac-lock-user 640ms 90ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.os-root[data-style='mac'] .mac-lock-clock {
+  margin-top: 2px;
+  font-size: 112px;
+  font-weight: 250;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.18);
+}
+.os-root[data-style='mac'] .mac-pin {
+  position: relative;
+  width: 200px;
+  height: 30px;
+}
+.os-root[data-style='mac'] .mac-pin-input {
+  width: 100%;
+  height: 100%;
+  padding: 0 32px;
+  border: 0;
+  border-radius: 999px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.32);
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-align: center;
+}
+.os-root[data-style='mac'] .mac-pin-input::placeholder {
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: normal;
+}
+.os-root[data-style='mac'] .mac-pin-input:focus {
+  background: rgba(255, 255, 255, 0.28);
+}
+.os-root[data-style='mac'] .mac-pin.is-locked .mac-pin-input {
+  opacity: 0.55;
+}
+.os-root[data-style='mac'] .mac-pin-go {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(0, 0, 0, 0.75);
+}
+.os-root[data-style='mac'] .mac-pin-go.is-busy {
+  background: transparent;
+}
+.os-root[data-style='mac'] .mac-shake {
+  animation: mac-shake 440ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+.os-root[data-style='mac'] .mac-lock-power {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 12px;
+}
+.os-root[data-style='mac'] .mac-lock-power-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.28);
+  transition: background 120ms;
+}
+.os-root[data-style='mac'] .mac-lock-power:hover .mac-lock-power-btn {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Boot / welcome / shutdown ─────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .mac-boot-mark {
+  animation: mac-fade 700ms ease-out both;
+}
+.os-root[data-style='mac'] .mac-boot-track {
+  width: 200px;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  animation: mac-fade 500ms 300ms ease-out both;
+}
+.os-root[data-style='mac'] .mac-boot-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: #ffffff;
+  animation: mac-boot 2.3s 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.os-root[data-style='mac'] .mac-welcome-clear {
+  animation: mac-unfade 820ms 120ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.os-root[data-style='mac'] .mac-welcome-user {
+  animation: mac-welcome-user 560ms 80ms ease-in forwards;
+}
+.os-root[data-style='mac'] .mac-to-black {
+  opacity: 0;
+  animation: mac-fade 700ms 100ms ease-in forwards;
+}
+.os-root[data-style='mac'] .mac-shutdown-spin {
+  opacity: 0;
+  animation: mac-fade 400ms 480ms ease-out forwards;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════════
+   3. App re-skin (shared tokens, ctl-* markers, per-app touches)
+   ════════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Type + geometry utilities ─────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .text-body {
+  font-size: 13px;
+  line-height: 18px;
+}
+.os-root[data-style='mac'] .text-subtitle {
+  font-size: 18px;
+  line-height: 24px;
+}
+.os-root[data-style='mac'] .text-title {
+  font-size: 24px;
+  line-height: 30px;
+  letter-spacing: -0.012em;
+}
+.os-root[data-style='mac'] .rounded-ctl {
+  border-radius: 6px;
+}
+.os-root[data-style='mac'] .rounded-win {
+  border-radius: 10px;
+}
+.os-root[data-style='mac'] .rounded-t-win {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.os-root[data-style='mac'] .rounded-r-ctl {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+/* Content panes sit flush under the title bar (the sidebar runs into the chrome, content keeps a hairline). */
+.os-root[data-style='mac'] .rounded-tl-win {
+  border-top-left-radius: 0;
+}
+.os-root[data-style='mac'] .shadow-card {
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.07);
+}
+.os-root[data-style='mac'] .shadow-flyout {
+  box-shadow: inset 0 0 0 0.5px var(--mac-menu-rim), 0 0 0 0.5px var(--mac-menu-border), 0 12px 32px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.os-root[data-style='mac'] .acrylic {
+  background: var(--flyout);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px) saturate(180%);
+}
+.os-root[data-style='mac'] .fly-up {
+  animation: mac-pop 140ms ease-out;
+}
+
+/* ── Vibrancy: the app root's bg-win is the translucent sidebar tint over the frame's blur ─── */
+/* Panes laid straight onto the root (sidebars, toolbars, status bars) show that same tint... */
+.os-root[data-style='mac'] .mac-body .bg-win .bg-win {
+  background-color: var(--mac-solid);
+}
+.os-root[data-style='mac'] .mac-body > .bg-win > .bg-win {
+  background-color: transparent;
+}
+/* (The first rule above covers bg-win deeper inside opaque content - tab strips, preview
+   headers, dialog footers - which stays a solid grey.) */
+
+/* ── Menus inside apps (Mail account menu, Notepad + Event Viewer menu bars) ───────────────── */
+.os-root[data-style='mac'] .mac-body .acrylic.py-1 > button {
+  border-radius: 5px;
+}
+.os-root[data-style='mac'] .mac-body .acrylic.py-1 > button:not(:disabled):hover {
+  background-color: var(--accent-fill);
+  color: var(--accent-on);
+}
+.os-root[data-style='mac'] .mac-body .acrylic.py-1 > button:not(:disabled):hover * {
+  color: var(--accent-on);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .ctl-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+.os-root[data-style='mac'] .ctl-btn-standard {
+  background: var(--control);
+  border-color: var(--mac-btn-border);
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.12);
+  color: var(--text-1);
+}
+.os-root[data-style='mac'] .ctl-btn-standard:hover {
+  background: var(--control-hover);
+}
+.os-root[data-style='mac'] .ctl-btn-standard:active {
+  background: var(--control-press);
+}
+.os-root[data-style='mac'][data-theme='dark'] .ctl-btn-standard {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.13));
+  box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.35), inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+}
+.os-root[data-style='mac'][data-theme='dark'] .ctl-btn-standard:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.21), rgba(255, 255, 255, 0.17));
+}
+.os-root[data-style='mac'][data-theme='dark'] .ctl-btn-standard:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+.os-root[data-style='mac'] .ctl-btn-accent {
+  background: linear-gradient(180deg, var(--mac-accent-top, var(--accent-fill)), var(--accent-fill));
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.25);
+  color: var(--accent-on);
+  font-weight: 500;
+}
+.os-root[data-style='mac'] .ctl-btn-accent:hover {
+  background: linear-gradient(180deg, var(--mac-accent-top, var(--accent-fill)), var(--accent-fill));
+  filter: brightness(1.06);
+}
+.os-root[data-style='mac'] .ctl-btn-accent:active {
+  filter: brightness(0.92);
+}
+.os-root[data-style='mac'] .ctl-btn-danger {
+  background: linear-gradient(180deg, #ff6b61, #e5372c);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+.os-root[data-style='mac'] .ctl-btn-danger:hover {
+  background: linear-gradient(180deg, #ff6b61, #e5372c);
+  filter: brightness(1.06);
+}
+.os-root[data-style='mac'] .ctl-btn-danger:active {
+  filter: brightness(0.92);
+}
+.os-root[data-style='mac'] .ctl-btn-subtle {
+  background: transparent;
+  box-shadow: none;
+}
+.os-root[data-style='mac'] .ctl-btn-subtle:hover {
+  background: var(--subtle-hover);
+}
+.os-root[data-style='mac'] .ctl-iconbtn {
+  border-radius: 6px;
+  color: var(--text-2);
+}
+.os-root[data-style='mac'] .ctl-iconbtn:hover {
+  color: var(--text-1);
+  background: var(--subtle-hover);
+}
+
+/* ── Fields (kit fields + the apps' hand-rolled ones that use the --input surface) ─────────── */
+.os-root[data-style='mac'] .ctl-field,
+.os-root[data-style='mac'] .mac-body [class*='bg-[var(--input)]'] {
+  background-color: var(--input);
+  border: 1px solid var(--mac-field-border);
+  border-radius: 6px;
+  box-shadow: inset 0 0.5px 1.5px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 120ms ease-out, border-color 120ms ease-out;
+}
+.os-root[data-style='mac'] .ctl-field:focus,
+.os-root[data-style='mac'] .mac-body input[class*='bg-[var(--input)]']:focus,
+.os-root[data-style='mac'] .mac-body div[class*='bg-[var(--input)]']:focus-within {
+  background-color: var(--input-focus);
+  border-color: var(--accent-fill);
+  border-bottom-width: 1px;
+  box-shadow: 0 0 0 3px var(--mac-focus, rgba(10, 132, 255, 0.4));
+}
+.os-root[data-style='mac'] .ctl-field[class*='critical'] {
+  border-color: var(--critical) !important;
+}
+.os-root[data-style='mac'] .ctl-select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 24px;
+  background-color: var(--control);
+  background-image: var(--mac-chevrons);
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 7px 11px;
+  border-color: var(--mac-btn-border);
+  box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.12);
+}
+.os-root[data-style='mac'][data-theme='dark'] .ctl-select {
+  background-color: rgba(255, 255, 255, 0.13);
+}
+.os-root[data-style='mac'][data-theme='dark'] .ctl-select option {
+  background: #2b2b2e;
+}
+
+/* ── Switches ──────────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .ctl-toggle {
+  width: 40px;
+  height: 22px;
+  border-color: transparent;
+  background-color: var(--mac-switch-off);
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  transition: background-color 180ms ease;
+}
+.os-root[data-style='mac'] .ctl-toggle.is-on {
+  background-color: var(--accent-fill);
+}
+.os-root[data-style='mac'] .ctl-toggle > span {
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  box-shadow: 0 1px 2.5px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  transition: left 180ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.os-root[data-style='mac'] .ctl-toggle.is-on > span {
+  left: 20px;
+}
+
+/* ── Spinner, info bars, cards, badges, empty states ───────────────────────────────────────── */
+.os-root[data-style='mac'] .ctl-spinner {
+  color: var(--text-3);
+}
+.os-root[data-style='mac'] .ctl-infobar {
+  border-color: transparent;
+  border-radius: 8px;
+}
+.os-root[data-style='mac'] .ctl-infobar-info {
+  background: var(--accent-soft);
+}
+.os-root[data-style='mac'] .ctl-infobar-success {
+  background: rgba(52, 199, 89, 0.14);
+}
+.os-root[data-style='mac'] .ctl-infobar-warning {
+  background: rgba(255, 159, 10, 0.16);
+}
+.os-root[data-style='mac'] .ctl-infobar-error {
+  background: rgba(255, 69, 58, 0.13);
+}
+.os-root[data-style='mac'] .ctl-card {
+  border-radius: 10px;
+  border-color: var(--stroke);
+  background-color: var(--card);
+}
+.os-root[data-style='mac'] .ctl-badge {
+  height: 18px;
+  min-width: 18px;
+  padding: 0 6px;
+  background: var(--accent-fill);
+  color: var(--accent-on);
+  font-size: 11px;
+  font-weight: 650;
+}
+.os-root[data-style='mac'] .ctl-empty .text-body.font-semibold {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ── Sidebar rows ──────────────────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .ctl-nav {
+  height: 30px;
+  padding: 0 10px;
+  gap: 8px;
+  border-radius: 7px;
+}
+.os-root[data-style='mac'] .ctl-nav.is-selected {
+  background: var(--mac-nav-sel-off);
+}
+.os-root[data-style='mac'] .mac-window.is-active .ctl-nav.is-selected {
+  background: var(--mac-nav-sel, var(--accent-soft));
+}
+.os-root[data-style='mac'] .ctl-nav > span.w-4 > svg {
+  color: var(--accent-text);
+}
+/* The Fluent "selection pill" bars become redundant next to the tinted selection. */
+.os-root[data-style='mac'] .ctl-nav > span.absolute,
+.os-root[data-style='mac'] .mac-body span.absolute.w-\[3px\].h-4.rounded-full.bg-accent {
+  display: none;
+}
+
+/* ── Dialogs: centred sheets ───────────────────────────────────────────────────────────────── */
+.os-root[data-style='mac'] .ctl-dialog-shade,
+.os-root[data-style='mac'] .mac-body .bg-black\/40 {
+  background-color: var(--mac-shade);
+}
+.os-root[data-style='mac'] .ctl-dialog,
+.os-root[data-style='mac'] .mac-body .bg-black\/40 > .bg-layer.shadow-flyout {
+  background: var(--mac-sheet);
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 0.5px var(--mac-menu-rim), 0 0 0 0.5px var(--mac-menu-border), 0 24px 70px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.1);
+  animation: mac-sheet-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1.04);
+}
+.os-root[data-style='mac'] .ctl-dialog-title {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 650;
+}
+.os-root[data-style='mac'] .mac-body .ctl-dialog .ctl-dialog-actions.bg-win,
+.os-root[data-style='mac'] .mac-body .bg-black\/40 .bg-win.border-t {
+  padding-top: 4px;
+  background-color: transparent;
+  border-top-color: transparent;
+}
+
+/* ── Scrollbars: thin, appear while the pointer is over the pane ───────────────────────────── */
+.os-root[data-style='mac'] .os-scroll::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+.os-root[data-style='mac'] .os-scroll::-webkit-scrollbar-thumb {
+  min-height: 32px;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  background-color: transparent;
+  background-clip: padding-box;
+}
+.os-root[data-style='mac'] .os-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: var(--mac-scroll);
+}
+.os-root[data-style='mac'] .os-scroll::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+  background-color: var(--mac-scroll-hover);
+}
+
+/* ── Per-app touches (keyed on the frame's data-app) ───────────────────────────────────────── */
+
+/* Mail: the message list is a white column like the reading pane; unread = a dot, not a bar. */
+.os-root[data-style='mac'] .mac-body[data-app='mail'] > .bg-win > div.bg-win {
+  background-color: var(--layer);
+  border-top: 1px solid var(--stroke);
+  border-left: 1px solid var(--stroke);
+}
+.os-root[data-style='mac'] .mac-body[data-app='mail'] .sticky.bg-win {
+  background-color: var(--layer);
+}
+.os-root[data-style='mac'] .mac-body[data-app='mail'] [data-mail-list] span.absolute.w-\[3px\].bg-accent {
+  top: 17px;
+  bottom: auto;
+  left: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Settings: translucent sidebar, solid content pane with grouped (joined) rows. */
+.os-root[data-style='mac'] .mac-body[data-app='settings'] > .bg-win > main {
+  background-color: var(--layer);
+  border-top: 1px solid var(--stroke);
+  border-left: 1px solid var(--stroke);
+}
+.os-root[data-style='mac'] .mac-body[data-app='settings'] section > .flex.flex-col.gap-1 {
+  gap: 0;
+}
+.os-root[data-style='mac'] .mac-body[data-app='settings'] section > .flex.flex-col.gap-1 > * {
+  border-radius: 0;
+}
+.os-root[data-style='mac'] .mac-body[data-app='settings'] section > .flex.flex-col.gap-1 > * + * {
+  border-top-width: 0;
+}
+.os-root[data-style='mac'] .mac-body[data-app='settings'] section > .flex.flex-col.gap-1 > :first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.os-root[data-style='mac'] .mac-body[data-app='settings'] section > .flex.flex-col.gap-1 > :last-child {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Calculator: rounder keys, light digits over darker operator keys, on the translucent body. */
+.os-root[data-style='mac'] .mac-body[data-app='calculator'] .grid-cols-4 > button {
+  border-radius: 8px;
+}
+.os-root[data-style='mac'] .mac-body[data-app='calculator'] .grid-cols-4 > button.bg-control {
+  background-color: var(--mac-calc-num);
+}
+.os-root[data-style='mac'] .mac-body[data-app='calculator'] .grid-cols-4 > button.bg-control-hover {
+  background-color: var(--mac-calc-op);
+}
+.os-root[data-style='mac'] .mac-body[data-app='calculator'] .grid-cols-4 > button.bg-accent {
+  background: linear-gradient(180deg, var(--mac-accent-top, var(--accent-fill)), var(--accent-fill));
+}
+
+/* Utility fix-ups that must win over the generic rules above (e.g. Mail's "user" + "@domain" pair). */
+.os-root[data-style='mac'] .rounded-r-none,
+.os-root[data-style='mac'] .mac-body .ctl-field.rounded-r-none {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════════════════════
+   4. Motion
+   ════════════════════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes mac-win-open {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes mac-win-close {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+/* Genie-lite: squeeze and fall towards the dock (the target offset is set on the frame in JS). */
+@keyframes mac-genie {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1, 1);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(calc(var(--mac-gx, 0px) * 0.12), calc(var(--mac-gy, 0px) * 0.3)) scale(0.86, 0.62);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--mac-gx, 0px), var(--mac-gy, 400px)) scale(0.06, 0.04);
+  }
+}
+@keyframes mac-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes mac-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mac-search-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes mac-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(100% + 24px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes mac-menubar-in {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes mac-dock-in {
+  from {
+    transform: translateY(150%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes mac-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  22% {
+    transform: translateY(-26px);
+  }
+  44% {
+    transform: translateY(0);
+  }
+  64% {
+    transform: translateY(-12px);
+  }
+  82% {
+    transform: translateY(0);
+  }
+}
+@keyframes mac-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mac-unfade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes mac-lock-top {
+  from {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mac-lock-user {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mac-welcome-user {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+@keyframes mac-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-12px);
+  }
+  30% {
+    transform: translateX(10px);
+  }
+  45% {
+    transform: translateX(-8px);
+  }
+  60% {
+    transform: translateX(6px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+}
+@keyframes mac-boot {
+  0% {
+    width: 0;
+  }
+  18% {
+    width: 14%;
+  }
+  34% {
+    width: 22%;
+  }
+  52% {
+    width: 50%;
+  }
+  70% {
+    width: 63%;
+  }
+  86% {
+    width: 86%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+@keyframes mac-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

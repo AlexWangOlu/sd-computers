@@ -1,0 +1,164 @@
+{
+  "title": "Computers",
+  "subtitle": "Every computer on the server, and the tool that places new ones",
+  "tabs": {
+    "overview": "Overview",
+    "computers": "Computers",
+    "styles": "Styles"
+  },
+  "stats": {
+    "computers": "Computers",
+    "placed": "Placed here",
+    "config": "From the config",
+    "in_use": "In use now",
+    "locked": "Locked to jobs",
+    "pin": "PIN protected",
+    "props": "Props on offer",
+    "styles": "Styles"
+  },
+  "overview": {
+    "by_style": "Computers by style",
+    "by_prop": "Placed computers by prop",
+    "no_data": "Nothing to show yet",
+    "rules": "Rules",
+    "rule_style": "Default style",
+    "rule_boot": "Boot sequence when a computer opens",
+    "rule_reach": "A computer closes itself %s m away",
+    "on": "On",
+    "off": "Off"
+  },
+  "recent": {
+    "title": "This session",
+    "empty": "Nothing done yet."
+  },
+  "computers": {
+    "place": "Place computer",
+    "place_world": "Place in the world",
+    "edit": "Change computer",
+    "prop": "Prop",
+    "prop_preview": "What it looks like",
+    "style": "Style",
+    "style_default": "Default",
+    "style_default_hint": "No style of its own: it opens in the server's default, currently %s.",
+    "name": "Name",
+    "name_placeholder": "Front desk",
+    "default_label": "Computer",
+    "access": "Access",
+    "access_anyone": "Anyone can use it",
+    "jobs": "Jobs that can use it",
+    "add_job": "Add a job",
+    "job_name": "Job name",
+    "grade": "Minimum grade",
+    "remove_job": "Remove job",
+    "jobs_empty": "No jobs listed: anyone who walks up to it can sign in.",
+    "jobs_hint": "A job name as your framework spells it, and the lowest grade allowed. The server checks it on every action.",
+    "aim_hint": "Next you place it with the gizmo: it starts sitting on whatever you are looking at, so aim at the desk first.",
+    "saved": "Computer updated",
+    "search": "Search by name, id, prop, style or job",
+    "filter_all": "All",
+    "filter_placed": "Placed here",
+    "filter_config": "From the config",
+    "empty": "No computers yet.",
+    "none_placed": "Nothing placed from the panel yet.",
+    "no_results": "Nothing matches that.",
+    "source_placed": "Placed",
+    "source_config": "Config",
+    "source_model": "Every prop",
+    "more_models": "+%s more",
+    "in_use_by": "In use: %s",
+    "in_use_count": "%s in use",
+    "idle": "Nobody is using it",
+    "show_style": "Show this style",
+    "locked_to": "Only for: %s",
+    "has_pin": "Asks for a PIN",
+    "delete_placed": "Delete placed",
+    "delete_placed_title": "Delete every placed computer?",
+    "delete_placed_body": "All %s computers placed from this panel go, and anyone using one is signed out. The computers in the config stay.",
+    "all_removed": "Placed computers deleted",
+    "remove": "Delete computer",
+    "remove_confirm": "\"%s\" is taken away, and anyone using it is signed out. Its logs are kept until they expire.",
+    "removed": "%s deleted"
+  },
+  "styles": {
+    "place_this": "Place one in this style",
+    "default": "Default",
+    "computers_using": "%s computers",
+    "build": "Build",
+    "theme": "Starts in",
+    "theme_dark": "Dark",
+    "theme_light": "Light",
+    "wallpapers": "Wallpapers",
+    "wallpaper_list": "Included",
+    "about": {
+      "modern": "A current desktop: centred taskbar, Start menu, rounded translucent windows.",
+      "retro": "A 1991 shell inside a CRT monitor: grey bevelled windows, a DOS boot, period sounds.",
+      "mac": "Top menu bar, a magnifying dock and windows with traffic-light buttons.",
+      "other": "A look defined in configs/shared/desktop.lua."
+    }
+  },
+  "placed": {
+    "computer_placed": "Computer placed",
+    "computer_moved": "Computer moved"
+  },
+  "actions": {
+    "teleport": "Teleport",
+    "move": "Move",
+    "edit": "Change",
+    "delete": "Delete",
+    "delete_all": "Delete all",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
+  },
+  "common": {
+    "view_only": "View only",
+    "view_only_hint": "You can look around, but changes need the edit permission.",
+    "ago": "%s ago",
+    "just_now": "just now",
+    "shortcuts": "Keyboard: 1-3 tabs, / search, Esc close"
+  },
+  "toast": {
+    "failed": "That did not work."
+  },
+  "placement": {
+    "title": "Placing %s",
+    "handles": {
+      "move": "Move",
+      "rotate": "Rotate"
+    },
+    "modes": {
+      "snap": "Snap",
+      "local": "Local axes",
+      "world": "World axes",
+      "stick": "Stick to ground",
+      "cursor": "Cursor",
+      "move": "Move",
+      "rotate": "Rotate"
+    },
+    "warnings": {
+      "floating": "Floating %s m above the ground — press Alt to drop it"
+    },
+    "groups": {
+      "gizmo": "Gizmo",
+      "move": "Adjust",
+      "edit": "Edit"
+    },
+    "keys": {
+      "drag": "Grab arrow or ring",
+      "nudge": "Nudge",
+      "height": "Height",
+      "rotate": "Turn",
+      "snap": "Snap",
+      "stick": "Stick",
+      "drop": "Drop",
+      "undo": "Undo",
+      "cancel": "Cancel",
+      "confirm": "Place",
+      "cursor": "Cursor on / off",
+      "look": "Hold to look around",
+      "move": "Move mode",
+      "rotate_mode": "Rotate mode"
+    }
+  }
+}
