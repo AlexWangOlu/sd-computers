@@ -6,8 +6,8 @@ local CFG = config.Admin
 ---@type table Gizmo tuning (configs/shared/admin.lua > Placement).
 local P = CFG.Placement or {}
 
--- The same creator sd-bombs and sd-scooters place with, carried over unchanged apart from names:
--- one placement tool across the server, so admins learn one set of keys.
+-- The same creator sd-bombs and sd-scooters place with, carried over apart from names and from where a
+-- new placement starts (startSpot): one placement tool across the server, so admins learn one set of keys.
 
 ---Placement with the game's own editor gizmo (the one object_gizmo uses). A translucent copy of the
 ---whole assembly (the root model plus any extra parts built with it) is previewed; the gizmo sits
@@ -677,6 +677,36 @@ lib.addKeybind({
     onReleased = function() ExecuteCommand('-gizmoLocal') end,
 })
 
+---@type number Metres in front of the admin a new placement starts when they were not looking at a place for it.
+local START_AHEAD = 1.5
+
+---Where a new placement starts. On what the admin is looking at, when that is somewhere a prop can stand (a desk, a
+---counter, the floor: something level) and within reach of them; otherwise a step in front of them, on the ground.
+---The panel covers the display when this is asked, so "what the admin is looking at" is as often a far wall they
+---never chose - and a prop that starts on it, across the room and above head height, has to be fetched back first.
+---@param pc vector3 player coords
+---@return table draft { x, y, z, heading }
+local function startSpot(pc)
+    local reach = CFG.PlaceReach or 6.0
+    local rot = GetGameplayCamRot(2)
+    local ro, rd = GetGameplayCamCoord(), rotToDir(rot)
+    -- (measured from the admin, not from the camera behind them: the ray is given the room to get that far)
+    local to = ro + rd * (reach + 10.0)
+    local _, hit, at, normal = GetShapeTestResult(StartExpensiveSynchronousShapeTestLosProbe(ro.x, ro.y, ro.z, to.x, to.y, to.z, 1 + 16, cache.ped, 4))
+    if hit == 1 and normal.z >= 0.7 and #(at - pc) <= reach then
+        return { x = at.x, y = at.y, z = at.z, heading = headingToFace(at, pc) }
+    end
+
+    -- The way the camera faces, and not through a wall that is nearer than the step.
+    local yaw = math.rad(rot.z)
+    local ahead = vector3(-math.sin(yaw), math.cos(yaw), 0.0)
+    local wall = surfaceHit(pc, ahead, START_AHEAD + 0.5)
+    local step = wall and math.max(0.3, #(wall - pc) - 0.5) or START_AHEAD
+    local x, y = pc.x + ahead.x * step, pc.y + ahead.y * step
+    local spot = vector3(x, y, groundAt(x, y, pc.z) or (pc.z - 1.0))
+    return { x = spot.x, y = spot.y, z = spot.z, heading = headingToFace(spot, pc) }
+end
+
 ---Begin placing `modelName` and block the calling thread until the admin confirms or cancels.
 ---@param kind string 'object' | 'vehicle'
 ---@param modelName string
@@ -687,8 +717,8 @@ lib.addKeybind({
 ---  tint = a texture variation for every prop of the ghost;
 ---  frame = fun(transform) called every frame with where it is shown (an overlay of the caller's own)
 ---  rot = vector3 the root's own turn (pitch, roll, yaw), its parts' `rot` then counting towards the box too
----  airborne = true: it belongs off the ground (a computer: on a desk) - it starts with its underside where the admin
----  aims, not dropped to the ground, does not stick to it, and is never warned about floating
+---  airborne = true: it belongs off the ground (a computer: on a desk) - it starts with its underside on the spot it
+---  starts at (startSpot), not dropped to the ground, does not stick to it, and is never warned about floating
 ---@return table|nil|false result { x, y, z, heading }; nil when cancelled, false when refused
 ---@return string|nil errKey
 function placer.start(kind, modelName, label, extra, from, opts)
@@ -711,10 +741,7 @@ function placer.start(kind, modelName, label, extra, from, opts)
     if from then
         draft = { x = from.x + 0.0, y = from.y + 0.0, z = from.z + 0.0, heading = (from.heading or 0.0) + 0.0 }
     else
-        local ro = GetGameplayCamCoord()
-        local rd = rotToDir(GetGameplayCamRot(2))
-        local hit = surfaceHit(ro, rd, CFG.PlaceReach or 25.0) or (ro + rd * 6.0)
-        draft = { x = hit.x, y = hit.y, z = hit.z, heading = headingToFace(hit, pc) }
+        draft = startSpot(pc)
     end
 
     if kind == 'vehicle' then

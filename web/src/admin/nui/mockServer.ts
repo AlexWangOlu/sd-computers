@@ -26,8 +26,8 @@ let printers: Printer[] = [
   { id: 2, label: 'Records room copier', prop: 'prop_copier_01', world: true, x: 452.6, y: -985.9, z: 30.7, heading: 180, waiting: 0 },
 ];
 const PRINTER_PROPS = [
-  { model: 'prop_printer_01', label: 'Desktop printer' },
-  { model: 'prop_printer_02', label: 'Office printer' },
+  { model: 'prop_printer_01', label: 'Laser printer' },
+  { model: 'prop_printer_02', label: 'Desktop printer' },
   { model: 'v_res_printer', label: 'Home printer' },
   { model: 'prop_copier_01', label: 'Photocopier' },
 ];

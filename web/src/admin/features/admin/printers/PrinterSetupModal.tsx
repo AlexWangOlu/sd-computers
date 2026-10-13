@@ -9,7 +9,7 @@ import type { Printer, PrinterProp } from '@/admin/types';
 
 // What a printer prop looks like: its picture (web/public/props/<model>.jpg, or the `image` its
 // config entry gives), and a printer drawn in its place when there is none.
-const PropPicture = ({ prop, className = '', style, iconSize = 22 }: { prop?: PrinterProp; className?: string; style?: CSSProperties; iconSize?: number }) => {
+export const PropPicture = ({ prop, className = '', style, iconSize = 22 }: { prop?: PrinterProp; className?: string; style?: CSSProperties; iconSize?: number }) => {
   const [missing, setMissing] = useState<string | null>(null);
   const src = prop ? (prop.image ?? `props/${prop.model}.jpg`) : null;
   return (

@@ -25,10 +25,12 @@ return {
     Target = { label = 'Take printouts', icon = 'fas fa-print', distance = 1.8 },
 
     -- The props a printer can be placed as, and the ones "Pick existing prop" takes from the world.
-    -- Add any streamed prop; a model the game does not have is refused when placed.
+    -- Add any streamed prop; a model the game does not have is refused when placed. The panel shows
+    -- web/public/props/<model>.jpg for each (the ones here are photographs taken in the game; rebuild
+    -- the UI after adding one), or set `image = 'https://...'`; with neither it shows an icon.
     Props = {
-        { model = 'prop_printer_01', label = 'Desktop printer' },
-        { model = 'prop_printer_02', label = 'Office printer' },
+        { model = 'prop_printer_01', label = 'Laser printer' },
+        { model = 'prop_printer_02', label = 'Desktop printer' },
         { model = 'v_res_printer', label = 'Home printer' },
         { model = 'prop_copier_01', label = 'Photocopier' },
     },

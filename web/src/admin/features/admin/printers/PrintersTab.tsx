@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Crosshair, Move, Navigation, Pencil, Plus, Printer as PrinterIcon, Trash2, TriangleAlert } from 'lucide-react';
+import { Crosshair, Move, Navigation, Pencil, Plus, Trash2, TriangleAlert } from 'lucide-react';
 import { Badge, ConfirmDialog, Empty, Heading, Hint, SearchInput, Status } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
 import { useAdmin } from '@/admin/store/admin';
 import { act, place } from '@/admin/nui/api';
 import { t } from '@/admin/i18n';
 import type { Printer } from '@/admin/types';
-import { PrinterSetupModal } from './PrinterSetupModal';
+import { PrinterSetupModal, PropPicture } from './PrinterSetupModal';
 
 const whereOf = (p: Printer) => `${p.prop} · ${p.x.toFixed(1)}, ${p.y.toFixed(1)}, ${p.z.toFixed(1)}`;
 
@@ -14,12 +14,11 @@ const Row = ({ p, onEdit, onDelete }: { p: Printer; onEdit: () => void; onDelete
   const snapshot = useAdmin(s => s.snapshot)!;
   const busy = useAdmin(s => s.busy);
   const edit = snapshot.canEdit;
-  const label = snapshot.printers.props.find(x => x.model === p.prop)?.label;
+  const prop = snapshot.printers.props.find(x => x.model === p.prop);
+  const label = prop?.label;
   return (
     <div className="sc-row">
-      <span className="flex items-center justify-center flex-shrink-0" style={{ width: 38, color: 'var(--text-3)' }}>
-        <PrinterIcon size={17} />
-      </span>
+      <PropPicture prop={prop ?? { model: p.prop, label: p.prop }} className="rounded-[6px] flex-shrink-0" style={{ width: 38, height: 38, boxShadow: '0 0 0 1px var(--hairline-strong)' }} iconSize={16} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
           <span className="text-[13px] font-medium truncate">{p.label}</span>

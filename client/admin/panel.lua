@@ -220,7 +220,7 @@ end
 local function placeAndCreate(model, action, build, from, what, label)
     what = what or 'computer'
     hideForPlacement()
-    -- (airborne: a computer belongs on a desk - it starts sitting on what was aimed at, and is not
+    -- (airborne: a computer belongs on a desk - it starts sitting on the spot it starts at, and is not
     -- dropped to the floor or warned about floating)
     local spot, err = placer.start('object', model, label or propLabel(model), nil, from, { airborne = true })
     local placed

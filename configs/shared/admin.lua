@@ -5,7 +5,9 @@ return {
     ViewGroup = false, -- optional ace principal (e.g. 'group.mod') that can open the panel and look, but not change anything
     EditAce = 'sd_computers.edit', -- the ace every change needs; granted to Group automatically, add it to other principals to let them edit
 
-    PlaceReach = 25.0, -- metres ahead of the camera a new placement starts when nothing closer is in view
+    -- A new placement starts on the desk, counter or floor you are looking at when that is within this
+    -- many metres of you; looking anywhere else (a wall, across the room), it starts a step in front of you.
+    PlaceReach = 6.0,
     Placement = { -- the placement gizmo
         SnapMove = 0.25, -- metres per step while snapping is on (X)
         SnapTurn = 15.0, -- degrees per step while snapping is on
