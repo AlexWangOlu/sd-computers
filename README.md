@@ -243,12 +243,13 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 | **Bank** | The character's bank balance, cash and recent transactions, to look at. Nothing can be moved from it |
 | **Company Board** | A job's notice board: bosses post, pin and remove announcements, everyone in the job reads them from any computer, and it shows who is on duty. Only shown to players with a job |
 | **Security Cameras** | The cameras a player is allowed to watch from that computer: the ones put up from the admin panel, and the ones in `configs/shared/cameras.lua`. Picking one plays its picture live in the app's window, to look around and zoom with, and **Full screen** puts it over the whole display. Only shown to players with at least one camera to watch; every first look is written to the System Logs |
-| **Games** | Mines, Solitaire and Snake |
+| **Print** | Notepad, Files, Mail, Bank and Event Viewer print to a [printer](#printers) near the computer. The page waits in the printer's tray and is taken as an item that opens as the page |
+| **Games** | A shelf of three, each one a program of its own with its own window, icon and look: Mines on a bomb-disposal console, Solitaire on a felt card table, Snake on an arcade screen. Best results are kept |
 | **Phone Link** | Only with sd-phone: links the character's phone to that machine. It sends a code to the phone as a notification; typing it in puts the phone's apps on the desktop there and then, until they unlink it |
 | **Messages / Notes / Photos / Contacts** | Only with sd-phone, once the phone is linked in Phone Link: the phone's texts, notes, gallery and address book on the desktop |
 | **Notepad / Calculator / Settings** | Notes that follow the character to every computer; a full standard calculator; wallpaper, accent colour and dark or light mode, saved per character |
 
-Around the apps: a lock screen with an optional per-computer PIN (checked server-side, with lockout), welcome and shutdown screens, draggable, resizable, snap-to-maximize windows, calendar and quick-settings flyouts, and toast notifications.
+Around the apps: a lock screen with an optional per-computer PIN (checked server-side, with lockout), welcome and shutdown screens, draggable, resizable, snap-to-maximize windows, calendar and quick-settings flyouts, toast notifications, and system sounds for starting up, signing in, windows, clicks and notifications (synthesized, no audio files; each style has its own and can switch them off).
 
 ## Three looks, one computer
 
@@ -256,9 +257,9 @@ Every computer runs the same apps against the same server. Its **style** decides
 
 | Style | Name on screen | Feel |
 |---|---|---|
-| `modern` | SD OS Pro | Centred taskbar and Start menu, rounded translucent windows, dark or light |
+| `modern` | SD OS Pro | Centred taskbar and Start menu, rounded translucent windows, dark or light, soft glassy system sounds |
 | `retro` | SD Desktop 3.11 | A 1991 shell inside a beige CRT: DOS boot, teal desktop, bevelled grey windows that snap open in chunky steps, synthesized period sounds |
-| `mac` | SD OS Harbor | Top menu bar, magnifying dock, traffic-light window buttons, search overlay |
+| `mac` | SD OS Harbor | Top menu bar, magnifying dock, traffic-light window buttons, search overlay, a startup chord and its own pops and whooshes |
 
 Pick it per computer with `style = 'retro'` in `configs/shared/computers.lua` (unset = `Desktop.DefaultStyle`), or force it per open from a script:
 
@@ -396,6 +397,26 @@ Every tile in the **Props** tab has a screen button: **Draw screen** on a prop t
 
 A screen is a flat rectangle, so curved glass gets the nearest flat one. What you draw is kept in the database (`computers_settings`) and applies to every prop of that model for everyone at once. It wins over the rectangle `screens.lua` has for the same model, so a built-in screen that sits a little off can be redrawn too; the arrow button beside **Adjust screen** takes a drawn screen away again.
 
+## Printers
+
+Stand a printer near a computer and its apps can print. A page is not handed to whoever pressed Print: it comes out of the printer, and waits in its tray until somebody walks over and takes it.
+
+- **Printing.** Notepad (File > Print, or Ctrl+P), Files, Mail, Bank and Event Viewer each have a Print. It lists the printers within reach of that computer (`Range`, 30 m), nearest first, and asks how many copies.
+- **Taking the pages.** Target the printer and take what is in its tray. Each copy takes a moment to come out (`PageSeconds`). Anyone standing there can take them unless `OwnOnly` is set, a full tray prints nothing more (`TrayLimit`), and what nobody collects is thrown away after an hour (`TrayMinutes`).
+- **The item.** A printout is one inventory item, `printed_document`. Its tooltip says what the page is, who printed it, when and from which machine; using it holds the page up to read. Copies of the same page stack, and it can be handed over, stashed or found on somebody like any other item.
+- **What a page is.** A typed page is plain. A mail message prints with its headers, a bank statement with the bank's letterhead and its rows, a system log on green-bar listing paper. Those three are built by the server from its own data, never from what the page sent, so nobody can print a statement that says something the bank does not.
+
+Every print is written to that computer's System Logs (event 5001, source Print Spooler).
+
+### Printers from the panel
+
+The **Printers** tab of `/computeradmin` lists every printer with what is waiting in its tray:
+
+1. **Place a printer**: name it, pick the prop (`configs/shared/printers.lua` > `Props`), and stand it with the placement gizmo, on a desk or the floor.
+2. Or **Pick existing prop**: aim at a printer or copier the game already has in the world. Nothing is spawned; that prop becomes the printer.
+
+A printer can be renamed, moved, gone to and removed from its row. Removing one throws away what was in its tray. They are kept in the `computers_printers` table, the pages in `computers_prints`.
+
 ## sd-phone link (optional)
 
 sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-Development/sd-phone)** is running too, a computer becomes another screen for the character's phone:
@@ -460,6 +481,11 @@ exports['sd-computers']:MailAddressExists('jessica.hale@lsmail.com')
 exports['sd-computers']:GetMailAddresses(citizenid) -- addresses a character is signed into
 
 exports['sd-computers']:GetComputers() -- { id, label, hostname, coords?, model?, placed?, prop?, world? }[] (placed = from the admin panel; world = a prop the game already had, picked)
+
+-- Printing: a page of your own. A page is { title, letterhead?, subhead?, fields? = { { label, value } }, body?, table? = { head, rows }, image?, footer?, kind? }.
+exports['sd-computers']:GetPrinters() -- { id, label, coords }[]
+local ok, why = exports['sd-computers']:PrintAt(printerId, page, { copies = 1, by = 'Officer Hale', from = 'Records' }) -- into that printer's tray
+local ok, why = exports['sd-computers']:GivePrintout(source, page, { copies = 1 }) -- straight into a player's inventory
 ```
 
 Fired after every successful breach, with `info = { target, computer, instance }` (each target can also name its own event):
@@ -510,7 +536,7 @@ ensure oxmysql
 ensure sd-computers
 ```
 
-Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_settings`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`.
+Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_settings`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`, and one each for the features that keep one (`computers_files`, `computers_cameras`, `computers_printers`, `computers_prints` ...).
 
 The UI ships pre-built in `web/build`, so a plain download or clone runs as is.
 
@@ -529,6 +555,32 @@ The example coordinates (MRPD front desk, Pillbox reception) are from qbx_police
 
 Both live in `configs/server/`, which never ships to clients: breach targets and their rewards in `targets.lua`, and optional PINs per computer in `security.lua`. No computer has a PIN out of the box: a computer's `groups` already decides who can use it, and only those players are offered it.
 
+### 4. Add the printout item
+
+Printers hand out an item, so your inventory has to know it. The name is `Item` in `configs/shared/printers.lua`; its picture is `docs/items/printed_document.png`, to copy into your inventory's images folder.
+
+ox_inventory (`data/items.lua`):
+
+```lua
+['printed_document'] = {
+    label = 'Printed page',
+    weight = 5,
+    stack = true,
+    close = true,
+    consume = 0,
+    description = 'A page from a printer.',
+    server = { export = 'sd-computers.usePrinted_document' },
+},
+```
+
+qb-core (`shared/items.lua`):
+
+```lua
+printed_document = { name = 'printed_document', label = 'Printed page', weight = 5, type = 'item', image = 'printed_document.png', unique = true, useable = true, shouldClose = true, description = 'A page from a printer.' },
+```
+
+Until the item exists, the Printers tab of the admin panel says so, and so does the server console at boot. No printers on your server? Skip this, or set `Enabled = false` in that file.
+
 ## Configuration
 
 Scope-by-folder, like the other sd-* resources: `configs/shared` ships to clients, `configs/server` never does.
@@ -537,7 +589,7 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | --- | --- |
 | `configs/config.lua` | Locale, Debug, bridge debug prints |
 | `configs/shared/computers.lua` | **The computers.** Each is a location (`coords`/`size`/`rotation`) or a `model` (every prop of that model). Optional `groups` lock, `boss` (a job name, or `true` = the signed-in player's own job), `style`, `apps` list |
-| `configs/shared/desktop.lua` | Default style, app list and window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name and build, wallpapers, accent colours, default theme, retro's CRT monitor and sounds toggles |
+| `configs/shared/desktop.lua` | Default style, app list and window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name and build, wallpapers, accent colours, default theme, a `Sounds` toggle for its system sounds, retro's CRT monitor |
 | `configs/shared/interact.lua` | Target label, icon and distance, walk-away distance, **how the desktop is shown** (the camera up at the prop's screen, or fullscreen) and that camera's framing, typing animation, debug `/computer_pos` |
 | `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, whether props in the world are computers on their own (`Automatic`, off by default), and the props a computer can be placed as (or picked from the world as) |
 | `configs/shared/screens.lua` | **The screens on the props**: on or off, draw distance, how many are drawn and mirrored at once, texture size, what an idle computer shows, the live copy (on or off, minigame frame rate, watchers per session), and where the screen is on each prop model |
@@ -548,6 +600,7 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/shared/bank.lua` | Bank on or off, how many transactions it lists |
 | `configs/shared/board.lua` | Company Board on or off, jobs that have none, how many announcements a job keeps |
 | `configs/shared/cameras.lua` | **The security cameras** written in the config (more are put up from the admin panel): where each is, the way it looks, who may watch it and from which computers; how far they all turn and zoom, and the look of the picture (`Filter`: black-and-white CCTV, colour, or clean) |
+| `configs/shared/printers.lua` | **Printers**: on or off, the item a printout is, how far a printer reaches, copies per print, how long a copy takes, tray size and how long a page waits in it, who may take pages, the reading animation, and the props a printer can be |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
 | `configs/shared/boss.lua` | Business Manager on or off, hire radius, hiring by player ID on or off, deposit sources, withdraw target |
 | `configs/server/security.lua` | Optional **PINs per computer** (none set out of the box) and wrong-PIN lockout |
@@ -572,6 +625,7 @@ Start > Power > Shut down stands you up too, with the shutdown screen. Walking a
 - Every app action goes through one server callback (`server/computers/rpc.lua`) that checks the player has this computer open, is signed in, is still in reach, still passes its job lock, and has that app, before any handler runs.
 - PINs and breach rewards live only in `configs/server/`. The client never sees them.
 - Location computers are distance-checked against their config coords. Model (prop) computers can't be: world props aren't networked, so the prop's position comes from the client. That's fine for public PCs, but put valuable breach targets on location computers.
+- A printed page is built by the server. An app names what to print (a message id, the statement, the log); it does not send the page. Only what a player typed themselves (Notepad, Files) is taken as sent, and that can only ever be a plain page with no letterhead. Taking pages from a tray is checked against where the server sees the player standing.
 - A hack win is never trusted: the server mints the run (and, for maze, pipe, typing and signal, generates the puzzle), requires every milestone in order at human pace, refuses anything faster than the difficulty's minimum play time, and only then pays out. These are sd-deaddrop's `proof.lua` / `challenge.lua`.
 - A screen's live copy is relayed by the server, which only passes on what comes from the player holding that computer's session, within size and rate caps, and only to players it has itself measured as standing near the computer (and keeps measuring). On the watching side the copy is rebuilt in a sandboxed frame that cannot run script, and that loads nothing from outside the resource except from the hosts your own wallpaper images come from (`Desktop.Styles`), so a modified client cannot use it to run code on, or pull addresses from, the players around it. Password fields are masked before the recording leaves the player's game.
 

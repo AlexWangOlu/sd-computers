@@ -56,6 +56,27 @@ than a 1080p one, which the shell already clamps windows to.
   the player unable to get up while that app is focused. Typing in a field or a running hack makes
   the first Escape a hint and the second the one that leaves, and a window with unsaved changes
   (`setCloseGuard`) is asked first, as when it is closed.
+- **Sounds:** the modern and mac looks have system sounds, each in a voice of its own
+  (`src/os/sfx.ts`; retro's are `src/os/retro/sounds.ts`). An app asks for none of them:
+  `wireSounds()`, mounted by `src/os/Computer.tsx`, plays them from the store (a window opening,
+  closing, minimized, restored, maximized; a toast; signing out) and from presses on anything
+  that is a button. Something pressed that is not a `<button>` or a `role` in the markup takes
+  `data-sfx="press"`; a program that is a world of its own takes `data-sfx="off"` on its root
+  (the hacks; the games by their `.game` class). All synthesised, no files, and switched per style
+  with `Styles.<style>.Sounds` in `configs/shared/desktop.lua` (`payload.desktop.sounds`).
+- **Printing:** an app that can print takes two things from `src/os/print/PrintDialog.tsx`:
+  `<PrintSlot app="mail" />` once at its root, and `askPrint('mail', { source, data, title })` from
+  its Print command (hide the command unless `usePrinting()`). The app never sends a page: `source`
+  names something the server knows how to print and `data` what in it (`'mail'` + `{ email, id }`,
+  `'statement'`, `'logs'` + `{ filter }`); only `'text'` (`{ title, body }`) carries what the player
+  typed. To make something new printable, register a source next to the app's endpoints:
+  `printing.source(name, app, function(src, s, data) return page end)` in `server/computers/*.lua`.
+  - `print:printers` {} -> `{ enabled, printers: [{ id, label, distance, waiting, full }], maxCopies, pageSeconds }` (the printers in reach of this computer)
+  - `print:submit` { printer, copies, source, data } -> `{ printer, copies, seconds }`
+  - A printout held in the hand is `src/os/Paper.tsx` (its own stylesheet, `src/styles/paper.css`), drawn by
+    the OS page with no computer open: Lua sends `computers:paper:open` with `{ id, doc, by, from, at }`
+    (or `{ faded, title }`) and hears the NUI callback `computers:paper:close`. `#paper` (with
+    `?kind=text|mail|statement|logs|faded`) shows one in a browser.
 - **Props:** every app gets `{ win }` (`AppProps` from `src/apps/registry.tsx`); `win.props` may
   carry launch arguments (e.g. Mail opened from a toast gets `{ mailbox, messageId }`).
 - **Server calls:** `rpc<T>(endpoint, payload)` from `src/nui/rpc.ts` -> `Promise<{ ok, data?, error? }>`.
@@ -186,6 +207,9 @@ Read as the page is opened, through `useLive()` (`live/useLive.ts`): what an end
 - The photo picker on a post is the Photos app's own `photos:list`, so it is only offered while the session has that app (the phone linked to this machine). The contact buttons open other apps by their launch props: `openApp('messages', { number })` and `openApp('mail', { to, subject })`.
 
 ### Games - app id `games`, no server calls (best results live in `localStorage['sd_computers:games']`).
+- The app is only the shelf (`src/apps/games/index.tsx`): a box for each game and the best the player has done at it. The games are programs of their own, the way a hack is: `openGame(id)` in `shared.ts` opens `openWindow({ id: 'game:' + id, app: id, ... })` with `id` = `'mines' | 'solitaire' | 'snake'`, so each has its own window, title, taskbar entry and icon (`os/icons.tsx`, `os/mac/MacIcon.tsx`, `os/retro/glyphs.tsx`). One window per game: opening one that is running brings it forward.
+- Each game draws itself and takes nothing from the OS's look, so it is the same in all three (`src/styles/games.css`: `.game-mines`, `.game-solitaire`, `.game-snake`; the retro frame leaves them unskinned). `useGameWindow(win)` gives a game its root and whether its window is the focused one, which is what the clocks and Snake's tick go by.
+- Rules stay in `minesRules.ts`, `solitaireRules.ts`, `snakeRules.ts`; best results are the `useBests` store in `storage.ts`, which the shelf and the games both read.
 
 ### Calculator - no server calls.
 
