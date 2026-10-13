@@ -16,6 +16,7 @@ import contacts from './contacts';
 import phonelink from './phonelink';
 import browser from './browser';
 import web from './web';
+import print from './print';
 
 /** A mock handler: gets the rpc payload, returns what the server's handler would. */
 export type MockHandler = (payload: Record<string, unknown>) => RpcResult<unknown> | Promise<RpcResult<unknown>>;
@@ -24,7 +25,7 @@ export type MockHandler = (payload: Record<string, unknown>) => RpcResult<unknow
 // exactly as registered in server/computers/*.lua.
 const handlers: Record<string, MockHandler> = {
   ...shell, ...mail, ...logs, ...cmd, ...boss, ...notes, ...messages, ...phonenotes,
-  ...files, ...cameras, ...board, ...bank, ...photos, ...contacts, ...phonelink, ...browser, ...web,
+  ...files, ...cameras, ...board, ...bank, ...photos, ...contacts, ...phonelink, ...browser, ...web, ...print,
 };
 
 /** Browser-only stand-in for the server: a short fake latency, then the mock handler's reply. */

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
-import { Banknote, Landmark, ReceiptText, RefreshCw } from 'lucide-react';
+import { Banknote, Landmark, Printer, ReceiptText, RefreshCw } from 'lucide-react';
 import { Button, InfoBar, Spinner } from '@/ui/controls';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
@@ -11,6 +11,7 @@ import { Figure, Panel, cx } from './parts';
 import Statement from './Statement';
 import type { Overview } from './types';
 import { fmtBalance, fmtSigned, normOverview, txDelta } from './util';
+import { PrintSlot, askPrint, usePrinting } from '@/os/print/PrintDialog';
 
 /**
  * Bank: the character's own money on one page, to look at. Both balances, what came in and went
@@ -52,6 +53,7 @@ export default function Bank(_props: AppProps) {
           </div>
         )}
       </main>
+      <PrintSlot app="bank" />
     </div>
   );
 }
@@ -70,6 +72,7 @@ function Page({ ov, holder, error, loading, onReload, clock24 }: { ov: Overview;
     return [i, o];
   }, [txs]);
   const change = points.length >= 2 ? points[points.length - 1].v - points[0].v : 0;
+  const printing = usePrinting();
 
   return (
     <div className="px-6 pt-5 pb-8 max-w-[1400px] mx-auto page-in">
@@ -78,9 +81,16 @@ function Page({ ov, holder, error, loading, onReload, clock24 }: { ov: Overview;
           <h1 className="font-display text-title font-semibold text-t1 truncate">{holder || t('ui.bank.account')}</h1>
           {holder && <div className="text-body text-t2 mt-0.5">{t('ui.bank.account')}</div>}
         </div>
-        <Button icon={<RefreshCw size={16} className={loading ? 'spin' : ''} />} onClick={onReload} disabled={loading}>
-          {t('ui.common.refresh')}
-        </Button>
+        <div className="flex items-center gap-2">
+          {printing && (
+            <Button icon={<Printer size={16} />} onClick={() => askPrint('bank', { source: 'statement', title: t('ui.print.statement'), data: {} })}>
+              {t('ui.print.print')}
+            </Button>
+          )}
+          <Button icon={<RefreshCw size={16} className={loading ? 'spin' : ''} />} onClick={onReload} disabled={loading}>
+            {t('ui.common.refresh')}
+          </Button>
+        </div>
       </header>
 
       {error && (

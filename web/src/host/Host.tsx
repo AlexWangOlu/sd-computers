@@ -168,7 +168,7 @@ export default function Host() {
         away = false;
         drop();
         show(toView(data.data?.view));
-      } else if (data.action === 'computers:lib:open' && !active) show(null);
+      } else if ((data.action === 'computers:lib:open' || data.action === 'computers:paper:open') && !active) show(null);
       else if (data.action === 'computers:camera') {
         // (the game is back in the room: the still has done its work, and the display is the desktop's)
         if (data.data?.active !== true) {

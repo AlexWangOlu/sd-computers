@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { ArrowLeft, Check, Download, FileText, Image as ImageIcon, ImageOff, Lock, Paperclip, PenLine, Save, Smartphone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Download, FileText, Image as ImageIcon, ImageOff, Lock, Paperclip, PenLine, Printer, Save, Smartphone, Trash2 } from 'lucide-react';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
 import { Button, Empty, IconButton, InfoBar, Spinner, TextInput } from '@/ui/controls';
@@ -7,6 +7,7 @@ import { askDelete, copyFromPhone, copyToPhone, dismissSaveError, editBody, edit
 import { cx, fmtCount, fmtSize, fmtWhen } from './model';
 import type { PhoneFull, PhoneKind } from './types';
 import { useWidth } from './hooks';
+import { askPrint, usePrinting } from '@/os/print/PrintDialog';
 
 /** The page a document is read and written on: the shell's own type, at a size made for reading. */
 const PAGE: CSSProperties = { fontSize: 15, lineHeight: 1.6, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' };
@@ -65,6 +66,7 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
   const phone = useFiles(s => s.phone);
   const focus = useFiles(s => s.focus);
   const clock24 = useOS(s => !!s.payload?.desktop.clock24);
+  const printing = usePrinting();
   const [ref, width] = useWidth<HTMLDivElement>();
   const nameRef = useRef<HTMLInputElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -113,6 +115,16 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
         {onBack && (
           <IconButton title={t('ui.files.delete_hint')} onClick={askDelete} disabled={!ready || busy !== null} className="shrink-0">
             <Trash2 size={16} />
+          </IconButton>
+        )}
+        {printing && (
+          <IconButton
+            title={t('ui.print.print')}
+            onClick={() => askPrint('files', { source: 'text', title: open.name.trim() || t('ui.files.untitled'), data: { title: open.name.trim(), body: open.body } })}
+            disabled={!ready || open.body.trim() === ''}
+            className="shrink-0"
+          >
+            <Printer size={16} />
           </IconButton>
         )}
         <Button variant="accent" icon={<Save size={15} />} onClick={() => void save()} disabled={!ready || busy !== null || (!dirty && !draft)} title={t('ui.files.save_hint')} className="shrink-0">

@@ -12,6 +12,8 @@ local camtool = require 'client.admin.camtool'
 local state = require 'client.computers.state'
 ---@type table Computers made from this panel (client.computers.placed): which props are one already.
 local placedProps = require 'client.computers.placed'
+---@type table Printers made from this panel (client.computers.printers): which props are one already.
+local printerProps = require 'client.computers.printers'
 
 ---@type table The prop models known as a computer (shared.props): what each is called.
 local props = require 'shared.props'
@@ -116,6 +118,8 @@ local PASS = {
     deletecamera = 'deleteCamera',
     removeconfigcamera = 'removeConfigCamera',
     restoreconfigcamera = 'restoreConfigCamera',
+    updateprinter = 'updatePrinter',
+    deleteprinter = 'deletePrinter',
     setauto = 'setAuto',
     setautocomputer = 'setAutoComputer',
     setautomodel = 'setAutoModel',
@@ -211,19 +215,22 @@ end
 ---@param action 'placed'|'moved'
 ---@param build fun(spot: table): string, table turns the placed transform into server verb + payload
 ---@param from table|nil where it stands now, when moving it
-local function placeAndCreate(model, action, build, from)
+---@param what? 'computer'|'printer' what is being stood (a computer unless said)
+---@param label? string what the HUD calls the prop (the computer props' own name for it unless said)
+local function placeAndCreate(model, action, build, from, what, label)
+    what = what or 'computer'
     hideForPlacement()
     -- (airborne: a computer belongs on a desk - it starts sitting on what was aimed at, and is not
     -- dropped to the floor or warned about floating)
-    local spot, err = placer.start('object', model, propLabel(model), nil, from, { airborne = true })
+    local spot, err = placer.start('object', model, label or propLabel(model), nil, from, { airborne = true })
     local placed
     if spot then
         local reply = request(build(spot))
-        placed = { what = 'computer', action = action, success = reply.success, message = (not reply.success) and reply.message or nil }
+        placed = { what = what, action = action, success = reply.success, message = (not reply.success) and reply.message or nil }
     else
-        placed = { what = 'computer', action = action, success = false, cancelled = err == nil, message = err and locale(err) or nil }
+        placed = { what = what, action = action, success = false, cancelled = err == nil, message = err and locale(err) or nil }
     end
-    log.debug('admin', 'placement %s: %s', action, placed.success and 'ok' or tostring(placed.message or 'cancelled'))
+    log.debug('admin', '%s placement %s: %s', what, action, placed.success and 'ok' or tostring(placed.message or 'cancelled'))
     if open then showAfterPlacement(placed) end
 end
 
@@ -271,6 +278,53 @@ RegisterNUICallback('computers:admin:movecomputer', function(data, cb)
     placeAndCreate(c.prop, 'moved', function(spot)
         return 'moveComputer', { id = data.id, x = spot.x, y = spot.y, z = spot.z, heading = spot.heading }
     end, { x = c.coords.x, y = c.coords.y, z = c.coords.z, heading = c.coords.w })
+end)
+
+---NUI callback: stand a printer, set up in the panel: its prop and its name. Replies immediately;
+---the panel waits for computers:admin:show. The server checks all of it again.
+RegisterNUICallback('computers:admin:placeprinter', function(data, cb)
+    cb({ ok = true })
+    local model = tostring(data.prop)
+    placeAndCreate(model, 'placed', function(spot)
+        return 'createPrinter', { x = spot.x, y = spot.y, z = spot.z, heading = spot.heading, label = data.label, prop = data.prop }
+    end, nil, 'printer', printerProps.label(model))
+end)
+
+---NUI callback: make a prop the game already has a printer. The admin aims at it with the panel
+---hidden; nothing is spawned.
+RegisterNUICallback('computers:admin:pickprinter', function(data, cb)
+    cb({ ok = true })
+    hideForPlacement()
+    local spot, err = picker.start(printerProps.isPrinter, printerProps.models)
+    local picked
+    if spot then
+        local reply = request('createPrinter', { world = true, prop = spot.model, x = spot.x, y = spot.y, z = spot.z, heading = spot.heading, label = data.label })
+        picked = { what = 'printer', action = 'picked', success = reply.success, message = (not reply.success) and reply.message or nil }
+    else
+        picked = { what = 'printer', action = 'picked', success = false, cancelled = err == nil, message = err and locale(err) or nil }
+    end
+    log.debug('admin', 'printer pick: %s', picked.success and 'ok' or tostring(picked.message or 'cancelled'))
+    if open then showAfterPlacement(picked) end
+end)
+
+---NUI callback: pick a new spot for a placed printer with the gizmo. What waits in its tray stays in it.
+RegisterNUICallback('computers:admin:moveprinter', function(data, cb)
+    cb({ ok = true })
+    local p = (GlobalState['sd-computers:printers'] or {})[tostring(data.id)]
+    if not p then
+        if open then showAfterPlacement({ what = 'printer', action = 'moved', success = false, message = locale('admin.gone') }) end
+        return
+    end
+    placeAndCreate(p.prop, 'moved', function(spot)
+        return 'movePrinter', { id = data.id, x = spot.x, y = spot.y, z = spot.z, heading = spot.heading }
+    end, { x = p.coords.x, y = p.coords.y, z = p.coords.z, heading = p.coords.w }, 'printer', printerProps.label(p.prop))
+end)
+
+---NUI callback: go and stand in front of a printer, then close.
+RegisterNUICallback('computers:admin:teleportprinter', function(data, cb)
+    local reply = request('teleportPrinter', data)
+    cb(reply)
+    if reply.success then close() end
 end)
 
 ---NUI callback: draw where the screen is on a prop, with the screen tool and the panel hidden. What

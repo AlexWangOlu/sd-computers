@@ -28,6 +28,7 @@ import TabStrip from './TabStrip';
 import MenuBar, { type MenuDef } from './MenuBar';
 import StatusBar from './StatusBar';
 import OpenDialog from './OpenDialog';
+import { PrintSlot, askPrint, usePrinting } from '@/os/print/PrintDialog';
 
 // `closing`: the prompt came from closing the whole window - resolving it carries on closing.
 type DialogState = { kind: 'open' } | { kind: 'unsaved'; key: string; closing?: boolean } | { kind: 'delete'; key: string } | null;
@@ -50,6 +51,7 @@ let internalClipboard = '';
 export default function Notepad({ win }: AppProps) {
   const clock24 = useOS(s => s.payload?.desktop.clock24 ?? false);
   const active = useOS(selectActiveId) === win.id;
+  const printing = usePrinting();
 
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeKey, setActiveKey] = useState<string | null>(null);
@@ -287,8 +289,13 @@ export default function Notepad({ win }: AppProps) {
 
   // ── keyboard (only while this window is focused) ────────────────────────
 
+  /** Print the tab as it is on the screen, saved or not. */
+  const print = () => {
+    if (tab && printing) askPrint('notepad', { source: 'text', title: tabTitle(tab), data: { title: tabTitle(tab), body: tab.body } });
+  };
+
   // The listener is bound once per focus change and reads the latest handlers/state from here.
-  const live = { newTab, closeTab, save, cycleTab, zoomBy, zoomReset, insertTimeDate, dialog, activeKey, busy };
+  const live = { newTab, closeTab, save, cycleTab, zoomBy, zoomReset, insertTimeDate, print, dialog, activeKey, busy };
   const keys = useRef(live);
   keys.current = live;
 
@@ -317,6 +324,7 @@ export default function Notepad({ win }: AppProps) {
       if (key === 'n' && !e.shiftKey) k.newTab();
       else if (key === 'o') setDialog({ kind: 'open' });
       else if (key === 's') void k.save(k.activeKey);
+      else if (key === 'p') k.print();
       else if (key === 'w') k.closeTab(k.activeKey);
       else if (key === '=' || key === '+') k.zoomBy(ZOOM_STEP);
       else if (key === '-' || key === '_') k.zoomBy(-ZOOM_STEP);
@@ -340,6 +348,7 @@ export default function Notepad({ win }: AppProps) {
         { kind: 'item', label: t('ui.notepad.file_new'), accel: t('ui.notepad.key_new'), onClick: newTab },
         { kind: 'item', label: t('ui.notepad.file_open'), accel: t('ui.notepad.key_open'), onClick: () => setDialog({ kind: 'open' }) },
         { kind: 'item', label: t('ui.notepad.file_save'), accel: t('ui.notepad.key_save'), onClick: () => activeKey && void save(activeKey), disabled: !tab || busy },
+        ...(printing ? [{ kind: 'item' as const, label: t('ui.print.menu'), accel: t('ui.print.key'), onClick: print, disabled: !tab || tab.body.trim() === '' }] : []),
         { kind: 'sep' },
         { kind: 'item', label: t('ui.notepad.file_delete'), onClick: () => activeKey && setDialog({ kind: 'delete', key: activeKey }), disabled: !tab?.id || busy },
         { kind: 'sep' },
@@ -517,6 +526,8 @@ export default function Notepad({ win }: AppProps) {
           {t('ui.notepad.delete_body', tabTitle(dialogTab))}
         </Dialog>
       )}
+
+      <PrintSlot app="notepad" />
     </div>
   );
 }

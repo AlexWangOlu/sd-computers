@@ -104,7 +104,8 @@ end
 
 ---Start the per-frame loop: finds the prop under the crosshair, boxes it and confirms or cancels.
 ---@param taken fun(entity: integer): boolean whether a prop is a picked or placed computer already
-local function loop(taken)
+---@param set { byHash: table<integer, string>, label: fun(model: string): string } the models that can be picked
+local function loop(taken, set)
     CreateThread(function()
         local near, scanned = {}, 0
         local lastHud, lastKey = 0, nil
@@ -121,14 +122,14 @@ local function loop(taken)
                 local origin = GetEntityCoords(cache.ped)
                 near = {}
                 for _, entity in ipairs(GetGamePool('CObject')) do
-                    if props.byHash[GetEntityModel(entity)] and #(GetEntityCoords(entity) - origin) <= REACH + 4.0 then near[#near + 1] = entity end
+                    if set.byHash[GetEntityModel(entity)] and #(GetEntityCoords(entity) - origin) <= REACH + 4.0 then near[#near + 1] = entity end
                 end
             end
 
             -- The one meant: the prop looked at, or the nearest one to the point looked at.
             local at, hit = aim()
             local found
-            if hit and props.byHash[GetEntityModel(hit)] then
+            if hit and set.byHash[GetEntityModel(hit)] then
                 found = hit
             elseif at then
                 local best
@@ -140,7 +141,7 @@ local function loop(taken)
                 end
             end
 
-            local model = found and props.byHash[GetEntityModel(found)] or nil
+            local model = found and set.byHash[GetEntityModel(found)] or nil
             local isTaken = found ~= nil and taken(found)
             if found then
                 local col = isTaken and COL.taken or COL.ok
@@ -154,7 +155,7 @@ local function loop(taken)
                 lastKey, lastHud = key, now
                 hudPush('computers:picker:hud', {
                     active = true, state = not found and 'none' or (isTaken and 'taken' or 'ok'),
-                    model = model, label = model and props.label(model) or nil,
+                    model = model, label = model and set.label(model) or nil, what = set.what,
                 })
             end
 
@@ -176,13 +177,14 @@ end
 
 ---Begin picking and block the calling thread until the admin takes a prop or cancels.
 ---@param taken fun(entity: integer): boolean whether a prop is a computer of its own already
+---@param set? { byHash: table<integer, string>, label: fun(model: string): string } the models that can be picked (the computers' unless said: a printer is picked the same way)
 ---@return table|nil|false result { model, x, y, z, heading }; nil when cancelled, false when refused
 ---@return string|nil errKey
-function picker.start(taken)
+function picker.start(taken, set)
     if active then return false, 'admin.busy' end
     active = true
     pending = promise.new()
-    loop(taken)
+    loop(taken, set or props)
     return Citizen.Await(pending)
 end
 

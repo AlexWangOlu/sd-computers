@@ -1,4 +1,4 @@
-export const TABS = ['overview', 'computers', 'cameras', 'automatic', 'props', 'styles'] as const;
+export const TABS = ['overview', 'computers', 'cameras', 'printers', 'automatic', 'props', 'styles'] as const;
 export type Tab = (typeof TABS)[number];
 
 // Where a computer comes from: placed from this panel (kept in the database, everything about it
@@ -58,6 +58,38 @@ export interface Cameras {
   list: Camera[];
 }
 
+// A printer as the server describes it (server/computers/printers.lua > snapshot): a prop stood
+// from this panel, or one the game already had there, picked from it.
+export interface Printer {
+  id: number; // its row id: what a print names, and what the tray is kept under
+  label: string;
+  prop: string; // the model it is
+  world?: boolean; // picked: a prop the game has there already (it cannot be moved or swapped)
+  x: number;
+  y: number;
+  z: number;
+  heading: number;
+  waiting: number; // copies in its tray right now
+}
+
+// A prop a printer can be placed as (configs/shared/printers.lua > Props).
+export interface PrinterProp {
+  model: string;
+  label: string;
+  image?: string; // a picture of its own (a URL); otherwise props/<model>.jpg, and an icon when there is none
+}
+
+// The Printers tab: every printer, and what the config says about printing.
+export interface Printers {
+  enabled: boolean; // Enabled in configs/shared/printers.lua
+  max: number; // most that can be made from the panel
+  range: number; // metres from a computer a printer can stand and still be printed to from it
+  item: string; // the inventory item a printout is
+  itemMissing?: boolean; // the inventory has no such item yet: nobody can be handed a page
+  props: PrinterProp[];
+  list: Printer[];
+}
+
 // A prop a computer can be placed as (configs/shared/admin.lua > Props).
 export interface Prop {
   model: string;
@@ -114,6 +146,7 @@ export interface Snapshot {
   canEdit: boolean;
   computers: Computer[];
   cameras: Cameras;
+  printers: Printers;
   props: Prop[];
   auto: Auto;
   // Which props have a screen, by model: 'config' = configs/shared/screens.lua has one for it,
@@ -132,7 +165,7 @@ export interface Snapshot {
 
 // What came of a tool that ran with the panel hidden: the gizmo, the picker, the screen tool or the camera tool.
 export interface Placed {
-  what: 'computer' | 'screen' | 'camera';
+  what: 'computer' | 'screen' | 'camera' | 'printer';
   action: 'placed' | 'moved' | 'picked' | 'saved';
   success: boolean;
   cancelled?: boolean;

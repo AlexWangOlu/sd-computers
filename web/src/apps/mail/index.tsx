@@ -28,6 +28,7 @@ import {
 } from './store';
 import type { ReceivedPush } from './types';
 import { cx } from './util';
+import { PrintSlot } from '@/os/print/PrintDialog';
 
 // Mail - a three-pane mail client for the server's shared @domain addresses.
 // index.tsx owns the window-level concerns (layout breakpoints, launch props, live pushes,
@@ -200,6 +201,7 @@ export default function Mail({ win }: AppProps) {
       {content}
       {adding && hasAccounts && <AddAccountSheet />}
       {confirm && <ConfirmDialog />}
+      <PrintSlot app="mail" />
     </div>
   );
 }

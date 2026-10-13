@@ -1,4 +1,4 @@
-import type { Auto, Camera, Computer, Job, Placed, Prop, Reply, Snapshot } from '@/admin/types';
+import type { Auto, Camera, Computer, Job, Placed, Printer, Prop, Reply, Snapshot } from '@/admin/types';
 
 // The panel in a browser tab (npm run dev -> /admin.html): a stand-in for the game and the server,
 // so every tab, dialog and toast can be worked on without either. Placing "runs the gizmo" by
@@ -17,6 +17,19 @@ let computers: Computer[] = [
   { key: 'placed_1', order: 5, id: 1, source: 'placed', label: 'Mechanic office', hostname: 'MECHANIC-OFF-01', style: 'mac', styleSet: true, prop: 'prop_laptop_01a', x: -339.6, y: -156.9, z: 39.8, heading: 87, groups: { mechanic: 2 }, boss: 'mechanic', pin: false, users: [] },
   { key: 'placed_2', order: 6, id: 2, source: 'placed', label: 'Vanilla Unicorn back room', hostname: 'VANILLA-UNIC-02', style: 'modern', styleSet: false, prop: 'prop_monitor_01a', x: 95.4, y: -1294.1, z: 29.6, heading: 211.5, pin: false, users: ['Devon Price'] },
   { key: 'placed_3', order: 7, id: 3, source: 'world', label: 'Booking desk', hostname: 'BOOKING-DESK-03', style: 'retro', styleSet: true, prop: 'prop_monitor_03b', x: 461.0, y: -988.4, z: 24.8, heading: 300, groups: { police: 0 }, pin: false, users: [] },
+];
+
+// The printers: stood from the panel, or picked.
+let nextPrinter = 3;
+let printers: Printer[] = [
+  { id: 1, label: 'Front desk printer', prop: 'prop_printer_01', x: 443.1, y: -980.2, z: 30.7, heading: 90, waiting: 3 },
+  { id: 2, label: 'Records room copier', prop: 'prop_copier_01', world: true, x: 452.6, y: -985.9, z: 30.7, heading: 180, waiting: 0 },
+];
+const PRINTER_PROPS = [
+  { model: 'prop_printer_01', label: 'Desktop printer' },
+  { model: 'prop_printer_02', label: 'Office printer' },
+  { model: 'v_res_printer', label: 'Home printer' },
+  { model: 'prop_copier_01', label: 'Photocopier' },
 ];
 
 // The security cameras: the config's, then the ones put up from the panel.
@@ -84,6 +97,7 @@ export const mockSnapshot = (): Snapshot => ({
     return { ...c, order: i + 1, models, off: a ? !auto.enabled || !a.enabled || models?.length === 0 : undefined, style: a?.style ?? c.style, styleSet: a ? !!a.style || c.styleSet : c.styleSet };
   }),
   cameras: { enabled: true, max: 200, list: cameras },
+  printers: { enabled: true, max: 200, range: 30, item: 'printed_document', props: PRINTER_PROPS, list: printers },
   props,
   screens,
   auto,
@@ -166,6 +180,30 @@ export async function mockNui(callback: string, data: unknown): Promise<unknown>
       return ok();
     }
     case 'teleportcamera':
+    case 'teleportprinter':
+      return ok();
+    case 'placeprinter':
+    case 'pickprinter': {
+      const id = nextPrinter++;
+      const world = callback.endsWith('pickprinter');
+      printers = [...printers, { id, label: d.label || 'Printer', prop: world ? 'prop_printer_02' : (d.prop ?? 'prop_printer_01'), world: world || undefined, x: 120.5 + id * 3.1, y: -1040.2 - id * 2.4, z: 29.3, heading: (id * 47) % 360, waiting: 0 }];
+      afterGizmo({ what: 'printer', action: world ? 'picked' : 'placed', success: true });
+      return { ok: true };
+    }
+    case 'moveprinter': {
+      printers = printers.map(p => (p.id === d.id ? { ...p, x: p.x + 1.5, heading: (p.heading + 90) % 360 } : p));
+      afterGizmo({ what: 'printer', action: 'moved', success: true });
+      return { ok: true };
+    }
+    case 'updateprinter': {
+      const p = printers.find(x => x.id === d.id);
+      if (!p) return fail('That no longer exists');
+      printers = printers.map(x => (x === p ? { ...p, label: d.label ?? p.label, prop: p.world ? p.prop : (d.prop ?? p.prop) } : x));
+      return ok();
+    }
+    case 'deleteprinter':
+      if (!printers.some(x => x.id === d.id)) return fail('That no longer exists');
+      printers = printers.filter(x => x.id !== d.id);
       return ok();
     case 'placecamera': {
       const id = nextCamera++;

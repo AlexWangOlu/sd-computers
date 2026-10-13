@@ -19,5 +19,6 @@ AddEventHandler('onResourceStop', function(resource)
         if src and session.get(src) then session.close(src) end
     end
     require('server.computers.placed').unpublish()
+    require('server.computers.printers').unpublish()
     require('server.computers.mirror').unpublish()
 end)

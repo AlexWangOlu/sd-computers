@@ -27,6 +27,7 @@ import {
 } from './store';
 import { cx } from './model';
 import { useWidth } from './hooks';
+import { PrintSlot } from '@/os/print/PrintDialog';
 
 // Files - the character's documents (files:*), which roam with them to every computer, and beside
 // them the phone's own documents while sd-phone is linked. index.tsx owns the window-level
@@ -174,6 +175,7 @@ export default function Files({ win }: AppProps) {
   return (
     <div ref={rootRef} className="relative h-full w-full flex bg-win text-t1 overflow-hidden">
       {content}
+      <PrintSlot app="files" />
       {dialog?.kind === 'unsaved' && <UnsavedDialog />}
       {dialog?.kind === 'delete' && <DeleteDialog />}
       {dialog?.kind === 'rename' && <RenameDialog id={dialog.id} name={dialog.name} />}

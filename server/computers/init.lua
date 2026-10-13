@@ -20,6 +20,8 @@ local screens = require 'server.computers.screens'
 local removed = require 'server.computers.removed'
 ---@type table The security cameras (server.computers.cameras): the file's, and the ones put up from the panel.
 local cameras = require 'server.computers.cameras'
+---@type table The printers stood from the admin panel (server.computers.printers).
+local printers = require 'server.computers.printers'
 
 -- Boot order matters only for the schema: every table exists before the first callback can run.
 -- The feature modules register their callbacks/exports at require time.
@@ -28,11 +30,13 @@ mailstore.ensureSchema()
 placed.ensureSchema()
 auto.ensureSchema()
 cameras.ensureSchema()
+printers.ensureSchema()
 custom.load() -- props added from the admin panel: before anything that names a prop
 screens.load() -- where the screen is on a prop, as an admin drew it in the panel
 removed.load() -- the config's computers the admin panel took away
 cameras.load() -- the security cameras put up from the panel, and the config's ones it took away
 placed.load() -- before the first open: a placed computer is a registry entry like any other
+printers.load() -- the printers stood or picked from the panel
 auto.load() -- which props in the world are a computer, as the admin panel left them
 
 -- Files and the Company Board keep a table each. They are apps, so requiring them brings the
@@ -40,6 +44,8 @@ auto.load() -- which props in the world are a computer, as the admin panel left 
 require('server.computers.files').ensureSchema() -- Files: the characters' documents
 require('server.computers.board').ensureSchema() -- Company Board: the jobs' announcements
 require('server.computers.phone').ensureSchema() -- Phone Link: which machines a character's phone is linked to
+require('server.computers.printing').ensureSchema() -- Printing: the pages, and what waits in which printer's tray
+require('server.computers.printing').load() -- (after the printers: a page whose printer is gone waits nowhere)
 
 require 'server.computers.session'
 require 'server.computers.mirror' -- the screen on a computer's prop: which are in use, and the relay to the players watching

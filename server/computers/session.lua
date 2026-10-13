@@ -307,6 +307,7 @@ function session.open(src, id, coords, styleOverride)
                 boot = D.Boot ~= false, clock24 = D.Clock24 == true,
                 wallpapers = S.Wallpapers or {}, accents = S.Accents or {}, defaultWallpaper = S.DefaultWallpaper, defaultTheme = S.DefaultTheme or 'dark',
                 monitor = S.Monitor == true, sounds = S.Sounds ~= false,
+                printing = (config.Printers or {}).Enabled ~= false,
             },
             settings = profile.settings(citizenid, style),
             hacks = {

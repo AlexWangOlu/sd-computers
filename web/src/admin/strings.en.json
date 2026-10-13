@@ -5,6 +5,7 @@
     "overview": "Overview",
     "computers": "Computers",
     "cameras": "Cameras",
+    "printers": "Printers",
     "automatic": "Automatic",
     "props": "Props",
     "styles": "Styles"
@@ -210,7 +211,10 @@
     "computer_picked": "Prop is now a computer",
     "screen_saved": "Screen saved",
     "camera_placed": "Camera put up",
-    "camera_moved": "Camera aimed"
+    "camera_moved": "Camera aimed",
+    "printer_placed": "Printer placed",
+    "printer_moved": "Printer moved",
+    "printer_picked": "Prop is now a printer"
   },
   "cameras": {
     "place": "Put up a camera",
@@ -254,6 +258,41 @@
     "removed_hint": "Removed in this panel: nobody is offered it until it is restored",
     "full": "No more than %s cameras can be put up from the panel",
     "disabled": "The Security Cameras app is switched off for the whole server (Enabled in configs/shared/cameras.lua), so nobody is offered any of these."
+  },
+  "printers": {
+    "place": "Place a printer",
+    "place_next": "Place it",
+    "place_hint": "Next you stand it with the gizmo: on a desk, a counter or the floor.",
+    "pick": "Pick existing prop",
+    "pick_title": "Make an existing prop a printer",
+    "pick_world": "Pick it in the world",
+    "pick_next": "You pick the prop next",
+    "pick_hint": "Aim at a printer or copier the game already has in the world and press Enter. Nothing is spawned: the prop standing there becomes this printer.",
+    "picked_hint": "A prop the game already has in the world, so it cannot be swapped or moved. Delete this printer to give the prop back.",
+    "edit": "Change printer",
+    "default_label": "Printer",
+    "name": "Name",
+    "name_placeholder": "Front desk printer",
+    "name_hint": "What the Print dialog calls it, so people know which one to walk to.",
+    "prop": "Prop",
+    "no_props": "No printer props are listed in configs/shared/printers.lua.",
+    "saved": "Printer updated",
+    "search": "Search by name or prop",
+    "empty": "No printers yet. Place one near a computer and its apps can print to it.",
+    "about": "A computer prints to the printers within %s m of it. The pages wait in the tray until somebody takes them, as the %s item.",
+    "disabled": "Printing is switched off for the whole server (Enabled in configs/shared/printers.lua).",
+    "source_placed": "Placed",
+    "source_world": "Picked",
+    "waiting_one": "1 page in the tray",
+    "waiting": "%s pages in the tray",
+    "tray_empty": "Tray empty",
+    "go": "Go to it",
+    "full": "There are as many printers as the panel can make (%s).",
+    "delete": "Remove the printer",
+    "delete_confirm": "\"%s\" is removed for good.",
+    "delete_confirm_tray": "\"%s\" is removed for good, and the %s pages waiting in its tray go with it.",
+    "deleted": "%s removed",
+    "item_missing": "Your inventory has no \"%s\" item yet, so nobody can take a page from a tray. Add it (README > Printers) and restart the inventory."
   },
   "camtool": {
     "title": "Put up a camera",
@@ -343,7 +382,7 @@
     "view_only_hint": "You can look around, but changes need the edit permission.",
     "ago": "%s ago",
     "just_now": "just now",
-    "shortcuts": "Keyboard: 1-6 tabs, / search, Esc close"
+    "shortcuts": "Keyboard: 1-7 tabs, / search, Esc close"
   },
   "toast": {
     "failed": "That did not work."
@@ -353,7 +392,10 @@
     "none": "Aim at a monitor or laptop",
     "taken": "Already a computer",
     "confirm": "Make it a computer",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "none_printer": "Aim at a printer or copier",
+    "taken_printer": "Already a printer",
+    "confirm_printer": "Make it a printer"
   },
   "placement": {
     "title": "Placing %s",

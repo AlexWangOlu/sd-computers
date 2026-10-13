@@ -7,6 +7,7 @@ export interface PickerHud {
   state?: 'none' | 'ok' | 'taken'; // nothing meant, a prop that can be taken, one that is a computer already
   model?: string | null;
   label?: string | null;
+  what?: 'printer' | null; // what the prop is being picked as (a computer unless said)
 }
 
 export const usePicker = create<{ hud: PickerHud; set: (hud: PickerHud) => void }>(set => ({
@@ -27,6 +28,7 @@ export const PickHud = () => {
   const ok = hud.state === 'ok';
   const taken = hud.state === 'taken';
   const tone = ok ? 'var(--ok)' : taken ? 'var(--warn)' : 'var(--text-4)';
+  const as = hud.what === 'printer' ? '_printer' : '';
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
@@ -40,7 +42,7 @@ export const PickHud = () => {
             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: tone }} />
             <span className="min-w-0 flex items-baseline gap-2 text-[12.5px]">
               <span className="truncate" style={{ color: ok ? 'var(--text-1)' : taken ? 'var(--warn)' : 'var(--text-3)' }}>
-                {ok ? (hud.label ?? hud.model) : taken ? t('pick.taken') : t('pick.none')}
+                {ok ? (hud.label ?? hud.model) : taken ? t(`pick.taken${as}`) : t(`pick.none${as}`)}
               </span>
               {(ok || taken) && hud.model && (
                 <span className="mono text-[11.5px] truncate" style={{ color: 'var(--text-3)' }}>
@@ -56,7 +58,7 @@ export const PickHud = () => {
               <span className="flex items-center gap-1.5 font-medium" style={{ opacity: ok ? 1 : 0.45 }}>
                 <Kbd strong={ok}>Enter</Kbd>
                 <Kbd strong={ok}>LMB</Kbd>
-                {t('pick.confirm')}
+                {t(`pick.confirm${as}`)}
               </span>
             </span>
           </div>

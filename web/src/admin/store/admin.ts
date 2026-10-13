@@ -57,6 +57,15 @@ const clean = (s: Snapshot): Snapshot => ({
     max: Number(s.cameras?.max) || 200,
     list: list<Snapshot['cameras']['list'][number]>(s.cameras?.list).map(c => ({ ...c, computers: c.computers ? list<string>(c.computers) : null })),
   },
+  printers: {
+    enabled: s.printers?.enabled !== false,
+    max: Number(s.printers?.max) || 200,
+    range: Number(s.printers?.range) || 30,
+    item: String(s.printers?.item ?? 'printed_document'),
+    itemMissing: s.printers?.itemMissing === true,
+    props: list<Snapshot['printers']['props'][number]>(s.printers?.props),
+    list: list<Snapshot['printers']['list'][number]>(s.printers?.list).map(p => ({ ...p, waiting: Number(p.waiting) || 0 })),
+  },
   props: list<Snapshot['props'][number]>(s.props),
   screens: s.screens && !Array.isArray(s.screens) ? s.screens : {}, // (a map: empty, it can arrive as a list)
   auto: {

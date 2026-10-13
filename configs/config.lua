@@ -25,6 +25,7 @@ local config = {
     Bank = require 'configs.shared.bank', -- Bank: balance + statement (read-only)
     Browser = require 'configs.shared.browser', -- Browser: the sites a computer can open
     Cameras = require 'configs.shared.cameras', -- Security Cameras: where they are and who may watch them
+    Printers = require 'configs.shared.printers', -- Printers: the props a printer can be, how far one reaches, the item a printout is
     Interact = require 'configs.shared.interact', -- target label/icon/distance, typing animation, walk-away distance (server re-checks it)
     Admin = require 'configs.shared.admin', -- the /computeradmin panel: who may use it, the placement gizmo, the props a computer can be placed as
     Screens = require 'configs.shared.screens', -- the screen drawn on a computer's prop: lock face when idle, a live copy of the session when in use

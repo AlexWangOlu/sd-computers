@@ -1,0 +1,294 @@
+/* A printed page, in the hand (src/os/Paper.tsx): what using a printout opens. It belongs to no
+   desktop style, so nothing here reads the OS's variables: paper, ink and the dark it is held up
+   against. The kind of page (.is-text, .is-mail, .is-statement, .is-logs) only changes the stock. */
+
+.paper-root {
+  position: absolute;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 34px;
+  background: rgba(8, 9, 12, 0.74);
+  user-select: none;
+}
+
+/* The page scrolls inside this when it is longer than the display; the padding leaves its shadow room. */
+.paper-scroll {
+  max-width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 36px 56px 64px;
+}
+.paper-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.paper-scroll::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.28);
+  background-clip: padding-box;
+}
+
+@keyframes paperIn {
+  from {
+    opacity: 0;
+    transform: translateY(34px) rotate(-1.4deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.paper {
+  position: relative;
+  width: 760px;
+  max-width: 100%;
+  min-height: 440px;
+  margin: 0 auto;
+  padding: 56px 62px 34px;
+  border-radius: 2px;
+  background: #fbfaf5 linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 120px);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+  color: #1c1c1f;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14.5px;
+  line-height: 1.55;
+  animation: paperIn 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The line across the top: a bank, a department, a business. */
+.paper-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1c1c1f;
+}
+.paper-letterhead {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.paper-subhead {
+  min-width: 0;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-align: right;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #5c5c61;
+}
+
+.paper-title {
+  margin: 0 0 16px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.paper-fields {
+  margin: 0 0 20px;
+}
+.paper-field {
+  display: flex;
+  gap: 14px;
+  padding: 2px 0;
+}
+.paper-field dt {
+  flex: none;
+  width: 132px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  line-height: 22px;
+  text-transform: uppercase;
+  color: #6a6a70;
+}
+.paper-field dd {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  word-break: break-word;
+}
+
+.paper-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.paper-image {
+  display: block;
+  max-width: 100%;
+  max-height: 520px;
+  margin: 0 auto 18px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+}
+
+.paper-table {
+  width: 100%;
+  margin-top: 4px;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.paper-table th {
+  padding: 4px 10px 5px 0;
+  border-bottom: 1.5px solid #1c1c1f;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.paper-table td {
+  padding: 4px 10px 4px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+  vertical-align: top;
+  word-break: break-word;
+}
+.paper-table th:last-child,
+.paper-table td:last-child {
+  padding-right: 0;
+}
+
+.paper-note {
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: #55555a;
+}
+
+/* What the printer put on every page: who, from which machine, when. */
+.paper-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 30px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(0, 0, 0, 0.26);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: #74747a;
+}
+.paper-foot span:last-child {
+  flex: none;
+  text-align: right;
+}
+
+/* ── The stock each kind of page is on ───────────────────────────────────────────────────── */
+
+/* A mail message: the headers boxed off, the way a mail program prints them. */
+.paper.is-mail .paper-fields {
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.025);
+}
+
+/* A statement: figures in a column, money to the right. */
+.paper.is-statement .paper-table th:last-child,
+.paper.is-statement .paper-table td:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+.paper.is-statement .paper-table td:first-child {
+  white-space: nowrap;
+  color: #55555a;
+}
+
+/* A system log: green-bar listing paper, with the sprocket holes still on. */
+.paper.is-logs {
+  width: 900px;
+  padding: 44px 74px 30px;
+  background: repeating-linear-gradient(180deg, #f6fbf4 0, #f6fbf4 44px, #e2f1dd 44px, #e2f1dd 88px);
+  font-size: 13px;
+}
+.paper.is-logs::before,
+.paper.is-logs::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: radial-gradient(circle at 20px 22px, rgba(8, 9, 12, 0.74) 0, rgba(8, 9, 12, 0.74) 5.5px, transparent 6px) 0 0 / 40px 44px repeat-y;
+}
+.paper.is-logs::before {
+  left: 0;
+  border-right: 1px dashed rgba(0, 0, 0, 0.22);
+}
+.paper.is-logs::after {
+  right: 0;
+  border-left: 1px dashed rgba(0, 0, 0, 0.22);
+}
+.paper.is-logs .paper-letterhead,
+.paper.is-logs .paper-title {
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.paper.is-logs .paper-title {
+  font-size: 15px;
+}
+.paper.is-logs .paper-table {
+  font-size: 11.5px;
+}
+.paper.is-logs .paper-table td {
+  border-bottom-color: transparent;
+}
+/* (the time, the level, the source and the event id each keep to one line: the message is what wraps) */
+.paper.is-logs .paper-table td:not(:last-child) {
+  white-space: nowrap;
+}
+
+/* A page past its keeping time: the ink has gone. */
+.paper.is-faded {
+  min-height: 300px;
+  background: #f1ecdf;
+  color: rgba(28, 28, 31, 0.42);
+}
+
+/* ── Round the page ──────────────────────────────────────────────────────────────────────── */
+
+.paper-close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  transition: background-color 150ms ease;
+}
+.paper-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.paper-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}

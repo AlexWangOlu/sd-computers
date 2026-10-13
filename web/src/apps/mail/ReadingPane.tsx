@@ -1,4 +1,4 @@
-import { ArrowLeft, Flag, FlagOff, Forward, Mail, MailOpen, Reply, ReplyAll, Trash2, Undo2 } from 'lucide-react';
+import { ArrowLeft, Flag, FlagOff, Forward, Mail, MailOpen, Printer, Reply, ReplyAll, Trash2, Undo2 } from 'lucide-react';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
 import { Button, Empty, IconButton, InfoBar, Spinner } from '@/ui/controls';
@@ -7,6 +7,7 @@ import { binMessage, deleteForever, openMessage, restoreMessage, setRead, startC
 import type { Message } from './types';
 import { fmtFull } from './util';
 import Attachments from './Attachments';
+import { askPrint, usePrinting } from '@/os/print/PrintDialog';
 
 /** Right pane when not composing: the open message, or Outlook's "Select an item to read". */
 export default function ReadingPane({ width, onBack }: { width: number; onBack?: () => void }) {
@@ -66,6 +67,16 @@ function Toolbar({ m, width, onBack }: { m: Message; width: number; onBack?: () 
   const primary = width >= 460;
   const all = width >= 760;
   const inBin = m.folder === 'bin';
+  const printing = usePrinting();
+  const mailbox = useMail(s => s.active);
+  const print = printing && mailbox && (
+    <ToolButton
+      icon={<Printer size={16} />}
+      label={t('ui.print.print')}
+      onClick={() => askPrint('mail', { source: 'mail', title: m.subject || t('ui.mail.no_subject'), data: { email: mailbox, id: m.id } })}
+      showLabel={all}
+    />
+  );
   return (
     <div className="h-12 shrink-0 flex items-center gap-0.5 px-2 border-b border-stroke overflow-hidden">
       {onBack && (
@@ -80,6 +91,7 @@ function Toolbar({ m, width, onBack }: { m: Message; width: number; onBack?: () 
         <>
           <ToolButton icon={<Undo2 size={16} />} label={t('ui.mail.restore')} onClick={() => restoreMessage(m)} showLabel={width >= 360} />
           <ToolButton icon={<Trash2 size={16} />} label={t('ui.mail.delete_forever')} onClick={() => deleteForever(m)} showLabel={width >= 360} />
+          {print}
         </>
       ) : (
         <>
@@ -100,6 +112,7 @@ function Toolbar({ m, width, onBack }: { m: Message; width: number; onBack?: () 
             showLabel={all}
           />
           <ToolButton icon={<Trash2 size={16} />} label={t('ui.common.delete')} onClick={() => binMessage(m)} showLabel={all} />
+          {print}
         </>
       )}
     </div>

@@ -22,6 +22,8 @@ local text = require 'shared.text'
 local phone = require 'server.computers.phone'
 ---@type table Mail on the phone's accounts (server.computers.phonemail), used while linked.
 local phonemail = require 'server.computers.phonemail'
+---@type table Printing (server.computers.printing): a message can be printed.
+local printing = require 'server.computers.printing'
 
 -- Mail: shared, password-protected addresses @config.Mail.Domain (sd-phone's model: an address
 -- isn't owned by a character - whoever knows the password can sign in). Passwords are hashed with
@@ -252,7 +254,7 @@ end)
 
 ---Open a message (marks it read).
 ---@param payload { email: string, id: integer }
-register('mail:read', function(_, s, payload)
+local function readMessage(_, s, payload)
     local email = mine(s, payload.email)
     local id = math.tointeger(tonumber(payload.id))
     if not email or not id then return rpc.fail('mail.err_not_signed_in') end
@@ -260,6 +262,38 @@ register('mail:read', function(_, s, payload)
     if not r then return rpc.fail('mail.err_not_found') end
     if r.is_read ~= 1 and r.is_read ~= true then mailstore.setRead(email, id, true); r.is_read = 1 end
     return rpc.ok(shape(r))
+end
+register('mail:read', readMessage)
+
+-- A message as a printed page. It is read the way the app reads it (the phone's mail while that
+-- is linked, else the built-in one), so what prints is a message this session may open.
+---@param payload { email: string, id: integer|string }
+printing.source('mail', 'mail', function(src, s, payload)
+    local alt = phonemail.handlers['mail:read']
+    local res
+    if alt and phone.mailLinked() then res = alt(src, s, payload) else res = readMessage(src, s, payload) end
+    local m = type(res) == 'table' and res.ok and res.data or nil
+    if type(m) ~= 'table' then return nil, type(res) == 'table' and res.error or locale('mail.err_not_found') end
+
+    local from = type(m.from) == 'table' and m.from or {}
+    local to = {}
+    for _, r in ipairs(type(m.to) == 'table' and m.to or {}) do
+        to[#to + 1] = type(r) == 'table' and tostring(r.email or r.name or '') or tostring(r)
+    end
+    local sender = tostring(from.email or from.name or '')
+    if from.name and from.email and from.name ~= from.email then sender = ('%s <%s>'):format(from.name, from.email) end
+    local when = tonumber(m.ts)
+    if when and when > 1e11 then when = math.floor(when / 1000) end -- (a source that kept milliseconds)
+    return {
+        kind = 'mail', title = (type(m.subject) == 'string' and m.subject ~= '') and m.subject or locale('mail.no_subject'),
+        letterhead = locale('print.mail_head'), subhead = tostring(payload.email or ''),
+        fields = {
+            { label = locale('print.mail_from'), value = sender },
+            { label = locale('print.mail_to'), value = table.concat(to, ', ') },
+            { label = locale('print.mail_date'), value = when and os.date('%d/%m/%Y %H:%M', when) or '' },
+        },
+        body = type(m.body) == 'string' and m.body or '',
+    }
 end)
 
 ---Send from a signed-in address. A sent draft (draftId) is removed once delivered.

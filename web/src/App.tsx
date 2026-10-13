@@ -14,6 +14,8 @@ import type { IncomingPush } from './apps/messages/types';
 import { devMirror, mirrorControl, mirrorStop, type MirrorControl } from './mirror';
 import Computer from './os/Computer';
 import LibHack from './os/LibHack';
+import Paper, { type PaperPage } from './os/Paper';
+import { mockPage } from './nui/mock/print';
 
 /** computers:mail:received (built-in Mail) - also what a phone mail push is reshaped into. */
 interface MailPush {
@@ -54,8 +56,10 @@ function notifyMail(d: MailPush): void {
  *   computers:phone:seen     sd-phone: a 1:1 peer read my texts (lib/bus 'messages:seen')
  *   computers:mirror         somebody nearby is looking at this computer's screen: record for them (src/mirror)
  *   computers:lib:open       StartHack export: a standalone hack.exe window, no desktop needed
+ *   computers:paper:open     a printout was used: the page, held up over the game (src/os/Paper.tsx)
  * Browser dev (`npm run dev`): opens itself with the mock payload. URL hashes: #desktop skips
- * boot+lock, #lib opens a standalone hack, #<app> (e.g. #mail) also opens that app.
+ * boot+lock, #lib opens a standalone hack, #paper a printed page (?kind=text|mail|statement|logs|faded),
+ * #<app> (e.g. #mail) also opens that app.
  * ?style=retro / ?style=mac picks the computer's look. ?frame=x,y,w,h (fractions of the window)
  * lays it out as it sits on a prop's screen. /screen.html?mode=live in a second tab shows what this
  * one's prop would.
@@ -65,6 +69,7 @@ export default function App() {
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const [lib, setLib] = useState<HackRun | null>(null);
+  const [paper, setPaper] = useState<PaperPage | null>(null);
 
   const open = useCallback((p: OpenPayload) => {
     useOS.getState().bootWith(p);
@@ -126,6 +131,8 @@ export default function App() {
   });
 
   useNuiEvent<HackRun>('computers:lib:open', run => setLib(run));
+  useNuiEvent<PaperPage>('computers:paper:open', page => page && setPaper(page));
+  useNuiEvent('computers:paper:close', () => setPaper(null));
 
   useNuiEvent<MirrorControl>('computers:mirror', d => {
     if (d) mirrorControl(d);
@@ -148,6 +155,10 @@ export default function App() {
     const mockPayload = mockPayloadFor(style);
     // (on a prop's screen the prop is the monitor: retro leaves its own chassis off, as Lua asks it to)
     if (query.has('frame')) mockPayload.desktop.monitor = false;
+    if (hash === 'paper') {
+      setPaper(mockPage(query.get('kind')));
+      return;
+    }
     if (hash === 'lib') {
       void mockRpc<HackRun>('hack:start', { game: 'pipe', difficulty: 'easy' }).then(r => r.data && setLib({ ...r.data, title: 'Vault Door Panel' }));
       return;
@@ -167,7 +178,7 @@ export default function App() {
 
   // Tell the page holding this one (src/host) whether anything is up: it gives the frame the mouse
   // and the keyboard only then.
-  const active = visible || lib !== null;
+  const active = visible || lib !== null || paper !== null;
   useEffect(() => {
     if (window.parent !== window) window.parent.postMessage({ source: 'sd-computers-os', active }, '*');
   }, [active]);
@@ -180,6 +191,7 @@ export default function App() {
         </div>
       )}
       {lib && <LibHack run={lib} onClose={() => setLib(null)} />}
+      {paper && <Paper page={paper} onClose={() => setPaper(null)} />}
     </>
   );
 }

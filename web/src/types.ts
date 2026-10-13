@@ -92,6 +92,8 @@ export interface OpenPayload {
     monitor: boolean;
     /** the style's synthesized sounds (os/sfx.ts for modern and mac, os/retro/sounds.ts) */
     sounds: boolean;
+    /** whether anything prints (configs/shared/printers.lua > Enabled): the apps offer Print only then */
+    printing?: boolean;
   };
   settings: UserSettings;
   hacks: {

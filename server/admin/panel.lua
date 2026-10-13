@@ -18,6 +18,10 @@ local screens = require 'server.computers.screens'
 local removed = require 'server.computers.removed'
 ---@type table The security cameras (server.computers.cameras): the Cameras tab.
 local cameras = require 'server.computers.cameras'
+---@type table The printers (server.computers.printers): the Printers tab.
+local printers = require 'server.computers.printers'
+---@type table Printing (server.computers.printing): what waits in each printer's tray.
+local printing = require 'server.computers.printing'
 ---@type table Session module (server.computers.session): who sits where.
 local session = require 'server.computers.session'
 ---@type table Job roster adapter (server.computers.employees): the jobs a Business Manager can manage.
@@ -116,6 +120,7 @@ local function snapshot(source)
         props = props.list(),
         screens = screens.states(),
         cameras = cameras.snapshot(),
+        printers = printers.snapshot(printing.waiting, printing.itemReady()),
         auto = auto.snapshot(),
         styles = styles,
         jobs = employees.jobs(),
@@ -293,6 +298,43 @@ verb('teleportCamera', true, function(source, d)
     if not cam or not ped or ped == 0 then return false, locale('admin.gone') end
     SetEntityCoords(ped, cam.x, cam.y, cam.z, false, false, false, false)
     SetEntityHeading(ped, cam.yaw % 360.0)
+    return true
+end)
+
+-- ---- Printers -----------------------------------------------------------------------------
+
+-- d = { x, y, z, heading (from the gizmo), label, prop }; with world = true the spot and the prop
+-- are a prop the game already has there, picked rather than placed.
+verb('createPrinter', true, function(source, d)
+    local id, why = printers.create(d, player.getName(source))
+    return id ~= nil, why and locale(why), { printerId = id }
+end)
+
+-- d = { id, label, prop }
+verb('updatePrinter', true, function(_, d)
+    local ok, why = printers.update(tonumber(d.id), d)
+    return ok, why and locale(why)
+end)
+
+verb('movePrinter', true, function(_, d)
+    local ok, why = printers.move(tonumber(d.id), d)
+    return ok, why and locale(why)
+end)
+
+-- (what was waiting in its tray goes with it)
+verb('deletePrinter', true, function(_, d)
+    local ok, why = printers.remove(tonumber(d.id))
+    return ok, why and locale(why)
+end)
+
+-- d.id = a printer: stand in front of it.
+verb('teleportPrinter', true, function(source, d)
+    local r = printers.get(tonumber(d.id))
+    local ped = GetPlayerPed(source)
+    if not r or not ped or ped == 0 then return false, locale('admin.gone') end
+    local rad = math.rad(r.coords.w)
+    SetEntityCoords(ped, r.coords.x + math.sin(rad) * 1.2, r.coords.y - math.cos(rad) * 1.2, r.coords.z, false, false, false, false)
+    SetEntityHeading(ped, r.coords.w)
     return true
 end)
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent, type ReactNode, type RefObject } from 'react';
 import {
   ArrowLeft, ArrowRight, Copy, Eraser, Eye, FileText, Filter, FolderInput, FolderOpen, HelpCircle, ListFilter, Monitor, PanelLeft, PanelRight,
-  RotateCw, Save, Search, Settings2, Trash2, X,
+  Printer, RotateCw, Save, Search, Settings2, Trash2, X,
 } from 'lucide-react';
 import { Button, Dialog, IconButton, InfoBar, Spinner, TextInput } from '@/ui/controls';
 import { useOS } from '@/store/os';
@@ -22,6 +22,7 @@ import { ActionsPane, type ActionDef } from './ActionsPane';
 import { FolderView, Overview } from './Overview';
 import { AboutDialog, EventPropertiesDialog, FilterDialog, LogPropertiesDialog } from './Dialogs';
 import { NodeIcon } from './icons';
+import { PrintSlot, askPrint, usePrinting } from '@/os/print/PrintDialog';
 
 type DialogState =
   | { kind: 'clear' }
@@ -108,6 +109,9 @@ export default function EventViewer({ win }: AppProps) {
   const visible = useMemo(() => sortEntries(applyFilter(logs.entries, node, filter), sort), [logs.entries, node, filter, sort]);
   const selected = selId !== null ? visible.find(e => e.id === selId) ?? null : null;
   const canClearHere = logs.canClear && !!def?.clearable;
+  const printing = usePrinting();
+  /** Print the log as it is listed: the server reads it again through the filter that is on. */
+  const printLog = () => askPrint('logs', { source: 'logs', title: t('ui.print.log_title', hostname), data: { filter: { ...sf } } });
 
   // The log's unfiltered size, remembered while a filter narrows the list ("Number of events").
   const totals = useRef<Partial<Record<NodeId, { n: number; more: boolean }>>>({});
@@ -225,6 +229,7 @@ export default function EventViewer({ win }: AppProps) {
     ...(filtered ? [{ label: L('a_clear_filter'), onClick: () => setFilter(EMPTY_FILTER) }] : []),
     { label: L('a_properties'), disabled: !def, onClick: () => setDialog({ kind: 'logprops' }) },
     { label: L('a_find'), disabled: !def, onClick: openFind },
+    ...(printing && def ? [{ label: L('a_print'), onClick: printLog }] : []),
     { separator: true },
     { label: L('a_refresh'), onClick: refresh },
     { separator: true },
@@ -247,6 +252,7 @@ export default function EventViewer({ win }: AppProps) {
         ...(filtered ? [{ key: 'unfilter', label: L('a_clear_filter'), icon: <Eraser size={14} />, onClick: () => setFilter(EMPTY_FILTER) }] : []),
         { key: 'props', label: L('a_properties'), icon: <Settings2 size={14} />, onClick: () => setDialog({ kind: 'logprops' }) },
         { key: 'find', label: L('a_find'), icon: <Search size={14} />, onClick: openFind },
+        ...(printing ? [{ key: 'print', label: L('a_print'), icon: <Printer size={14} />, onClick: printLog }] : []),
         { key: 'refresh', label: L('a_refresh'), icon: <RotateCw size={14} />, onClick: refresh },
         { key: 'view', label: L('a_view'), icon: <Eye size={14} />, submenu: viewItems },
         { key: 'help', label: L('a_help'), icon: <HelpCircle size={14} />, submenu: helpItems },
@@ -410,6 +416,7 @@ export default function EventViewer({ win }: AppProps) {
 
   return (
     <div ref={rootRef} className="relative h-full w-full flex flex-col bg-win text-t1 text-[12px] select-none" onKeyDown={onRootKey}>
+      <PrintSlot app="logs" />
       <MenuBar
         menus={[
           { key: 'file', label: L('m_file'), items: fileItems },

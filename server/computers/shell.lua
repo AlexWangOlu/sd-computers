@@ -12,6 +12,8 @@ local profile = require 'server.computers.profile'
 local registry = require 'server.computers.registry'
 ---@type table The security cameras and who may watch them (server.computers.cameras).
 local cameras = require 'server.computers.cameras'
+---@type table Printing (server.computers.printing): the log can be printed.
+local printing = require 'server.computers.printing'
 
 -- The small apps' endpoints: the shell itself (app launches, personalisation), Notepad, Event
 -- Viewer, Command Prompt's system info and Security Cameras. Mail, Business Manager, hacking and
@@ -76,6 +78,28 @@ rpc.register('logs:page', 'logs', function(src, s, payload)
     page.canClear = canClear(src)
     page.computer = { hostname = s.hostname, label = s.def.label or s.def.id }
     return rpc.ok(page)
+end)
+
+-- This computer's log as a printed page: the newest entries that pass the filter the viewer has
+-- on, read again here. A page of it is what somebody walks out of the building with.
+---@param payload { filter?: table }
+printing.source('logs', 'logs', function(_, s, payload)
+    local page = logs.page(s.instance, payload.filter)
+    local rows = {}
+    for i, e in ipairs(page.entries) do
+        if i > 60 then break end
+        rows[i] = { os.date('%d/%m/%Y %H:%M:%S', tonumber(e.ts) or 0), tostring(e.level or ''), tostring(e.source or ''), tostring(e.event_id or ''), tostring(e.message or '') }
+    end
+    if #rows == 0 then return nil, locale('print.logs_empty') end
+    return {
+        kind = 'logs', title = locale('print.logs_title', s.hostname), letterhead = locale('print.logs_head'), subhead = s.def.label or s.def.id,
+        fields = {
+            { label = locale('print.logs_computer'), value = s.hostname },
+            { label = locale('print.logs_entries'), value = tostring(#rows) },
+            { label = locale('print.logs_date'), value = os.date('%d/%m/%Y %H:%M') },
+        },
+        table = { head = { locale('print.col_time'), locale('print.col_level'), locale('print.col_source'), locale('print.col_event'), locale('print.col_message') }, rows = rows },
+    }
 end)
 
 ---Clear this computer's log (writes the 1102 "log cleared" entry naming who did it).

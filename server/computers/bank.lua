@@ -10,6 +10,8 @@ local phone = require 'server.computers.phone'
 local money = require 'bridge.server.money'
 ---@type table UTF-8-safe clipping (shared.text).
 local text = require 'shared.text'
+---@type table Printing (server.computers.printing): the statement can be printed.
+local printing = require 'server.computers.printing'
 
 -- Bank. The character's own money, to look at: what is in the bank, the cash on them and their
 -- recent statement. One endpoint, and it only reads - nothing here moves money. Whose account it
@@ -194,6 +196,37 @@ rpc.register('bank:overview', 'bank', function(src, s)
         source = source,
         transactions = rows,
     })
+end)
+
+---A sum of money as a statement prints it: whole dollars with thousands separated.
+---@param n number
+---@return string
+local function dollars(n)
+    local s = tostring(math.floor(math.abs(n) + 0.5))
+    local out = s:reverse():gsub('(%d%d%d)', '%1,'):reverse():gsub('^,', '')
+    return '$' .. out
+end
+
+-- The statement as a printed page: the same rows the app shows, read again here, so the page
+-- says what the bank says and nothing the NUI could have made up.
+printing.source('statement', 'bank', function(src, s)
+    if B.Enabled == false then return nil, locale('bank.err_disabled') end
+    local rows = statement(s)
+    local lines = {}
+    for i, r in ipairs(rows) do
+        lines[i] = { os.date('%d/%m/%Y %H:%M', r.time), r.title, (r.kind == 'withdraw' and '-' or '+') .. dollars(r.amount) }
+    end
+    return {
+        kind = 'statement', title = locale('print.statement_title'), letterhead = locale('print.statement_head'),
+        subhead = locale('print.statement_sub'),
+        fields = {
+            { label = locale('print.statement_holder'), value = s.name },
+            { label = locale('print.statement_balance'), value = dollars(tonumber(money.get(src, 'bank')) or 0) },
+            { label = locale('print.statement_date'), value = os.date('%d/%m/%Y %H:%M') },
+        },
+        table = #lines > 0 and { head = { locale('print.col_date'), locale('print.col_what'), locale('print.col_amount') }, rows = lines } or nil,
+        body = #lines == 0 and locale('print.statement_empty') or nil,
+    }
 end)
 
 return {}
