@@ -57,7 +57,7 @@ export const AdminPanel = () => {
   if (!snapshot) return null;
 
   const counts: Partial<Record<Tab, number>> = {
-    computers: snapshot.computers.length,
+    computers: snapshot.computers.filter(c => !c.removed).length,
     automatic: autoCount(snapshot.auto),
     props: snapshot.props.length,
     styles: snapshot.styles.length,

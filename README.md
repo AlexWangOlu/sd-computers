@@ -329,7 +329,7 @@ The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof
 2. The placement gizmo takes over, the same one sd-bombs and sd-scooters use. The prop starts sitting on whatever you were looking at; move and turn it, **Enter** places it.
 3. It is live at once for everyone, with the same "Use Computer" option as any other computer.
 
-A placed computer can be changed (name, prop, style, jobs, Business Manager), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
+A placed computer can be changed (name, prop, style, jobs, Business Manager), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` cannot be changed there, but a location from that file can be removed from its row and restored again: the file is not touched, the computer just stops being one (nobody can open it, and its monitor goes back to its stock look) until it is restored. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
 
 ### Business Manager on a placed computer
 
@@ -495,9 +495,9 @@ The `model` computers are off until you switch them on: out of the box the monit
 
 The example coordinates (MRPD front desk, Pillbox reception) are from qbx_police and qbx_ambulancejob; check them in game. With `Debug = true`, aim at a keyboard and run `/computer_pos`: it copies a ready-made `coords = vec3(...)` line.
 
-### 3. Set your PINs and breach targets
+### 3. Set your breach targets, and PINs if you want them
 
-Both live in `configs/server/`, which never ships to clients: PINs per computer in `security.lua`, breach targets and their rewards in `targets.lua`. Change the example PIN before going live.
+Both live in `configs/server/`, which never ships to clients: breach targets and their rewards in `targets.lua`, and optional PINs per computer in `security.lua`. No computer has a PIN out of the box: a computer's `groups` already decides who can use it, and only those players are offered it.
 
 ## Configuration
 
@@ -520,7 +520,7 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/shared/cameras.lua` | **The security cameras**: where each is, the way it looks, who may watch it and from which computers; how far they turn and zoom |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
 | `configs/shared/boss.lua` | Business Manager on or off, hire radius, hiring by player ID on or off, deposit sources, withdraw target |
-| `configs/server/security.lua` | **PINs per computer** and wrong-PIN lockout |
+| `configs/server/security.lua` | Optional **PINs per computer** (none set out of the box) and wrong-PIN lockout |
 | `configs/server/targets.lua` | **Breach targets**: which computers, the minigame steps, item requirement, cooldowns, police alert, rewards (items, money, mail or your own server event) |
 | `configs/server/hacks.lua` | Anti-cheat tuning, token and proof lifetimes |
 | `configs/server/logs.lua` | Retention, who may clear logs, which events get written |

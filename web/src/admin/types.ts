@@ -20,6 +20,7 @@ export interface Computer {
   prop?: string; // placed / picked: the model it is
   models?: string[]; // model computers: the models that are it
   off?: boolean; // model computers: no prop is it right now (switched off in the Automatic tab)
+  removed?: boolean; // config locations: taken away in this panel (still in the file; it can be put back)
   x?: number;
   y?: number;
   z?: number;

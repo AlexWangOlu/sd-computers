@@ -134,6 +134,15 @@ export async function mockNui(callback: string, data: unknown): Promise<unknown>
       if (!computers.some(x => x.id === d.id)) return fail('That no longer exists');
       computers = computers.filter(x => x.id !== d.id);
       return ok();
+    case 'removeconfigcomputer':
+    case 'restoreconfigcomputer': {
+      // (one of the config's locations: taken away, or put back - it stays in the list either way)
+      const c = computers.find(x => x.key === d.key && x.source === 'config');
+      if (!c) return fail('That no longer exists');
+      const removed = callback.endsWith('removeconfigcomputer');
+      computers = computers.map(x => (x === c ? { ...c, removed, users: removed ? [] : c.users } : x));
+      return ok();
+    }
     case 'deleteallcomputers': {
       const count = computers.filter(x => x.source === 'placed' || x.source === 'world').length;
       computers = computers.filter(x => x.source !== 'placed' && x.source !== 'world');

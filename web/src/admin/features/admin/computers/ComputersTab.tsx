@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Briefcase, Crosshair, KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { Briefcase, Crosshair, KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, RotateCcw, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { Badge, ConfirmDialog, Empty, Heading, SearchInput, Status } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
 import { useAdmin } from '@/admin/store/admin';
@@ -37,8 +37,10 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
     useAdmin.getState().focusStyle(c.style);
     useAdmin.getState().setTab('styles');
   };
+  // (taken away here: it is in the list only to be put back, and reads as not there)
+  const gone = c.removed === true;
   return (
-    <div className="sc-row">
+    <div className="sc-row" style={gone ? { opacity: 0.6 } : undefined}>
       {made(c) ? (
         <span title={prop?.label ?? c.prop}>
           <PropImage prop={prop} className="rounded-[6px]" style={{ width: 38, height: 38, boxShadow: inUse ? '0 0 0 1.5px var(--ok)' : '0 0 0 1px var(--hairline-strong)' }} iconSize={16} />
@@ -57,6 +59,11 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
           </button>
           <Badge tone={made(c) ? 'accent' : 'neutral'}>{t(`computers.source_${c.source}`)}</Badge>
           {c.off && <Status>{t('computers.off')}</Status>}
+          {gone && (
+            <span title={t('computers.removed_hint')}>
+              <Status>{t('computers.removed_tag')}</Status>
+            </span>
+          )}
           {jobs.length > 0 && (
             <span className="inline-flex items-center gap-1 text-[11.5px] min-w-0" style={{ color: 'var(--text-2)' }} title={t('computers.locked_to', jobs.join(', '))}>
               <Lock size={11} className="flex-shrink-0" />
@@ -111,6 +118,25 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
             </button>
           </>
         )}
+        {/* (one of the config's locations: the file is not this panel's to change, so it is taken away and put back instead) */}
+        {edit &&
+          c.source === 'config' &&
+          (gone ? (
+            <button
+              type="button"
+              className="sc-btn sc-btn--icon"
+              title={t('computers.restore')}
+              aria-label={t('computers.restore')}
+              disabled={busy}
+              onClick={() => void act('restoreconfigcomputer', { key: c.key }, t('computers.config_restored', c.label))}
+            >
+              <RotateCcw size={14} />
+            </button>
+          ) : (
+            <button type="button" className="sc-btn sc-btn--icon sc-btn--danger" title={t('computers.remove_config')} aria-label={t('computers.remove_config')} disabled={busy} onClick={onDelete}>
+              <Trash2 size={14} />
+            </button>
+          ))}
       </div>
     </div>
   );
@@ -118,7 +144,8 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
 
 // Every computer on the server: the ones made from here - placed, or picked from the props the game
 // already has - which can be changed and taken away, and the ones configs/shared/computers.lua
-// defines, listed so the whole map is in one place.
+// defines, listed so the whole map is in one place. A location from that file can be taken away
+// here too, and put back: the file is not changed, the computer only stops being one meanwhile.
 export function ComputersTab() {
   const snapshot = useAdmin(s => s.snapshot)!;
   const busy = useAdmin(s => s.busy);
@@ -142,7 +169,7 @@ export function ComputersTab() {
 
   return (
     <div className="flex flex-col h-full min-h-0 px-6 py-5 gap-4">
-      <Heading title={t('tabs.computers')} count={all.length}>
+      <Heading title={t('tabs.computers')} count={all.filter(c => !c.removed).length}>
         {edit && placed.length > 0 && (
           <button type="button" className="sc-btn sc-btn--danger" disabled={busy} onClick={() => setWiping(true)}>
             <Trash2 size={14} />
@@ -191,7 +218,7 @@ export function ComputersTab() {
       </ScrollArea>
 
       {setup && <ComputerSetupModal computer={setup.computer} world={setup.world} onClose={() => setSetup(null)} />}
-      {deleting && (
+      {deleting && made(deleting) && (
         <ConfirmDialog
           title={t('computers.remove')}
           body={t('computers.remove_confirm', deleting.label)}
@@ -199,6 +226,18 @@ export function ComputersTab() {
           onClose={() => setDeleting(null)}
           onConfirm={async () => {
             const reply = await act('deletecomputer', { id: deleting.id }, t('computers.removed', deleting.label));
+            if (reply.success) setDeleting(null);
+          }}
+        />
+      )}
+      {deleting && deleting.source === 'config' && (
+        <ConfirmDialog
+          title={t('computers.remove_config')}
+          body={t('computers.remove_config_confirm', deleting.label)}
+          confirmLabel={t('computers.remove_config_action')}
+          onClose={() => setDeleting(null)}
+          onConfirm={async () => {
+            const reply = await act('removeconfigcomputer', { key: deleting.key }, t('computers.config_removed', deleting.label));
             if (reply.success) setDeleting(null);
           }}
         />

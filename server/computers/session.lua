@@ -22,6 +22,8 @@ local phone = require 'server.computers.phone'
 local phonemail = require 'server.computers.phonemail'
 ---@type table The security cameras (server.computers.cameras): which of them a player may watch here.
 local cameras = require 'server.computers.cameras'
+---@type table The config's computers an admin took away in the panel (server.computers.removed).
+local removed = require 'server.computers.removed'
 
 ---@type table Session module; the table returned at end of file.
 local session = {}
@@ -248,7 +250,8 @@ end
 ---@return table result { ok, data?, error? }
 function session.open(src, id, coords, styleOverride)
     local def = registry.get(id)
-    if not def then return { ok = false, error = locale('err.unknown_computer') } end
+    -- (one taken away in the admin panel is not a computer until the panel puts it back)
+    if not def or removed.is(def.id) then return { ok = false, error = locale('err.unknown_computer') } end
 
     local at = registry.isModel(def) and toVec(coords) or def.coords
     if not at then return { ok = false, error = locale('err.unknown_computer') } end

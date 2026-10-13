@@ -14,6 +14,8 @@ local placer = require 'client.admin.placer'
 local picker = require 'client.admin.picker'
 ---@type table Which props are a computer on their own right now (client.computers.auto).
 local auto = require 'client.computers.auto'
+---@type table The config's computers an admin took away in the panel (client.computers.removed).
+local removed = require 'client.computers.removed'
 ---@type table The prop models known as a computer (shared.props).
 local props = require 'shared.props'
 
@@ -35,8 +37,10 @@ local function option(def)
         canInteract = function(entity)
             -- (a prop an admin made a computer of its own is not ALSO this model computer)
             if state.isOpen() or placer.isActive() or picker.isActive() or placed.isPlaced(entity) then return false end
-            -- (a model computer is the props the admin panel has it on for, which can change at any time)
-            return def.coords ~= nil or auto.is(def, GetEntityModel(entity))
+            -- (a location is a computer until the admin panel takes it away; a model computer is the
+            -- props the panel has it on for - and either can change at any time)
+            if def.coords then return not removed.is(def.id) end
+            return auto.is(def, GetEntityModel(entity))
         end,
         onSelect = function(data)
             if def.coords then
@@ -104,6 +108,7 @@ end
 ---@param opts? { style?: string }
 exports('OpenComputer', function(id, coords, opts)
     local style = type(opts) == 'table' and opts.style or nil
+    if removed.is(id) then return false end -- (taken away in the admin panel: the server would refuse it anyway)
     for _, def in ipairs(config.Computers or {}) do
         if def.id == id then
             if def.coords then

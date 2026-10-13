@@ -14,6 +14,8 @@ local custom = require 'server.computers.custom'
 local props = require 'shared.props'
 ---@type table Screens drawn from this panel (server.computers.screens).
 local screens = require 'server.computers.screens'
+---@type table The config's computers taken away from this panel (server.computers.removed).
+local removed = require 'server.computers.removed'
 ---@type table Session module (server.computers.session): who sits where.
 local session = require 'server.computers.session'
 ---@type table Job roster adapter (server.computers.employees): the jobs a Business Manager can manage.
@@ -33,6 +35,7 @@ local A = config.Admin
 -- props that were one.
 placed.onChanged = function(key, reason) session.closeComputer(key, reason) end
 auto.onChanged = function(key) session.closeComputer(key, 'err.computer_changed') end
+removed.onChanged = function(key) session.closeComputer(key, 'err.computer_changed') end
 -- A prop added or taken away here changes what the Automatic tab can tick; one a computer is
 -- placed as cannot be taken away.
 custom.onChanged = auto.refresh
@@ -54,8 +57,8 @@ local function canEdit(source)
 end
 
 ---Everything the panel shows, in one table: every computer (placed from here, or from
----configs/shared/computers.lua - those are listed read-only), the props and the styles on offer,
----and the jobs a computer's Business Manager can be for.
+---configs/shared/computers.lua - those cannot be changed here, only taken away and put back), the
+---props and the styles on offer, and the jobs a computer's Business Manager can be for.
 ---@param source integer player server id
 ---@return table snapshot
 local function snapshot(source)
@@ -80,6 +83,7 @@ local function snapshot(source)
             row.x, row.y, row.z, row.heading = r.coords.x, r.coords.y, r.coords.z, r.coords.w
         elseif def.coords then
             row.source = 'config'
+            row.removed = removed.is(def.id) or nil -- (taken away here: still in the file, not a computer)
             row.x, row.y, row.z, row.heading = def.coords.x, def.coords.y, def.coords.z, def.rotation or 0.0
         else
             row.source = 'model'
@@ -168,6 +172,18 @@ end)
 -- Every placed computer goes; the ones in configs/shared/computers.lua belong to the config.
 verb('deleteAllComputers', true, function()
     return true, nil, { count = placed.clear() }
+end)
+
+-- d.key = a location computer's id from configs/shared/computers.lua. The file is not written to:
+-- the entry is only not a computer any more (whoever sits at it is stood up), until it is put back.
+verb('removeConfigComputer', true, function(_, d)
+    local ok, why = removed.set(d.key, true)
+    return ok, why and locale(why)
+end)
+
+verb('restoreConfigComputer', true, function(_, d)
+    local ok, why = removed.set(d.key, false)
+    return ok, why and locale(why)
 end)
 
 -- ---- Props that are a computer on their own -----------------------------------------------

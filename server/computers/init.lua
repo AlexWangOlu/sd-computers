@@ -16,6 +16,8 @@ local auto = require 'server.computers.auto'
 local custom = require 'server.computers.custom'
 ---@type table Screens drawn in the admin panel (server.computers.screens).
 local screens = require 'server.computers.screens'
+---@type table The config's computers an admin took away in the panel (server.computers.removed).
+local removed = require 'server.computers.removed'
 
 -- Boot order matters only for the schema: every table exists before the first callback can run.
 -- The feature modules register their callbacks/exports at require time.
@@ -25,6 +27,7 @@ placed.ensureSchema()
 auto.ensureSchema()
 custom.load() -- props added from the admin panel: before anything that names a prop
 screens.load() -- where the screen is on a prop, as an admin drew it in the panel
+removed.load() -- the config's computers the admin panel took away
 placed.load() -- before the first open: a placed computer is a registry entry like any other
 auto.load() -- which props in the world are a computer, as the admin panel left them
 
@@ -59,15 +62,19 @@ end)
 ---Export: every computer (id, label, location or model) - the configured ones and the ones made
 ---from the admin panel (`placed = true`, with the prop they are; `world = true` when that prop is
 ---one the game already had there) - for other resources that want to write logs to them or list them.
+---One of the config's that the admin panel took away is not listed.
 ---@return table[] { id, label, hostname, coords?, model?, placed?, prop?, world? }
 exports('GetComputers', function()
     local out = {}
     for _, def in ipairs(registry.all()) do
-        out[#out + 1] = { id = def.id, label = def.label, hostname = def.hostname, coords = def.coords, model = def.model, placed = def.placed ~= nil or nil, prop = def.prop, world = def.world }
+        if not removed.is(def.id) then
+            out[#out + 1] = { id = def.id, label = def.label, hostname = def.hostname, coords = def.coords, model = def.model, placed = def.placed ~= nil or nil, prop = def.prop, world = def.world }
+        end
     end
     return out
 end)
 
 local placedCount = 0
 for _ in pairs(placed.all()) do placedCount = placedCount + 1 end
-log.info(nil, 'ready - %d computers (%d configured, %d placed)', #registry.all(), #registry.all() - placedCount, placedCount)
+local total = #registry.all() - removed.count() -- (the ones the admin panel took away are not computers)
+log.info(nil, 'ready - %d computers (%d configured, %d placed)', total, total - placedCount, placedCount)

@@ -1730,7 +1730,15 @@
         "all_removed": "Placed computers deleted",
         "remove": "Delete computer",
         "remove_confirm": "\"%s\" is taken away, and anyone using it is signed out. Its logs are kept until they expire.",
-        "removed": "%s deleted"
+        "removed": "%s deleted",
+        "remove_config": "Remove computer",
+        "remove_config_confirm": "\"%s\" stops being a computer, and anyone using it is signed out. It comes from the config, so it stays in this list and you can restore it at any time.",
+        "remove_config_action": "Remove",
+        "config_removed": "%s removed",
+        "restore": "Restore computer",
+        "config_restored": "%s restored",
+        "removed_tag": "Removed",
+        "removed_hint": "Removed in this panel: nobody can use it until it is restored"
       },
       "auto": {
         "title": "Automatic computers",

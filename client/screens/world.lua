@@ -8,6 +8,8 @@ local state = require 'client.computers.state'
 local placed = require 'client.computers.placed'
 ---@type table Which props are a computer on their own right now (client.computers.auto).
 local auto = require 'client.computers.auto'
+---@type table The config's computers an admin took away in the panel (client.computers.removed).
+local removed = require 'client.computers.removed'
 ---@type table The camera at the screen the player is using (client.computers.view).
 local view = require 'client.computers.view'
 ---@type table Where the screen is on each prop (client.screens.quads).
@@ -133,8 +135,9 @@ local function scan()
     end
 
     -- A location computer is a zone, not a prop: its screen is the screen prop standing in it.
+    -- (One the admin panel took away has none: its prop is left to be whatever else it is.)
     for _, def in ipairs(zones) do
-        if #(def.coords - origin) <= RANGE + ZONE_RADIUS then
+        if not removed.is(def.id) and #(def.coords - origin) <= RANGE + ZONE_RADIUS then
             local best, bestDist
             for _, p in ipairs(props) do
                 local d = #(p.at - def.coords)

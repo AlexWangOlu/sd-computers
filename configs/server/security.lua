@@ -1,10 +1,12 @@
 -- Server-only sign-in security. Never shipped to clients.
 return {
-    -- Per-computer PIN, keyed by the computers.lua `id`. A computer listed here shows a PIN box
-    -- on its sign-in screen; computers not listed sign straight in with the character's name.
-    -- PINs are compared server-side only - the client never learns them.
+    -- Per-computer PIN, keyed by the computers.lua `id`. OPTIONAL, and none is set out of the box:
+    -- a computer's `groups` (its job lock) already decides who can use it, and only they are
+    -- offered it. A computer listed here ALSO shows a PIN box on its sign-in screen; computers
+    -- not listed sign straight in with the character's name. PINs are compared server-side only -
+    -- the client never learns them.
     Pins = {
-        mrpd_frontdesk = '1031',
+        -- mrpd_frontdesk = '1031',
         -- pillbox_reception = '4242',
     },
 

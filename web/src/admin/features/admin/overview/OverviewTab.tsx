@@ -44,7 +44,7 @@ export const OverviewTab = () => {
   const busy = useAdmin(s => s.busy);
   const [placing, setPlacing] = useState(false);
 
-  const all = snapshot.computers;
+  const all = snapshot.computers.filter(c => !c.removed); // (one taken away in the panel is not a computer: it counts for nothing)
   const placed = all.filter(c => c.source === 'placed' || c.source === 'world'); // (made from this panel: placed, or picked)
   const stats: { label: string; value: string; tab: Tab }[] = [
     { label: t('stats.computers'), value: String(all.length), tab: 'computers' },
