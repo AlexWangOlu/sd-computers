@@ -34,6 +34,12 @@ export interface GameMeta {
 
 /** session.open's payload (server/computers/session.lua). */
 export interface OpenPayload {
+  /**
+   * Added by client Lua when the camera is up at the prop (client/computers/view.lua): the part of
+   * the display the prop's screen covers, as fractions of it. The page holding the OS reads it
+   * (src/host); the OS itself just fills whatever window it is given.
+   */
+  view?: { x: number; y: number; w: number; h: number };
   computer: {
     id: string;
     label: string;

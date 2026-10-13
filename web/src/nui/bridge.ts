@@ -5,9 +5,22 @@ declare global {
   }
 }
 
-export const isEnvBrowser = (): boolean => typeof window.GetParentResourceName !== 'function';
+// The OS runs in a frame of the resource's NUI page (src/host). FiveM only injects
+// GetParentResourceName into the top frame, so look there too (same origin, so allowed).
+const nameFn = (): (() => string) | undefined => {
+  if (typeof window.GetParentResourceName === 'function') return window.GetParentResourceName;
+  try {
+    const up = window.parent as Window | undefined;
+    if (up && up !== window && typeof up.GetParentResourceName === 'function') return up.GetParentResourceName;
+  } catch {
+    // cross-origin parent: a plain browser tab embedding us, not the game
+  }
+  return undefined;
+};
 
-const resourceName = (): string => window.GetParentResourceName?.() ?? 'sd-computers';
+export const isEnvBrowser = (): boolean => nameFn() === undefined;
+
+const resourceName = (): string => nameFn()?.() ?? 'sd-computers';
 
 export async function fetchNui<Resp = unknown, Req = unknown>(
   callback: string,

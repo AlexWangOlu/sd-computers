@@ -38,8 +38,10 @@ files {
     'client/*.lua',
     'client/**.lua',
     'locales/*.json',
-    'web/build/index.html',
-    'web/build/admin.html', -- the /computeradmin panel: a second page the first one holds in an iframe
+    'web/build/index.html', -- the NUI page: holds the two below as frames
+    'web/build/os.html', -- the OS itself (a frame, so it can sit on a prop's screen with a window of its own)
+    'web/build/admin.html', -- the /computeradmin panel
+    'web/build/screen.html', -- what a computer's prop shows in the world: the page behind every screen (client/screens)
     'web/build/assets/*.js',
     'web/build/assets/*.css',
     'web/build/assets/*.woff2', -- bundled open-licence fonts (Inter, JetBrains Mono)

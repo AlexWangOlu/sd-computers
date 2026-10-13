@@ -1,18 +1,21 @@
----@type table sd-computers config root (configs/config.lua).
-local config = require 'configs.config'
 ---@type table Console log helper (shared.log): tagged color-coded prints.
 local log = require 'shared.log'
 ---@type table Placement gizmo (client.admin.placer).
 local placer = require 'client.admin.placer'
+---@type table Prop picker (client.admin.picker): aiming at a prop the game already has.
+local picker = require 'client.admin.picker'
 ---@type table Client computer state (client.computers.state): whether a computer is open.
 local state = require 'client.computers.state'
+---@type table Computers made from this panel (client.computers.placed): which props are one already.
+local placedProps = require 'client.computers.placed'
 
----@type table Admin config (config.Admin): the props a computer can be placed as.
-local A = config.Admin
+---@type table The prop models known as a computer (shared.props): what each is called.
+local props = require 'shared.props'
 
 -- The /computeradmin panel's client side: opens the NUI page with a snapshot, relays its actions
--- to the server, and runs the placement gizmo with the panel hidden whenever a computer is placed
--- or moved. Built the way sd-bombs builds its panel, so both behave the same.
+-- to the server, and runs the placement gizmo (or the prop picker) with the panel hidden whenever
+-- a computer is placed, moved or picked. Built the way sd-bombs builds its panel, so both behave
+-- the same.
 
 ---@type boolean Whether the panel is open. Hidden-for-placement still counts as open: focus comes
 ---back the moment the placer returns.
@@ -36,8 +39,9 @@ local function push(action, data)
     SendNUIMessage({ action = action, data = data })
 end
 
--- The gizmo draws its HUD in the admin page.
+-- The gizmo and the picker draw their HUDs in the admin page.
 placer.setHud(function(action, data) push(action, data) end)
+picker.setHud(function(action, data) push(action, data) end)
 
 ---Take focus and mount the panel with a fresh snapshot. Strings first: the panel reads them as
 ---it renders.
@@ -73,7 +77,7 @@ end
 ---Server push: open the admin panel (/computeradmin). Not while sitting at a computer: the two
 ---share the resource's one NUI page, and its focus.
 RegisterNetEvent('sd-computers:client:openAdmin', function()
-    if open or placer.isActive() then return end
+    if open or placer.isActive() or picker.isActive() then return end
     if state.isOpen() then
         lib.notify({ title = locale('admin.title'), description = locale('admin.close_computer_first'), type = 'error' })
         return
@@ -100,6 +104,12 @@ local PASS = {
     updatecomputer = 'updateComputer',
     deletecomputer = 'deleteComputer',
     deleteallcomputers = 'deleteAllComputers',
+    setauto = 'setAuto',
+    setautocomputer = 'setAutoComputer',
+    setautomodel = 'setAutoModel',
+    setautostyle = 'setAutoStyle',
+    setautomodelstyle = 'setAutoModelStyle',
+    removeprop = 'removeProp',
 }
 
 for nuiVerb, serverVerb in pairs(PASS) do
@@ -108,6 +118,19 @@ for nuiVerb, serverVerb in pairs(PASS) do
     end)
 end
 
+---NUI callback: add a prop of the server's own. Whether the game has such a model is asked here,
+---where the game is: the server has no way to know, and a prop that does not exist could never be
+---placed, picked or found in the world.
+RegisterNUICallback('computers:admin:addprop', function(data, cb)
+    local model = type(data.model) == 'string' and data.model:gsub('^%s+', ''):gsub('%s+$', ''):lower() or ''
+    local hash = joaat(model)
+    if model == '' or not model:match('^[%w_]+$') or not IsModelInCdimage(hash) or not IsModelValid(hash) or IsModelAVehicle(hash) then
+        cb({ success = false, message = locale('admin.prop_unknown', model) })
+        return
+    end
+    cb(request('addProp', { model = model, label = data.label, kind = data.kind }))
+end)
+
 ---NUI callback: teleport, then close - standing in front of the thing is the point.
 RegisterNUICallback('computers:admin:teleport', function(data, cb)
     local reply = request('teleport', data)
@@ -115,14 +138,11 @@ RegisterNUICallback('computers:admin:teleport', function(data, cb)
     if reply.success then close() end
 end)
 
----What the HUD calls a prop: its name from config.Admin.Props (the model name when it is not listed).
+---What the HUD calls a prop: its label (the model name when it has none).
 ---@param model string
 ---@return string
 local function propLabel(model)
-    for _, p in ipairs(A.Props or {}) do
-        if p.model == model then return p.label or model end
-    end
-    return model
+    return props.label(model)
 end
 
 ---Run the placer with the panel hidden, create (or move) the record from the result, and bring
@@ -159,6 +179,27 @@ RegisterNUICallback('computers:admin:placecomputer', function(data, cb)
     end)
 end)
 
+---NUI callback: make a prop the game already has a computer, set up in the panel: its name, style
+---and job lock. The admin aims at the prop with the panel hidden; nothing is spawned. Replies
+---immediately; the panel waits for computers:admin:show. The server checks all of it again.
+RegisterNUICallback('computers:admin:pickcomputer', function(data, cb)
+    cb({ ok = true })
+    hideForPlacement()
+    local spot, err = picker.start(placedProps.isPlaced)
+    local picked
+    if spot then
+        local reply = request('createComputer', {
+            world = true, prop = spot.model, x = spot.x, y = spot.y, z = spot.z, heading = spot.heading,
+            label = data.label, style = data.style, jobs = data.jobs,
+        })
+        picked = { what = 'computer', action = 'picked', success = reply.success, message = (not reply.success) and reply.message or nil }
+    else
+        picked = { what = 'computer', action = 'picked', success = false, cancelled = err == nil, message = err and locale(err) or nil }
+    end
+    log.debug('admin', 'pick: %s', picked.success and 'ok' or tostring(picked.message or 'cancelled'))
+    if open then showAfterPlacement(picked) end
+end)
+
 ---NUI callback: pick a new spot for a placed computer with the gizmo. It keeps its id - and its logs.
 RegisterNUICallback('computers:admin:movecomputer', function(data, cb)
     cb({ ok = true })
@@ -182,8 +223,8 @@ end)
 ---@type table Admin panel module; the table returned at end of file.
 local panel = {}
 
----Whether the admin panel is up (the gizmo running counts).
+---Whether the admin panel is up (the gizmo or the picker running counts).
 ---@return boolean
-function panel.isOpen() return open or placer.isActive() end
+function panel.isOpen() return open or placer.isActive() or picker.isActive() end
 
 return panel

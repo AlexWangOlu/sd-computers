@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 
 // The /computeradmin panel is its own page (admin.html, src/admin): it is built from sd-bombs'
 // admin UI, stylesheet and all, and an iframe keeps that stylesheet from ever touching the OS (and
-// the OS's from touching it). A resource only gets one NUI page, so this one hosts it: every
-// message Lua addresses to the panel is passed down, and the frame only takes the mouse while the
-// panel says it is up (it covers the whole screen).
+// the OS's from touching it). A resource only gets one NUI page, so that page (src/host) holds it
+// beside the OS: every message Lua addresses to the panel is passed down, and the frame only takes
+// the mouse while the panel says it is up (it covers the whole screen).
 
-const ADMIN_ACTION = /^computers:(admin|placer):/;
+const ADMIN_ACTION = /^computers:(admin|placer|picker):/;
 
 export function AdminFrame() {
   const frame = useRef<HTMLIFrameElement>(null);

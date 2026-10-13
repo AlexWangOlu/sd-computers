@@ -9,7 +9,8 @@ local session = require 'server.computers.session'
 
 ---Clean teardown on resource stop: end every open session so each signed-in player gets a logoff
 ---entry in their computer's System Logs (their NUI closes itself on the client side), and clear
----the published placed computers so clients drop those props at once (GlobalState outlives us).
+---the published placed computers and computers in use so clients drop those props and screens at
+---once (GlobalState outlives us).
 ---@param resource string the stopping resource name
 AddEventHandler('onResourceStop', function(resource)
     if resource ~= GetCurrentResourceName() then return end
@@ -18,4 +19,5 @@ AddEventHandler('onResourceStop', function(resource)
         if src and session.get(src) then session.close(src) end
     end
     require('server.computers.placed').unpublish()
+    require('server.computers.mirror').unpublish()
 end)

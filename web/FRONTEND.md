@@ -6,8 +6,17 @@ React 19 + Vite 6 + TypeScript + Tailwind 3 + zustand. SD OS, a desktop OS rende
 in `src/os/`; every app is a folder in `src/apps/<id>/` whose `index.tsx` default-exports the app.
 The `/computeradmin` panel is NOT part of the OS: it is a second page (`admin.html`, `src/admin/`)
 built from sd-bombs' admin UI with that project's own stylesheet (`src/admin/styles.css`, the
-`sc-*` classes) - the OS holds it in an iframe (`src/AdminFrame.tsx`) so the two never share CSS.
+`sc-*` classes), so the two never share CSS.
 Nothing below applies to it; its strings are `src/admin/strings.en.json` (-> `ui.admin`).
+
+The OS is a page too (`os.html`), and both are frames of the resource's NUI page (`index.html`,
+`src/host/`), which passes each the messages Lua sends and puts the OS where the player is looking:
+over the whole window, or - with the camera up at a computer's prop - exactly over that prop's
+screen. On a prop the frame is 900px tall in its own pixels, as wide as the screen's shape makes
+it (about 1230px on a monitor, 1500px on a laptop), and scaled to fit. Inside the frame none of
+that shows: `window.innerWidth`, `vh` and the pointer's coordinates are all the OS's own, so an app
+is written exactly as if it filled the display. It only has to cope with that window being smaller
+than a 1080p one, which the shell already clamps windows to.
 
 ## Rules for app code
 
@@ -64,6 +73,12 @@ Nothing below applies to it; its strings are `src/admin/strings.en.json` (-> `ui
   `src/nui/mock/index.ts`, `src/types.ts`, `src/apps/registry.tsx`, `src/apps/hack/*`) belong to
   the shell and every app at once. An app keeps the helpers and components it needs inside its own
   folder rather than adding to them.
+- **Seen from the room:** what an app draws is also shown, live, on the computer's prop to players
+  standing near it (`src/mirror` records the page, `src/screen` replays it). It needs nothing from
+  an app, with three things to know: a secret goes in `<input type="password">` (masked before it
+  leaves), anything that must never be seen gets the class `mirror-block`, and a `<canvas>` is not
+  part of the page's markup - its picture is sampled a few times a second, so keep one inside
+  `.os-root` and give it `width`/`height` attributes.
 - **Verify:** `npx tsc --noEmit` must come back clean. While working on one app,
   `npx tsc --noEmit 2>&1 | grep "src/apps/<yourapp>\|src/nui/mock/<yourmock>"` narrows it to yours.
 

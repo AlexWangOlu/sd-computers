@@ -8,6 +8,8 @@ local target = require 'bridge.client.target'
 local state = require 'client.computers.state'
 ---@type table Placement gizmo (client.admin.placer): nothing is used while an admin is placing.
 local placer = require 'client.admin.placer'
+---@type table Prop picker (client.admin.picker): nothing is used while an admin is picking either.
+local picker = require 'client.admin.picker'
 
 ---@type string GlobalState key the server publishes the placed computers under.
 local STATE_KEY = 'sd-computers:placed'
@@ -15,29 +17,63 @@ local STATE_KEY = 'sd-computers:placed'
 local T = (config.Interact and config.Interact.Target) or {}
 ---@type number Metres from a placed computer its prop is spawned at.
 local SPAWN_DISTANCE = (config.Admin and config.Admin.SpawnDistance) or 60.0
+---@type number Metres from where it was picked the game's prop is looked for.
+local PICK_RADIUS = 0.4
+---@type integer ms between looks for the game's props of the picked computers around.
+local PICK_INTERVAL = 1000
 
--- Computers placed from the admin panel, in the world. Each is a local prop (every client spawns
--- its own from the server's list, so nothing syncs) with the same "Use Computer" option every
--- other computer has. To the server it is a location computer: opening it sends only its id, and
--- reach is measured from the coords the server holds (server/computers/placed.lua).
+-- Computers made from the admin panel, in the world. A placed one is a local prop (every client
+-- spawns its own from the server's list, so nothing syncs); a picked one (`world`) is a prop the
+-- game has there already, found again each time it streams in. Either gets the same "Use Computer"
+-- option every other computer has. To the server it is a location computer: opening it sends only
+-- its id, and reach is measured from the coords the server holds (server/computers/placed.lua).
 
 ---@type table Placed-computer module; the table returned at end of file.
 local placed = {}
 
--- Every placed computer this client knows about, keyed by id: { rec, point, obj }.
+-- Every placed computer this client knows about, keyed by id: { rec, point, obj, near }.
 ---@type table<integer, table>
 local tracked = {}
----@type table<integer, integer> entity handle -> computer id, for the props that are spawned.
+---@type table<integer, integer> entity handle -> computer id, for the props that are standing.
 local entities = {}
 
----Whether an entity is one of our placed computers. A prop that is also a model computer in
----configs/shared/computers.lua must answer as the placed computer only (client/computers/interact.lua).
+---Whether an entity is one of our placed or picked computers. A prop that is also a model computer
+---in configs/shared/computers.lua must answer as that one only (client/computers/interact.lua).
 ---@param entity any
 ---@return boolean
 function placed.isPlaced(entity)
     return type(entity) == 'number' and entities[entity] ~= nil
 end
 
+---What a target option of ours is taken off an entity by: ox_target goes by the option's name,
+---qb-target and qtarget by its label. (Never by nothing: that takes every resource's options off,
+---and a picked prop is the game's, not only ours.)
+---@param rec table record
+---@return string
+local function optionKey(rec)
+    return target.system == 'ox_target' and ('sd_computers_' .. rec.key) or (T.label or 'Use Computer')
+end
+
+---Make a prop the computer: remember it and give it the option.
+---@param entry table tracked entry
+---@param obj integer
+local function attach(entry, obj)
+    local rec = entry.rec
+    local c = rec.coords
+    entry.obj = obj
+    entities[obj] = rec.id
+    target.addLocalEntity(obj, { {
+        name = 'sd_computers_' .. rec.key,
+        label = T.label or 'Use Computer',
+        icon = T.icon or 'fas fa-desktop',
+        distance = T.distance or 1.8,
+        groups = rec.groups, -- ox_target hides the option from everyone else (the server enforces it regardless)
+        canInteract = function() return not state.isOpen() and not placer.isActive() and not picker.isActive() end,
+        onSelect = function() state.open(rec.key, vec3(c.x, c.y, c.z), false, nil, obj) end,
+    } })
+end
+
+---Stand a placed computer's prop.
 ---@param entry table tracked entry
 local function spawn(entry)
     if entry.obj then return end
@@ -55,27 +91,39 @@ local function spawn(entry)
     SetEntityRotation(obj, 0.0, 0.0, c.w, 2, false)
     FreezeEntityPosition(obj, true)
     SetEntityInvincible(obj, true)
-    entry.obj = obj
-    entities[obj] = rec.id
-    target.addLocalEntity(obj, { {
-        name = 'sd_computers_' .. rec.key,
-        label = T.label or 'Use Computer',
-        icon = T.icon or 'fas fa-desktop',
-        distance = T.distance or 1.8,
-        groups = rec.groups, -- ox_target hides the option from everyone else (the server enforces it regardless)
-        canInteract = function() return not state.isOpen() and not placer.isActive() end,
-        onSelect = function() state.open(rec.key, vec3(c.x, c.y, c.z), false) end,
-    } })
+    attach(entry, obj)
 end
 
+---Let go of a computer's prop: a placed one is deleted, a picked one is the game's and stays.
 ---@param entry table tracked entry
 local function despawn(entry)
     local obj = entry.obj
     if not obj then return end
     entry.obj = nil
     entities[obj] = nil
-    target.removeLocalEntity(obj)
-    if DoesEntityExist(obj) then DeleteEntity(obj) end
+    target.removeLocalEntity(obj, optionKey(entry.rec))
+    if not DoesEntityExist(obj) then return end
+    if entry.rec.world then FreezeEntityPosition(obj, false) else DeleteEntity(obj) end
+end
+
+---Find a picked computer's prop: the game's own, where it was picked. The game takes its props
+---away and brings them back as the player moves about, under a new handle each time, so the one
+---held is checked (still there, still that model, still at that spot) and looked for again.
+---@param entry table tracked entry of a picked computer
+local function find(entry)
+    local rec = entry.rec
+    local c, hash = rec.coords, joaat(rec.prop)
+    local at = vec3(c.x, c.y, c.z)
+    local obj = entry.obj
+    if obj then
+        if DoesEntityExist(obj) and GetEntityModel(obj) == hash and #(GetEntityCoords(obj) - at) <= PICK_RADIUS * 2 then return end
+        despawn(entry)
+    end
+    local found = GetClosestObjectOfType(c.x, c.y, c.z, PICK_RADIUS, hash, false, false, false)
+    if found and found ~= 0 and DoesEntityExist(found) and not entities[found] then
+        FreezeEntityPosition(found, true) -- (a monitor knocked off its desk would stop being the one picked)
+        attach(entry, found)
+    end
 end
 
 ---@param a table<string, integer>|nil job lock
@@ -98,7 +146,8 @@ end
 ---@return boolean
 local function differs(a, b)
     local ca, cb = a.coords, b.coords
-    return a.prop ~= b.prop or ca.x ~= cb.x or ca.y ~= cb.y or ca.z ~= cb.z or ca.w ~= cb.w or not sameGroups(a.groups, b.groups)
+    return a.prop ~= b.prop or (a.world == true) ~= (b.world == true) or ca.x ~= cb.x or ca.y ~= cb.y or ca.z ~= cb.z or ca.w ~= cb.w
+        or not sameGroups(a.groups, b.groups)
 end
 
 ---@param id integer
@@ -117,12 +166,22 @@ local function sync(list)
     for _, rec in pairs(list or {}) do
         seen[rec.id] = true
         local old = tracked[rec.id]
-        if old and differs(old.rec, rec) then forget(rec.id) end -- (changed: stood again as it is now)
+        if old and differs(old.rec, rec) then
+            forget(rec.id) -- (changed: stood again as it is now)
+        elseif old then
+            old.rec.style = rec.style -- (a new look needs no new prop: its screen picks it up)
+        end
         if not tracked[rec.id] then
             local entry = { rec = rec }
             local point = lib.points.new({ coords = vec3(rec.coords.x, rec.coords.y, rec.coords.z), distance = SPAWN_DISTANCE })
-            function point:onEnter() spawn(entry) end
-            function point:onExit() despawn(entry) end
+            function point:onEnter()
+                entry.near = true
+                if rec.world then find(entry) else spawn(entry) end
+            end
+            function point:onExit()
+                entry.near = false
+                despawn(entry)
+            end
             entry.point = point
             tracked[rec.id] = entry
         end
@@ -134,6 +193,28 @@ end
 
 AddStateBagChangeHandler(STATE_KEY, 'global', function(_, _, value) sync(value) end)
 sync(GlobalState[STATE_KEY])
+
+-- The picked computers around: keep hold of the game's prop for each.
+CreateThread(function()
+    while true do
+        for _, entry in pairs(tracked) do
+            if entry.near and entry.rec.world then find(entry) end
+        end
+        Wait(PICK_INTERVAL)
+    end
+end)
+
+---Every placed or picked computer whose prop is standing, as (entity, record) pairs - for the
+---screens drawn on them (client/screens/world.lua).
+---@return fun(): integer?, table?
+function placed.each()
+    local id, entry
+    return function()
+        repeat id, entry = next(tracked, id) until id == nil or (entry and entry.obj)
+        if not entry then return nil end
+        return entry.obj, entry.rec
+    end
+end
 
 ---Delete every prop (resource stop).
 function placed.cleanupAll()

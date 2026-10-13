@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, Trash2 } from 'lucide-react';
+import { Crosshair, KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { Badge, ConfirmDialog, Empty, Heading, SearchInput, Status } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
 import { useAdmin } from '@/admin/store/admin';
 import { act, place } from '@/admin/nui/api';
-import { t } from '@/admin/i18n';
+import { styleLike, t } from '@/admin/i18n';
 import type { Computer, OsStyle, Prop } from '@/admin/types';
 import { ComputerSetupModal, PropIcon, PropImage } from './ComputerSetupModal';
 
@@ -13,14 +13,17 @@ type Filter = 'all' | 'placed' | 'config';
 const coords = (c: Computer) => `${(c.x ?? 0).toFixed(1)}, ${(c.y ?? 0).toFixed(1)}, ${(c.z ?? 0).toFixed(1)}`;
 const jobsOf = (c: Computer) => Object.entries(c.groups ?? {}).map(([job, grade]) => (grade > 0 ? `${job} ${grade}+` : job));
 
-// Where it is, in the row's second line: a placed computer says its id, spot and prop; a config one
-// its id and spot; a model computer the props that are it (it has no one place).
+// Made from this panel: placed, or picked (a prop the game already had there).
+const made = (c: Computer) => c.source === 'placed' || c.source === 'world';
+
+// Where it is, in the row's second line: a placed or picked computer says its id, spot and prop; a
+// config one its id and spot; a model computer the props that are it (it has no one place).
 const whereOf = (c: Computer) => {
   if (c.source === 'model') {
     const models = c.models ?? [];
     return `${c.key} · ${models.slice(0, 2).join(', ')}${models.length > 2 ? ` ${t('computers.more_models', models.length - 2)}` : ''}`;
   }
-  if (c.source === 'placed') return `#${c.id} · ${c.hostname} · ${coords(c)} · ${Math.round(c.heading ?? 0)}° · ${c.prop}`;
+  if (made(c)) return `#${c.id} · ${c.hostname} · ${coords(c)} · ${Math.round(c.heading ?? 0)}° · ${c.prop}`;
   return `${c.key} · ${c.hostname} · ${coords(c)}`;
 };
 
@@ -36,7 +39,7 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
   };
   return (
     <div className="sc-row">
-      {c.source === 'placed' ? (
+      {made(c) ? (
         <span title={prop?.label ?? c.prop}>
           <PropImage prop={prop} className="rounded-[6px]" style={{ width: 38, height: 38, boxShadow: inUse ? '0 0 0 1.5px var(--ok)' : '0 0 0 1px var(--hairline-strong)' }} iconSize={16} />
         </span>
@@ -49,10 +52,11 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
         <div className="flex items-center gap-2.5">
           <span className="text-[13px] font-medium truncate">{c.label}</span>
           {inUse && <Status tone="ok">{c.source === 'model' ? t('computers.in_use_count', c.users.length) : t('computers.in_use_by', c.users.join(', '))}</Status>}
-          <button type="button" className="inline-flex p-0 bg-transparent border-0" title={t('computers.show_style')} onClick={showStyle}>
+          <button type="button" className="inline-flex p-0 bg-transparent border-0" title={[styleLike(c.style), t('computers.show_style')].filter(Boolean).join(' · ')} onClick={showStyle}>
             <Badge>{style?.name ?? c.style}</Badge>
           </button>
-          <Badge tone={c.source === 'placed' ? 'accent' : 'neutral'}>{t(`computers.source_${c.source}`)}</Badge>
+          <Badge tone={made(c) ? 'accent' : 'neutral'}>{t(`computers.source_${c.source}`)}</Badge>
+          {c.off && <Status>{t('computers.off')}</Status>}
           {jobs.length > 0 && (
             <span className="inline-flex items-center gap-1 text-[11.5px] min-w-0" style={{ color: 'var(--text-2)' }} title={t('computers.locked_to', jobs.join(', '))}>
               <Lock size={11} className="flex-shrink-0" />
@@ -75,14 +79,22 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
             <Navigation size={14} />
           </button>
         )}
-        {edit && c.source === 'placed' && (
+        {c.source === 'model' && (
+          <button type="button" className="sc-btn sc-btn--icon" title={t('computers.auto_settings')} aria-label={t('computers.auto_settings')} onClick={() => useAdmin.getState().setTab('automatic')}>
+            <SlidersHorizontal size={14} />
+          </button>
+        )}
+        {edit && made(c) && (
           <>
             <button type="button" className="sc-btn sc-btn--icon" title={t('actions.edit')} aria-label={t('actions.edit')} disabled={busy} onClick={onEdit}>
               <Pencil size={14} />
             </button>
-            <button type="button" className="sc-btn sc-btn--icon" title={t('actions.move')} aria-label={t('actions.move')} disabled={busy} onClick={() => void place('movecomputer', { id: c.id })}>
-              <Move size={14} />
-            </button>
+            {/* (a picked prop is where the game put it) */}
+            {c.source === 'placed' && (
+              <button type="button" className="sc-btn sc-btn--icon" title={t('actions.move')} aria-label={t('actions.move')} disabled={busy} onClick={() => void place('movecomputer', { id: c.id })}>
+                <Move size={14} />
+              </button>
+            )}
             <button type="button" className="sc-btn sc-btn--icon sc-btn--danger" title={t('actions.delete')} aria-label={t('actions.delete')} disabled={busy} onClick={onDelete}>
               <Trash2 size={14} />
             </button>
@@ -93,13 +105,14 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
   );
 };
 
-// Every computer on the server: the ones placed from here (which can be changed, moved and taken
-// away), and the ones configs/shared/computers.lua defines, listed so the whole map is in one place.
+// Every computer on the server: the ones made from here - placed, or picked from the props the game
+// already has - which can be changed and taken away, and the ones configs/shared/computers.lua
+// defines, listed so the whole map is in one place.
 export function ComputersTab() {
   const snapshot = useAdmin(s => s.snapshot)!;
   const busy = useAdmin(s => s.busy);
   const edit = snapshot.canEdit;
-  const [setup, setSetup] = useState<{ computer?: Computer } | null>(null);
+  const [setup, setSetup] = useState<{ computer?: Computer; world?: boolean } | null>(null);
   const [deleting, setDeleting] = useState<Computer | null>(null);
   const [wiping, setWiping] = useState(false);
   const [search, setSearch] = useState('');
@@ -108,11 +121,11 @@ export function ComputersTab() {
   const styles = Object.fromEntries(snapshot.styles.map(s => [s.key, s]));
   const props = Object.fromEntries(snapshot.props.map(p => [p.model, p]));
   const all = snapshot.computers;
-  const placed = all.filter(c => c.source === 'placed');
+  const placed = all.filter(made);
   const query = search.trim().toLowerCase();
   const shown = all.filter(
     c =>
-      (filter === 'all' || (filter === 'placed') === (c.source === 'placed')) &&
+      (filter === 'all' || (filter === 'placed') === made(c)) &&
       `${c.label} ${c.key} ${c.hostname} ${c.prop ?? ''} ${(c.models ?? []).join(' ')} ${styles[c.style]?.name ?? c.style} ${Object.keys(c.groups ?? {}).join(' ')} ${c.users.join(' ')}`.toLowerCase().includes(query),
   );
 
@@ -123,6 +136,12 @@ export function ComputersTab() {
           <button type="button" className="sc-btn sc-btn--danger" disabled={busy} onClick={() => setWiping(true)}>
             <Trash2 size={14} />
             {t('computers.delete_placed')}
+          </button>
+        )}
+        {edit && (
+          <button type="button" className="sc-btn" disabled={busy} onClick={() => setSetup({ world: true })}>
+            <Crosshair size={14} />
+            {t('computers.pick')}
           </button>
         )}
         {edit && (
@@ -154,13 +173,13 @@ export function ComputersTab() {
         ) : (
           <div className="sc-list">
             {shown.map(c => (
-              <Row key={c.key} c={c} style={styles[c.style]} prop={c.prop ? props[c.prop] : undefined} onEdit={() => setSetup({ computer: c })} onDelete={() => setDeleting(c)} />
+              <Row key={c.key} c={c} style={styles[c.style]} prop={c.prop ? (props[c.prop] ?? { model: c.prop, label: c.prop }) : undefined} onEdit={() => setSetup({ computer: c })} onDelete={() => setDeleting(c)} />
             ))}
           </div>
         )}
       </ScrollArea>
 
-      {setup && <ComputerSetupModal computer={setup.computer} onClose={() => setSetup(null)} />}
+      {setup && <ComputerSetupModal computer={setup.computer} world={setup.world} onClose={() => setSetup(null)} />}
       {deleting && (
         <ConfirmDialog
           title={t('computers.remove')}

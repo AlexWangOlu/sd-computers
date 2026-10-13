@@ -12,9 +12,9 @@ import { t } from './i18n';
 import { messagePreview } from './apps/messages/format';
 import type { IncomingPush } from './apps/messages/types';
 import { sfx } from './os/sfx';
+import { devMirror, mirrorControl, mirrorStop, type MirrorControl } from './mirror';
 import Computer from './os/Computer';
 import LibHack from './os/LibHack';
-import { AdminFrame } from './AdminFrame';
 
 /** computers:mail:received (built-in Mail) - also what a phone mail push is reshaped into. */
 interface MailPush {
@@ -47,17 +47,21 @@ function notifyMail(d: MailPush): void {
 }
 
 /**
- * NUI root. Messages from client Lua:
+ * The OS page (os.html), a frame of the resource's NUI page (src/host), which passes these on.
+ * Messages from client Lua:
  *   computers:open           boot the OS with session.open's payload
  *   computers:close          fade out and tear down
  *   computers:mail:received  toast + tell the Mail app (lib/bus 'mail:received')
  *   computers:phone:mail     sd-phone pushed a phone mail (only used while Mail runs on the phone)
  *   computers:phone:message  sd-phone pushed a text (only used when the Messages app is installed)
  *   computers:phone:seen     sd-phone: a 1:1 peer read my texts (lib/bus 'messages:seen')
+ *   computers:mirror         somebody nearby is looking at this computer's screen: record for them (src/mirror)
  *   computers:lib:open       StartHack export: a standalone hack.exe window, no desktop needed
  * Browser dev (`npm run dev`): opens itself with the mock payload. URL hashes: #desktop skips
  * boot+lock, #lib opens a standalone hack, #<app> (e.g. #mail) also opens that app.
- * ?style=retro / ?style=mac picks the computer's look.
+ * ?style=retro / ?style=mac picks the computer's look. ?frame=x,y,w,h (fractions of the window)
+ * lays it out as it sits on a prop's screen. /screen.html?mode=live in a second tab shows what this
+ * one's prop would.
  */
 export default function App() {
   useI18n();
@@ -72,6 +76,7 @@ export default function App() {
   }, []);
 
   const close = useCallback(() => {
+    mirrorStop();
     setClosing(true);
     window.setTimeout(() => {
       setVisible(false);
@@ -126,6 +131,10 @@ export default function App() {
 
   useNuiEvent<HackRun>('computers:lib:open', run => setLib(run));
 
+  useNuiEvent<MirrorControl>('computers:mirror', d => {
+    if (d) mirrorControl(d);
+  });
+
   useEffect(() => {
     void fetchNui<{ strings: Record<string, unknown> }>('computers:ui:locale').then(r => {
       if (r?.strings) setLocale(r.strings);
@@ -135,10 +144,14 @@ export default function App() {
   // Browser dev entry points.
   useEffect(() => {
     if (!isEnvBrowser()) return;
+    devMirror();
     const hash = window.location.hash.replace('#', '');
-    const wanted = new URLSearchParams(window.location.search).get('style');
+    const query = new URLSearchParams(window.location.search);
+    const wanted = query.get('style');
     const style: OsStyle = wanted === 'retro' || wanted === 'mac' ? wanted : 'modern';
     const mockPayload = mockPayloadFor(style);
+    // (on a prop's screen the prop is the monitor: retro leaves its own chassis off, as Lua asks it to)
+    if (query.has('frame')) mockPayload.desktop.monitor = false;
     if (hash === 'lib') {
       void mockRpc<HackRun>('hack:start', { game: 'pipe', difficulty: 'easy' }).then(r => r.data && setLib({ ...r.data, title: 'Vault Door Panel' }));
       return;
@@ -156,6 +169,13 @@ export default function App() {
     });
   }, [open]);
 
+  // Tell the page holding this one (src/host) whether anything is up: it gives the frame the mouse
+  // and the keyboard only then.
+  const active = visible || lib !== null;
+  useEffect(() => {
+    if (window.parent !== window) window.parent.postMessage({ source: 'sd-computers-os', active }, '*');
+  }, [active]);
+
   return (
     <>
       {visible && (
@@ -164,9 +184,6 @@ export default function App() {
         </div>
       )}
       {lib && <LibHack run={lib} onClose={() => setLib(null)} />}
-      {/* The /computeradmin panel: its own page, always mounted in the game so Lua can open it at
-          any time. In a browser it is a tab of its own (/admin.html), not a frame over the OS. */}
-      {!isEnvBrowser() && <AdminFrame />}
     </>
   );
 }

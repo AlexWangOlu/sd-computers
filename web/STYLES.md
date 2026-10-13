@@ -18,6 +18,12 @@ style's `payload.desktop.osName` (e.g. "SD Desktop", "SD OS Harbor") and bundled
 `@fontsource/pixelify-sans` are installed). Generic UI conventions (grey bevels, a top menu bar,
 a dock, coloured window buttons) are fine - those are styles, not brands.
 
+One exception, and only in the `/computeradmin` panel: beside a style's name the panel says what
+the look resembles ("Windows-inspired", "macOS-inspired" - `styles.like.<style>` in
+`src/admin/strings.en.json`), so an admin who has never heard of "SD OS Pro" knows what they are
+picking. That is a description for whoever sets the server up. It is never shown to players and
+never part of the OS itself.
+
 ## 1. What a style exports - `src/os/<style>/index.ts`
 
 ```ts
@@ -38,6 +44,13 @@ export default kit;
 - `WelcomeScreen({ onDone })` / `ShutdownScreen({ onDone })` - short transitions, then `onDone()`
   (ShutdownScreen's onDone closes the NUI).
 - `Desktop` - the signed-in desktop, see below.
+- A `Frame` that draws a chassis draws it only while `payload.desktop.monitor` is true. With the
+  camera up at a computer's prop the OS sits inside the prop's own screen and Lua sets it false:
+  the prop is the monitor, and the style fills its window edge to edge. The chassis is for the
+  fullscreen case. It marks the element that is the actual screen with `data-mirror-viewport`
+  (retro's `.rt-screen`): the prop in the world shows that part only, not a picture of the monitor
+  around it (`src/screen/live.ts`). A style's lock face for an idle prop is
+  in `src/screen/Idle.tsx`; keep it on the centre line, narrow screens show the middle of it.
 
 ## 2. Desktop responsibilities
 

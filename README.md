@@ -10,6 +10,8 @@ sd-computers puts a working desktop on any computer in your city. Players walk u
 
 Every computer opens in one of three original desktop styles, picked per computer. Admins place new computers in game with `/computeradmin`, without touching a config file.
 
+The screen on the prop is real too. Sit down at a computer and the camera goes up to it: the desktop is inside the prop's own bezel, with the room still there around it. A computer nobody is using shows its lock screen, and one somebody is using shows what they are doing, live, to anyone standing nearby.
+
 [![Stars](https://img.shields.io/github/stars/Samuels-Development/sd-computers?label=Stars&logo=github)](https://github.com/Samuels-Development/sd-computers)
 [![Discord](https://img.shields.io/discord/842045164951437383?label=Discord&logo=discord&logoColor=white)](https://discord.gg/FzPehMQaBQ)
 [![Documentation](https://img.shields.io/badge/Docs-docs.samueldev.shop-94DD0C)](https://docs.samueldev.shop)
@@ -214,7 +216,7 @@ Every computer on the server in one list, and the tool that places new ones.
 
 ### Props
 
-The thirteen props a computer can be placed as out of the box. Add any streamed prop in `configs/shared/admin.lua`.
+Thirteen of the thirty-one props a computer can be placed as out of the box. Add any streamed prop in `configs/shared/admin.lua`, or from the panel itself.
 
 <p align="center"><a href="docs/previews/props.webp"><img src="docs/previews/props.webp" alt="The thirteen placeable computer props" width="960" /></a></p>
 
@@ -257,6 +259,33 @@ exports['sd-computers']:OpenComputer(id, coords, { style = 'mac' })
 
 Each style has its own OS name, wallpapers and accent palette (`Desktop.Styles`), and every character's wallpaper, accent and light or dark choice is saved **per style**. All three are original designs: no real OS logos, names, wallpapers or fonts.
 
+## At the screen
+
+Using a computer does not cover the game with a desktop. The camera moves up to the prop, square on to its screen, and the desktop sits exactly inside it: the monitor's bezel or the laptop's lid is the frame, and the room is still there around it. Mouse and keyboard work as they always did.
+
+- The desktop keeps its own resolution and takes the shape of the screen it is on, so it is the same desktop on a 720p display and a 4K one, on a square monitor and a wide laptop.
+- Retro leaves its drawn CRT off there: the prop is the monitor.
+- A computer with no screen to go to opens fullscreen, as before: a tower PC, a zone with no monitor standing in it, a laptop opened from a script with no prop (`OpenComputer` without coords).
+- `configs/shared/interact.lua`: `View = 'screen'` (default) or `'fullscreen'` for every computer, and `Camera` for the framing (`Fill`, how much of the window the screen takes), the field of view and how long the camera takes to travel.
+
+## Screens in the world
+
+A computer's prop shows its screen to everyone around it (`configs/shared/screens.lua`, on by default):
+
+| The computer is | Its screen shows |
+|---|---|
+| Not in use | The lock face of its style: wallpaper and clock |
+| In use | A live copy of the session: the windows that are open, what is being typed, the pointer, the hacking minigames |
+
+Walk past a desk and you can see that someone is in Command Prompt, read the mail they have open, or watch a breach in progress. PIN and password fields are always masked, and the `/computeradmin` panel is never part of the picture.
+
+- **Which props:** the monitors and laptops in `Screens.Models`. Tower PCs have no screen and are left alone. A location computer (a box zone) shows on the screen prop standing inside its zone, when there is one.
+- **Your own props:** add an entry to `Screens.Models` with where the screen is on the model: its `centre`, its `size`, and for a lid or a stand its `tilt`. A model that is not listed gets no screen.
+- **What it costs:** each screen is a small browser drawn on the prop. Every idle screen of a style shares one, so an office full of monitors is three at most. A computer in use gets one of its own, for the nearest `MaxLive` (3). The player at the computer only records while somebody is actually watching, and what travels is the page's changes, not video: a few KB when a window opens, next to nothing while they read.
+- **Switches:** `Enabled = false` turns screens off entirely. `Idle = 'off'` leaves unused props alone and lights only the ones in use. `Mirror.Enabled = false` keeps a computer in use on its lock face, so nothing of a session ever leaves the player's game.
+
+There is no sound, and the copy runs a fraction of a second behind.
+
 ## Hacking
 
 Command Prompt is the way into the minigames:
@@ -293,12 +322,31 @@ The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof
 
 A placed computer can be changed (name, prop, style, jobs), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
 
+### Props the game already has
+
+**Pick existing prop** makes a computer of a monitor, tower or laptop that is already in the world, instead of standing a new one: set its name, style and jobs, then aim at the prop (it is boxed while you look at it) and press **Enter** or click. Nothing is spawned. The prop becomes a computer of its own, like a placed one, and stops being the automatic computer its model would otherwise make it. It keeps its prop and its spot; delete it to give the prop back. Any model in `Props` or in a `model` list of `computers.lua` can be picked.
+
+The **Automatic** tab is the `model` computers of `computers.lua`, the ones that make every prop of a model a computer wherever the game has one:
+
+- one switch for all of them: off, and no prop in the world is a computer unless you placed or picked it;
+- one switch for each model computer;
+- a tick for every prop, so "monitors yes, towers no" is two clicks. A prop from `Props` that no `model` list names shows as an extra one any of them can take on;
+- a style for each model computer, and one of its own for any prop of it: the CRT can open in the retro desktop while every other monitor stays modern. The lock face on the prop follows.
+
+What the panel changes is kept in the database (`computers_settings`) and wins over the file; a prop nobody touched still follows the file, and a prop left on "Same as computer" follows its computer's style. The switches decide which props offer a computer and show a screen. They are not a lock: an entry that is switched off still opens for a script through `OpenComputer`, so use `groups` to keep people out of one.
+
 Permissions are aces, like sd-bombs: `Group` (default `group.admin`) gets the command and the edit ace `sd_computers.edit`; an optional `ViewGroup` can open the panel but not change anything. To let another principal edit:
 
 ```cfg
 add_ace group.mod command.computeradmin allow
 add_ace group.mod sd_computers.edit allow
 ```
+
+### Your own props
+
+The **Props** tab is the catalogue of every prop a computer can be, each with where it is in use. **Add prop** there (also the last tile of the prop grid when placing) adds a prop model to the list without editing a file: its model name, what to call it and whether it is a monitor, a tower or a laptop. The game is asked whether the model exists before it is kept, so a streamed prop works as long as it is running. From then on a computer can be placed as it, one can be picked from the world, and the Automatic tab offers it to every model computer as an extra. Props added this way are kept in the database and can be removed from their tile in the Props tab (not while a computer is placed as one).
+
+A prop only has a screen drawn on it, and the camera going up to it, when `configs/shared/screens.lua` has a rectangle for its model. Without one it is still a computer; it opens fullscreen. The file has a rectangle for every prop on the list, and for a number of props that are the same shape as one of them with something else on screen (other DLC laptops, the seven control room monitors), so adding one of those from the panel gets its screen at once.
 
 ## sd-phone link (optional)
 
@@ -337,7 +385,7 @@ exports['sd-computers']:SendMail({ to = 'jessica.hale@lsmail.com', subject = 'Sh
 exports['sd-computers']:MailAddressExists('jessica.hale@lsmail.com')
 exports['sd-computers']:GetMailAddresses(citizenid) -- addresses a character is signed into
 
-exports['sd-computers']:GetComputers() -- { id, label, hostname, coords?, model?, placed?, prop? }[] (placed = from the admin panel)
+exports['sd-computers']:GetComputers() -- { id, label, hostname, coords?, model?, placed?, prop?, world? }[] (placed = from the admin panel; world = a prop the game already had, picked)
 ```
 
 Fired after every successful breach, with `info = { target, computer, instance }` (each target can also name its own event):
@@ -388,7 +436,7 @@ ensure oxmysql
 ensure sd-computers
 ```
 
-Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`.
+Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_settings`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`.
 
 The UI ships pre-built in `web/build`, so a plain download or clone runs as is.
 
@@ -397,7 +445,7 @@ The UI ships pre-built in `web/build`, so a plain download or clone runs as is.
 Computers come from two places, and you can use both:
 
 - `configs/shared/computers.lua`: each entry is a location (`coords` / `size` / `rotation`) or a `model` (every prop of that model in the world).
-- `/computeradmin` in game: place one on any desk and it is live at once.
+- `/computeradmin` in game: place one on any desk, or pick a monitor the game already has, and it is live at once. The same panel switches the `model` computers on and off, prop by prop.
 
 The example coordinates (MRPD front desk, Pillbox reception) are from qbx_police and qbx_ambulancejob; check them in game. With `Debug = true`, aim at a keyboard and run `/computer_pos`: it copies a ready-made `coords = vec3(...)` line.
 
@@ -414,8 +462,9 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/config.lua` | Locale, Debug, bridge debug prints |
 | `configs/shared/computers.lua` | **The computers.** Each is a location (`coords`/`size`/`rotation`) or a `model` (every prop of that model). Optional `groups` lock, `boss` (a job name, or `true` = the signed-in player's own job), `style`, `apps` list |
 | `configs/shared/desktop.lua` | Default style, app list and window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name and build, wallpapers, accent colours, default theme, retro's CRT monitor and sounds toggles |
-| `configs/shared/interact.lua` | Target label, icon and distance, typing animation, walk-away distance, debug `/computer_pos` |
-| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, and the props a computer can be placed as |
+| `configs/shared/interact.lua` | Target label, icon and distance, walk-away distance, **how the desktop is shown** (the camera up at the prop's screen, or fullscreen) and that camera's framing, typing animation, debug `/computer_pos` |
+| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, and the props a computer can be placed as (or picked from the world as) |
+| `configs/shared/screens.lua` | **The screens on the props**: on or off, draw distance, how many are drawn and mirrored at once, texture size, what an idle computer shows, the live copy (on or off, minigame frame rate, watchers per session), and where the screen is on each prop model |
 | `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
 | `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, Messages and Notes apps, RequirePhone |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
@@ -443,6 +492,7 @@ Start > Power > Shut down stands you up too, with the shutdown screen. Walking a
 - PINs and breach rewards live only in `configs/server/`. The client never sees them.
 - Location computers are distance-checked against their config coords. Model (prop) computers can't be: world props aren't networked, so the prop's position comes from the client. That's fine for public PCs, but put valuable breach targets on location computers.
 - A hack win is never trusted: the server mints the run (and, for maze, pipe, typing and signal, generates the puzzle), requires every milestone in order at human pace, refuses anything faster than the difficulty's minimum play time, and only then pays out. These are sd-deaddrop's `proof.lua` / `challenge.lua`.
+- A screen's live copy is relayed by the server, which only passes on what comes from the player holding that computer's session, within size and rate caps, and only to players it has itself measured as standing near the computer (and keeps measuring). On the watching side the copy is rebuilt in a sandboxed frame that cannot run script, and that loads nothing from outside the resource except from the hosts your own wallpaper images come from (`Desktop.Styles`), so a modified client cannot use it to run code on, or pull addresses from, the players around it. Password fields are masked before the recording leaves the player's game.
 
 ## Building from source
 
@@ -454,4 +504,4 @@ npm install
 npm run build
 ```
 
-`npm run dev` opens the whole OS in a browser with mock data (dev PIN `1031`). Hashes: `#desktop` skips the lock screen, `#mail` / `#boss` / `#logs` / `#cmd` and so on open an app, `#lib` shows a standalone StartHack window, and `?style=retro` or `?style=mac` switches the look. The admin panel is a page of its own: `http://localhost:<port>/admin.html` shows it with mock computers (placing "runs the gizmo" by hiding the panel for a moment). App contracts and UI conventions are in `web/FRONTEND.md`.
+`npm run dev` opens the whole OS in a browser with mock data (dev PIN `1031`). Hashes: `#desktop` skips the lock screen, `#mail` / `#boss` / `#logs` / `#cmd` and so on open an app, `#lib` shows a standalone StartHack window, and `?style=retro` or `?style=mac` switches the look. `?frame=0.2,0.1,0.6,0.78` (left, top, width, height as fractions of the window) lays the desktop out as it sits on a prop's screen. The admin panel is a page of its own: `http://localhost:<port>/admin.html` shows it with mock computers (placing "runs the gizmo" by hiding the panel for a moment). So is a prop's screen: `/screen.html?mode=idle&style=retro` is a lock face, and `/screen.html?mode=live` in a second tab shows a live copy of the OS running in the first. App contracts and UI conventions are in `web/FRONTEND.md`.

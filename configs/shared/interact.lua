@@ -10,6 +10,23 @@ return {
     -- server re-checks the same distance (+ a little slack) on every action.
     MaxDistance = 2.5,
 
+    -- How the desktop is shown while a computer is in use:
+    --   'screen'     - the camera goes up to the prop and the desktop sits inside its screen, framed
+    --                  by the prop's own bezel, with the room still there around it
+    --   'fullscreen' - the desktop covers the whole game window
+    -- A computer with no screen to go to is fullscreen either way: a tower PC, a zone with no
+    -- monitor standing in it, a laptop opened from a script with no prop. Which props have a screen,
+    -- and where on them it is, is configs/shared/screens.lua (Models).
+    View = 'screen',
+
+    -- The camera of the 'screen' view.
+    Camera = {
+        Fill = 0.76, -- how much of the window's height the prop's screen takes (0.3-0.95): the rest is bezel and room
+        Fov = 40.0, -- field of view, degrees: the wider it is, the more of the room is in the picture
+        Ease = 600, -- ms the camera takes to get to the screen, and back
+        HideRadar = true, -- put the minimap away while at the screen
+    },
+
     -- Typing animation while the computer is open (flag 49 = upper body, so the player can still
     -- turn). false = no animation.
     Anim = {

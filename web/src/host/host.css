@@ -1,0 +1,32 @@
+/* The resource's NUI page (src/host): nothing of its own to show, only the frames it places. */
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: transparent;
+  overflow: hidden;
+}
+
+/* The OS (os.html). Fullscreen, or laid over the prop's screen: sized to the desktop's own
+   resolution and scaled to the rectangle from its top-left corner (see Host.tsx). */
+.host-os {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  background: transparent;
+  color-scheme: normal;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.host-os.is-active {
+  pointer-events: auto;
+}

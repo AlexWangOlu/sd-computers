@@ -4,6 +4,8 @@
   "tabs": {
     "overview": "Overview",
     "computers": "Computers",
+    "automatic": "Automatic",
+    "props": "Props",
     "styles": "Styles"
   },
   "stats": {
@@ -13,7 +15,7 @@
     "in_use": "In use now",
     "locked": "Locked to jobs",
     "pin": "PIN protected",
-    "props": "Props on offer",
+    "props": "Props",
     "styles": "Styles"
   },
   "overview": {
@@ -34,9 +36,17 @@
   "computers": {
     "place": "Place computer",
     "place_world": "Place in the world",
+    "pick": "Pick existing prop",
+    "pick_title": "Make an existing prop a computer",
+    "pick_world": "Pick it in the world",
+    "pick_next": "You pick the prop next",
+    "pick_hint": "Aim at any monitor, tower or laptop the game already has in the world and press Enter. Nothing is spawned: the prop standing there becomes this computer.",
+    "picked_prop": "The prop it is",
+    "picked_hint": "A prop the game already has in the world, so it cannot be swapped or moved. Delete this computer to give the prop back.",
     "edit": "Change computer",
     "prop": "Prop",
     "prop_preview": "What it looks like",
+    "add_prop": "Add your own",
     "style": "Style",
     "style_default": "Default",
     "style_default_hint": "No style of its own: it opens in the server's default, currently %s.",
@@ -62,22 +72,76 @@
     "none_placed": "Nothing placed from the panel yet.",
     "no_results": "Nothing matches that.",
     "source_placed": "Placed",
+    "source_world": "Picked",
     "source_config": "Config",
     "source_model": "Every prop",
     "more_models": "+%s more",
     "in_use_by": "In use: %s",
     "in_use_count": "%s in use",
     "idle": "Nobody is using it",
+    "off": "Off",
+    "auto_settings": "Choose its props",
     "show_style": "Show this style",
     "locked_to": "Only for: %s",
     "has_pin": "Asks for a PIN",
     "delete_placed": "Delete placed",
     "delete_placed_title": "Delete every placed computer?",
-    "delete_placed_body": "All %s computers placed from this panel go, and anyone using one is signed out. The computers in the config stay.",
+    "delete_placed_body": "All %s computers placed or picked from this panel go, and anyone using one is signed out. The computers in the config stay.",
     "all_removed": "Placed computers deleted",
     "remove": "Delete computer",
     "remove_confirm": "\"%s\" is taken away, and anyone using it is signed out. Its logs are kept until they expire.",
     "removed": "%s deleted"
+  },
+  "auto": {
+    "title": "Automatic computers",
+    "master": "Props in the world are computers",
+    "master_hint": "The monitors, towers and laptops the game already has work as a computer wherever one stands, without being placed. Switch this off and only the computers you place or pick remain.",
+    "props_on": "%s of %s props",
+    "taken": "Used by %s",
+    "spare": "Extra",
+    "spare_hint": "Not listed for this computer in configs/shared/computers.lua: tick it to add it",
+    "computer_hint": "Every prop ticked here is \"%s\" wherever the game has one.",
+    "empty": "No computer in configs/shared/computers.lua is a prop model.",
+    "toast_on": "Props in the world are computers",
+    "toast_off": "Props in the world are no longer computers",
+    "toast_computer_on": "%s switched on",
+    "toast_computer_off": "%s switched off",
+    "toast_prop_on": "%s: on",
+    "toast_prop_off": "%s: off",
+    "style_default": "As configured (%s)",
+    "style_follow": "Same as computer",
+    "style_computer": "Style of %s",
+    "style_prop": "Style of %s",
+    "toast_style": "%s: %s"
+  },
+  "props": {
+    "add": "Add prop",
+    "add_title": "Add a prop",
+    "hint": "Add any prop model the game has, streamed ones included. A computer can then be placed as it, one can be picked from the world, and the Automatic tab offers it to every automatic computer.",
+    "tab_hint": "Every prop a computer can be: placed as, picked from the world as, or ticked in the Automatic tab. The ones from configs/shared/admin.lua are changed in that file; the ones added here can be removed here.",
+    "model": "Model name",
+    "taken": "That prop is already on the list.",
+    "label": "Name",
+    "label_placeholder": "Office monitor",
+    "kind": "Kind",
+    "kind_monitor": "Monitor",
+    "kind_tower": "Tower",
+    "kind_laptop": "Laptop",
+    "screen_hint": "It only shows a screen in the world when configs/shared/screens.lua has that model measured. Without that it is still a computer, opening fullscreen.",
+    "search": "Search by name or model",
+    "filter_all": "All",
+    "filter_monitor": "Monitors",
+    "filter_tower": "Towers",
+    "filter_laptop": "Laptops",
+    "filter_custom": "Added here",
+    "custom": "Added",
+    "auto": "Automatic: %s",
+    "placed": "%s placed",
+    "unused": "Not in use",
+    "none": "No props added yet.",
+    "remove": "Remove",
+    "added": "%s added",
+    "removed": "%s removed"
   },
   "styles": {
     "place_this": "Place one in this style",
@@ -89,6 +153,11 @@
     "theme_light": "Light",
     "wallpapers": "Wallpapers",
     "wallpaper_list": "Included",
+    "like": {
+      "modern": "Windows-inspired",
+      "mac": "macOS-inspired",
+      "retro": "Retro Windows-inspired"
+    },
     "about": {
       "modern": "A current desktop: centred taskbar, Start menu, rounded translucent windows.",
       "retro": "A 1991 shell inside a CRT monitor: grey bevelled windows, a DOS boot, period sounds.",
@@ -98,7 +167,8 @@
   },
   "placed": {
     "computer_placed": "Computer placed",
-    "computer_moved": "Computer moved"
+    "computer_moved": "Computer moved",
+    "computer_picked": "Prop is now a computer"
   },
   "actions": {
     "teleport": "Teleport",
@@ -116,10 +186,17 @@
     "view_only_hint": "You can look around, but changes need the edit permission.",
     "ago": "%s ago",
     "just_now": "just now",
-    "shortcuts": "Keyboard: 1-3 tabs, / search, Esc close"
+    "shortcuts": "Keyboard: 1-5 tabs, / search, Esc close"
   },
   "toast": {
     "failed": "That did not work."
+  },
+  "pick": {
+    "title": "Pick a prop",
+    "none": "Aim at a monitor, tower or laptop",
+    "taken": "Already a computer",
+    "confirm": "Make it a computer",
+    "cancel": "Cancel"
   },
   "placement": {
     "title": "Placing %s",

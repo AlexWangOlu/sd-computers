@@ -4,18 +4,25 @@ local config = require 'configs.config'
 local log = require 'shared.log'
 ---@type table Computer definitions (server.computers.registry).
 local registry = require 'server.computers.registry'
+---@type table The prop models known as a computer (shared.props): what a world prop may be picked as.
+local props = require 'shared.props'
 
 ---@type table Admin config (config.Admin): the props a computer can be placed as, label length.
 local A = config.Admin or {}
 ---@type string GlobalState key the placed computers are published under (clients spawn their props from it).
 local STATE_KEY = 'sd-computers:placed'
+---@type number Metres within which a picked prop is the one already picked.
+local SAME_PROP = 0.3
 
--- Computers placed from the admin panel (/computeradmin): a prop, an OS style and an optional job
--- lock at a spot an admin picked with the placement gizmo. They are kept in the database beside
--- everything else the resource stores, and registered with the registry as LOCATION computers - so
--- opening one goes through exactly the checks a computers.lua entry does: reach is measured from
--- the computer's own coords (never the client's), the job lock is enforced, one user at a time.
--- The prop itself is local to each client (client/computers/placed.lua), so nothing syncs.
+-- Computers made from the admin panel (/computeradmin): a prop, an OS style and an optional job
+-- lock at a spot an admin picked. Two kinds, kept in one table: PLACED ones, whose prop is put
+-- there with the placement gizmo, and PICKED ones (`world`), which are a prop the game already has
+-- in the world - nothing is spawned for those, the prop standing there is the computer. They are
+-- kept in the database beside everything else the resource stores, and registered with the
+-- registry as LOCATION computers - so opening one goes through exactly the checks a computers.lua
+-- entry does: reach is measured from the computer's own coords (never the client's), the job lock
+-- is enforced, one user at a time. The prop itself is local to each client
+-- (client/computers/placed.lua), so nothing syncs.
 
 ---@type table Placed-computer module; the table returned at end of file.
 local placed = {}
@@ -25,7 +32,8 @@ local placed = {}
 ---@field key string registry id ('placed_<id>'): keys its System Logs like any computer id
 ---@field label string
 ---@field hostname string
----@field prop string model name (one of config.Admin.Props)
+---@field prop string model name (one of config.Admin.Props; a picked one may be any model known as a computer)
+---@field world boolean picked: a prop the game has there already, rather than one stood there
 ---@field style string|nil Desktop.Styles key; nil = Desktop.DefaultStyle
 ---@field coords { x: number, y: number, z: number, w: number } the prop's origin and heading
 ---@field groups table<string, integer>|nil job lock, ox_target style
@@ -47,24 +55,38 @@ function placed.ensureSchema()
             y          DOUBLE       NOT NULL,
             z          DOUBLE       NOT NULL,
             heading    FLOAT        NOT NULL DEFAULT 0,
+            world      TINYINT(1)   NOT NULL DEFAULT 0,
             access     TEXT         NULL,
             created_by VARCHAR(96)  NULL,
             created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ]])
+    -- (a table made before props could be picked from the world has no `world` column yet)
+    local has = MySQL.query.await("SHOW COLUMNS FROM computers_placed LIKE 'world'")
+    if not has or #has == 0 then
+        MySQL.query.await('ALTER TABLE computers_placed ADD COLUMN world TINYINT(1) NOT NULL DEFAULT 0 AFTER heading')
+    end
 end
 
 -- ── What a record may hold ────────────────────────────────────────────────────────────────
 
----The config.Admin.Props entry for a model name (a computer can only be one of those).
+---The entry of a prop a computer can be placed as: one from config.Admin.Props, or one an admin
+---added from the panel (a computer can only be one of those).
 ---@param model any
 ---@return table|nil prop { model, label, kind }
 function placed.prop(model)
-    for _, p in ipairs(A.Props or {}) do
-        if p.model == model then return p end
+    return props.placeable(model)
+end
+
+---Whether a placed or picked computer is this prop (a prop added from the panel cannot go then).
+---@param model string
+---@return boolean
+function placed.usesProp(model)
+    for _, r in pairs(list) do
+        if r.prop == model then return true end
     end
-    return nil
+    return false
 end
 
 ---A label from the panel, trimmed and cut to length (nil when nothing is left).
@@ -134,6 +156,7 @@ local function apply(r)
     def.label, def.hostname = r.label, r.hostname
     def.coords, def.heading = vec3(r.coords.x, r.coords.y, r.coords.z), r.coords.w
     def.prop, def.style, def.groups = r.prop, r.style, r.groups
+    def.world = r.world or nil
 end
 
 ---Publish the placed computers. String keys: a sparse integer-keyed table does not survive
@@ -141,7 +164,7 @@ end
 local function publish()
     local out = {}
     for id, r in pairs(list) do
-        out[tostring(id)] = { id = id, key = r.key, prop = r.prop, coords = r.coords, groups = r.groups }
+        out[tostring(id)] = { id = id, key = r.key, prop = r.prop, style = r.style, coords = r.coords, groups = r.groups, world = r.world or nil }
     end
     GlobalState[STATE_KEY] = out
 end
@@ -162,11 +185,12 @@ end
 
 ---Load every placed computer from the database and publish them. Run once at boot.
 function placed.load()
-    local rows = MySQL.query.await('SELECT id, label, hostname, prop, style, x, y, z, heading, access FROM computers_placed ORDER BY id') or {}
+    local rows = MySQL.query.await('SELECT id, label, hostname, prop, style, x, y, z, heading, world, access FROM computers_placed ORDER BY id') or {}
     for _, row in ipairs(rows) do
         local access = row.access and json.decode(row.access) or nil
         track({
             id = row.id, label = row.label, hostname = row.hostname, prop = row.prop,
+            world = row.world == true or row.world == 1, -- (a TINYINT(1) comes back as either)
             style = select(1, styleOf(row.style)), groups = select(1, groupsOf(access)),
             coords = { x = row.x + 0.0, y = row.y + 0.0, z = row.z + 0.0, w = (row.heading or 0.0) + 0.0 },
         })
@@ -189,22 +213,34 @@ placed.onChanged = function() end
 
 -- ── Changes (each returns ok, then a locale key saying why not) ───────────────────────────
 
----Place a new computer.
----@param d table { x, y, z, heading, label, prop, style?, jobs? } from the panel
----@param by string|nil who placed it (kept with the row)
+---Make a new computer: place one (its prop is stood at the spot), or pick one (`world`: the spot
+---is where a prop of that model already stands in the game's world, and that prop is it).
+---@param d table { x, y, z, heading, label, prop, style?, jobs?, world? } from the panel
+---@param by string|nil who made it (kept with the row)
 ---@return integer|nil id
 ---@return string|nil why locale key
 function placed.create(d, by)
-    local coords, label, prop = coordsOf(d), labelOf(d.label), placed.prop(d.prop)
+    local world = d.world == true
+    local coords, label = coordsOf(d), labelOf(d.label)
+    -- (a picked prop may be any model known as a computer; one stood here must be on the placing list)
+    local model = world and (props.known(d.prop) and d.prop or nil) or (placed.prop(d.prop) or {}).model
     local style, styleOk = styleOf(d.style)
     local groups, groupsOk = groupsOf(d.jobs)
-    if not coords or not label or not prop or not styleOk or not groupsOk then return nil, 'admin.bad_request' end
+    if not coords or not label or not model or not styleOk or not groupsOk then return nil, 'admin.bad_request' end
+    if world then
+        local at = vec3(coords.x, coords.y, coords.z)
+        for _, other in pairs(list) do
+            if other.world and other.prop == model and #(vec3(other.coords.x, other.coords.y, other.coords.z) - at) <= SAME_PROP then
+                return nil, 'admin.already_computer'
+            end
+        end
+    end
 
     local id = MySQL.insert.await(
-        'INSERT INTO computers_placed (label, hostname, prop, style, x, y, z, heading, access, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        { label, '', prop.model, style, coords.x, coords.y, coords.z, coords.w, groups and json.encode(groups) or nil, by })
+        'INSERT INTO computers_placed (label, hostname, prop, style, x, y, z, heading, world, access, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        { label, '', model, style, coords.x, coords.y, coords.z, coords.w, world and 1 or 0, groups and json.encode(groups) or nil, by })
     if not id then return nil, 'admin.failed' end
-    local r = { id = id, label = label, hostname = hostnameOf(label, id), prop = prop.model, style = style, groups = groups, coords = coords }
+    local r = { id = id, label = label, hostname = hostnameOf(label, id), prop = model, world = world, style = style, groups = groups, coords = coords }
     MySQL.update.await('UPDATE computers_placed SET hostname = ? WHERE id = ?', { r.hostname, id })
     if not track(r) then return nil, 'admin.failed' end
     publish()
@@ -212,6 +248,7 @@ function placed.create(d, by)
 end
 
 ---Change what a placed computer is: its name, prop, style and job lock (the panel sends all four).
+---A picked one keeps its prop: that is the game's, not ours to swap.
 ---@param id integer|nil
 ---@param d table { label, prop, style?, jobs? }
 ---@return boolean ok
@@ -219,13 +256,14 @@ end
 function placed.update(id, d)
     local r = placed.get(id)
     if not r then return false, 'admin.gone' end
-    local label, prop = labelOf(d.label), placed.prop(d.prop)
+    local label = labelOf(d.label)
+    local model = r.world and r.prop or (placed.prop(d.prop) or {}).model
     local style, styleOk = styleOf(d.style)
     local groups, groupsOk = groupsOf(d.jobs)
-    if not label or not prop or not styleOk or not groupsOk then return false, 'admin.bad_request' end
+    if not label or not model or not styleOk or not groupsOk then return false, 'admin.bad_request' end
 
     if label ~= r.label then r.hostname = hostnameOf(label, r.id) end
-    r.label, r.prop, r.style, r.groups = label, prop.model, style, groups
+    r.label, r.prop, r.style, r.groups = label, model, style, groups
     MySQL.update.await('UPDATE computers_placed SET label = ?, hostname = ?, prop = ?, style = ?, access = ? WHERE id = ?',
         { r.label, r.hostname, r.prop, r.style, groups and json.encode(groups) or nil, r.id })
     apply(r)
@@ -242,7 +280,7 @@ function placed.move(id, at)
     local r = placed.get(id)
     if not r then return false, 'admin.gone' end
     local coords = coordsOf(at)
-    if not coords then return false, 'admin.bad_request' end
+    if not coords or r.world then return false, 'admin.bad_request' end -- (a picked prop is where the game put it)
     placed.onChanged(r.key, 'err.computer_changed')
     r.coords = coords
     MySQL.update.await('UPDATE computers_placed SET x = ?, y = ?, z = ?, heading = ? WHERE id = ?', { coords.x, coords.y, coords.z, coords.w, r.id })

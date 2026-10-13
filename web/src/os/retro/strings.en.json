@@ -31,6 +31,7 @@
   "logon_pin": "PIN:",
   "logon_job": "Department: %s",
   "logon_error_title": "Log On",
+  "idle_prompt": "Press Ctrl+Alt+Del to log on.",
 
   "welcome_title": "Welcome, %s.",
   "welcome_body": "Restoring your desktop...",

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './admin.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./index.html', './os.html', './admin.html', './screen.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       // Design tokens. Every colour is a CSS variable set on .os-root by

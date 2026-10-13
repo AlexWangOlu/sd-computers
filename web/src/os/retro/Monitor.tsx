@@ -28,9 +28,12 @@ export default function Frame({ children }: { children: ReactNode }) {
     else powerOff();
   };
 
+  // data-mirror-viewport: the screen on the prop shows the tube, not a picture of this monitor (src/screen).
   const screen = (
     <>
-      <div className="rt-screen">{children}</div>
+      <div className="rt-screen" data-mirror-viewport>
+        {children}
+      </div>
       <div className="rt-scan" aria-hidden />
     </>
   );

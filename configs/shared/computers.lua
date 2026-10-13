@@ -12,6 +12,9 @@
 --   rotation  number - box zone heading (default 0.0).
 --     - or -
 --   model     string | string[] - prop model name(s); every instance becomes this computer.
+--             The /computeradmin panel (Automatic tab) can switch a model computer off, or single
+--             models of it, and give it (or one model of it) a style: what it changes is kept in
+--             the database and wins over this list and the `style` below.
 --
 --   groups    optional job/gang lock, ox_target style: { police = 0, sheriff = 2 } (name = min
 --             grade). nil = anyone can use it. Checked server-side on open AND on every action.
@@ -34,7 +37,7 @@ return {
         rotation = 0.0,
         groups = { police = 0 },
         boss = 'police',
-        style = 'retro', -- the station's ageing terminal
+        style = 'modern',
         apps = { 'mail', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
     },
 
@@ -59,7 +62,10 @@ return {
         hostname = 'LS-WORKSTATION',
         model = {
             'prop_monitor_01a', 'prop_monitor_01b', 'prop_monitor_02', 'prop_monitor_03b',
-            'prop_monitor_w_large', 'prop_dyn_pc', 'prop_dyn_pc_02', 'prop_pc_01a', 'prop_pc_02a',
+            'prop_monitor_w_large', 'prop_monitor_01c', 'prop_monitor_01d', 'prop_monitor_li',
+            'tr_prop_tr_monitor_01a', 'prop_monitor_04a', 'xm_prop_x17_computer_02', 'prop_ld_monitor_01',
+            'v_serv_ct_monitor01', 'v_serv_ct_monitor02', 'ex_prop_monitor_01_ex', 'sm_prop_smug_monitor_01',
+            'prop_dyn_pc', 'prop_dyn_pc_02', 'prop_pc_01a', 'prop_pc_02a', 'hei_prop_heist_pc_01', 'v_res_pctower',
         },
         apps = { 'mail', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
     },
@@ -70,7 +76,10 @@ return {
         id = 'business_laptop',
         label = 'Business Laptop',
         hostname = 'BIZ-LAPTOP',
-        model = { 'prop_laptop_01a', 'p_laptop_02_s', 'prop_laptop_lester', 'prop_laptop_lester2' },
+        model = {
+            'prop_laptop_01a', 'p_laptop_02_s', 'prop_laptop_lester', 'prop_laptop_lester2',
+            'prop_laptop_jimmy', 'ex_prop_ex_laptop_01a', 'xm_prop_x17_laptop_lester_01', 'p_cs_laptop_02', 'v_ind_ss_laptop',
+        },
         boss = true,
         style = 'mac',
     },

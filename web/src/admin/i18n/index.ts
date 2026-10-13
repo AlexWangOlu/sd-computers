@@ -34,6 +34,12 @@ export function tOr(path: string, fallback: string): string {
   return raw === path ? fallback : raw;
 }
 
+// What a style resembles, in two words, for an admin who does not know it by its name (''
+// for a style somebody added in the config). Only ever shown in this panel, never in the OS.
+export function styleLike(key: string): string {
+  return tOr(`styles.like.${key}`, '');
+}
+
 export function t(path: string, ...args: (string | number)[]): string {
   const raw = resolve(path);
   let i = 0;

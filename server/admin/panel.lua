@@ -6,6 +6,12 @@ local log = require 'shared.log'
 local registry = require 'server.computers.registry'
 ---@type table Computers placed from this panel (server.computers.placed).
 local placed = require 'server.computers.placed'
+---@type table The props that are a computer on their own (server.computers.auto): the Automatic tab.
+local auto = require 'server.computers.auto'
+---@type table Props added from this panel (server.computers.custom).
+local custom = require 'server.computers.custom'
+---@type table The prop models known as a computer (shared.props): the config's and the added ones.
+local props = require 'shared.props'
 ---@type table Session module (server.computers.session): who sits where.
 local session = require 'server.computers.session'
 ---@type table Player bridge (bridge.server.player): names, for who placed a computer.
@@ -19,8 +25,14 @@ local A = config.Admin
 -- shape - { success, message?, data? } - and every reply carries a fresh snapshot, so the panel
 -- re-renders from one source of truth.
 
--- A computer that moves or goes stands up whoever is sitting at it.
+-- A computer that moves or goes stands up whoever is sitting at it; so does switching off the
+-- props that were one.
 placed.onChanged = function(key, reason) session.closeComputer(key, reason) end
+auto.onChanged = function(key) session.closeComputer(key, 'err.computer_changed') end
+-- A prop added or taken away here changes what the Automatic tab can tick; one a computer is
+-- placed as cannot be taken away.
+custom.onChanged = auto.refresh
+custom.inUse = placed.usesProp
 
 ---May this player open the panel at all?
 ---@param source integer player server id
@@ -54,19 +66,20 @@ local function snapshot(source)
     for index, def in ipairs(registry.all()) do
         local row = {
             key = def.id, order = index, label = def.label or def.id, hostname = def.hostname or tostring(def.id):upper(),
-            style = registry.style(def), styleSet = def.style ~= nil, groups = def.groups, users = users[def.id] or {},
+            style = registry.style(def), styleSet = registry.styleSet(def), groups = def.groups, users = users[def.id] or {},
             boss = def.boss == true and '*' or def.boss or nil, pin = pins[def.id] ~= nil,
         }
         if def.placed then
             local r = placed.get(def.placed)
-            row.source, row.id, row.prop = 'placed', def.placed, def.prop
+            row.source, row.id, row.prop = r.world and 'world' or 'placed', def.placed, def.prop
             row.x, row.y, row.z, row.heading = r.coords.x, r.coords.y, r.coords.z, r.coords.w
         elseif def.coords then
             row.source = 'config'
             row.x, row.y, row.z, row.heading = def.coords.x, def.coords.y, def.coords.z, def.rotation or 0.0
         else
             row.source = 'model'
-            row.models = type(def.model) == 'table' and def.model or { def.model }
+            row.models = auto.models(def)
+            row.off = #auto.active(def) == 0 -- (switched off, or left with no prop)
         end
         computers[#computers + 1] = row
     end
@@ -86,7 +99,8 @@ local function snapshot(source)
     return {
         canEdit = canEdit(source),
         computers = computers,
-        props = A.Props or {},
+        props = props.list(),
+        auto = auto.snapshot(),
         styles = styles,
         defaultStyle = registry.style({}),
         rules = { boot = D.Boot ~= false, reach = (config.Interact and config.Interact.MaxDistance) or 2.5, maxLabel = A.MaxLabel or 48 },
@@ -118,7 +132,8 @@ verb('snapshot', false, function() return true end)
 
 -- ---- Computers ----------------------------------------------------------------------------
 
--- d = { x, y, z, heading (from the gizmo), label, prop, style?, jobs? }
+-- d = { x, y, z, heading (from the gizmo), label, prop, style?, jobs? }; with world = true the spot
+-- and the prop are a prop the game already has there, picked rather than placed.
 verb('createComputer', true, function(source, d)
     local id, why = placed.create(d, player.getName(source))
     return id ~= nil, why and locale(why), { computerId = id }
@@ -142,6 +157,51 @@ end)
 -- Every placed computer goes; the ones in configs/shared/computers.lua belong to the config.
 verb('deleteAllComputers', true, function()
     return true, nil, { count = placed.clear() }
+end)
+
+-- ---- Props that are a computer on their own -----------------------------------------------
+
+-- d.enabled: whether any prop in the world is a computer without being placed or picked.
+verb('setAuto', true, function(_, d)
+    return auto.setEnabled(d.enabled == true)
+end)
+
+-- d.key = a model computer's id from configs/shared/computers.lua.
+verb('setAutoComputer', true, function(_, d)
+    local ok, why = auto.setComputer(d.key, d.enabled == true)
+    return ok, why and locale(why)
+end)
+
+-- d.model = one of that computer's props (its own, or a spare one from config.Admin.Props).
+verb('setAutoModel', true, function(_, d)
+    local ok, why = auto.setModel(d.key, d.model, d.enabled == true)
+    return ok, why and locale(why)
+end)
+
+-- d.style = a Desktop.Styles key, or nil: the style every prop of that computer opens in.
+verb('setAutoStyle', true, function(_, d)
+    local ok, why = auto.setStyle(d.key, d.style)
+    return ok, why and locale(why)
+end)
+
+-- d.style = a Desktop.Styles key, or nil: a style of its own for one prop of that computer.
+verb('setAutoModelStyle', true, function(_, d)
+    local ok, why = auto.setModelStyle(d.key, d.model, d.style)
+    return ok, why and locale(why)
+end)
+
+-- ---- Props added from the panel -----------------------------------------------------------
+
+-- d = { model, label, kind }: a prop of the server's own, beside the ones in configs/shared/admin.lua.
+-- (The client asked the game whether the model exists before sending this; the server cannot.)
+verb('addProp', true, function(_, d)
+    local ok, why = custom.add(d)
+    return ok, why and locale(why)
+end)
+
+verb('removeProp', true, function(_, d)
+    local ok, why = custom.remove(d.model)
+    return ok, why and locale(why)
 end)
 
 -- ---- Getting around -----------------------------------------------------------------------

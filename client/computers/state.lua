@@ -2,6 +2,10 @@
 local config = require 'configs.config'
 ---@type table Console log helper (shared.log): tagged color-coded prints.
 local log = require 'shared.log'
+---@type table The camera at the screen (client.computers.view).
+local view = require 'client.computers.view'
+---@type table Where the screen is on each prop (client.screens.quads).
+local quads = require 'client.screens.quads'
 
 ---@type table Client computer state module; the table returned at end of file.
 local state = {}
@@ -9,6 +13,7 @@ local state = {}
 ---@class OpenComputer
 ---@field id string computer id
 ---@field coords vector3 the machine's position (walk-away checks run against it)
+---@field instance string|nil the per-machine key the server gave this session (shared.instance)
 
 ---@type OpenComputer|nil The computer the player is using (nil when none).
 local current
@@ -19,6 +24,8 @@ local opening = false
 local ANIM = config.Interact and config.Interact.Anim or false
 ---@type number Walk-away distance before the computer closes itself.
 local MAX_DISTANCE = (config.Interact and config.Interact.MaxDistance) or 2.5
+---@type number Metres from a model computer's coords its prop is looked for when the caller did not hand it over.
+local PROP_RADIUS = 0.5
 
 ---Play the typing loop (flag 49: upper body only, so turning still works). Idempotent.
 local function playAnim()
@@ -41,6 +48,13 @@ function state.isOpen()
     return current ~= nil
 end
 
+---The per-machine key of the computer the player is using (nil when none) - so its screen in the
+---world knows it is the player's own.
+---@return string|nil
+function state.instance()
+    return current and current.instance or nil
+end
+
 ---Close the computer: hide the NUI, drop focus, stop the animation and (unless the server asked
 ---for this close) tell the server so the session + logoff are recorded. Idempotent.
 ---@param reason? string notification shown to the player (walked away, lost access, ...)
@@ -50,6 +64,7 @@ function state.close(reason, fromServer)
     current = nil
     SendNUIMessage({ action = 'computers:close' })
     SetNuiFocus(false, false)
+    view.leave()
     stopAnim()
     if not fromServer then TriggerServerEvent('sd-computers:server:close') end
     if reason then lib.notify({ description = reason, type = 'error' }) end
@@ -73,12 +88,14 @@ local function watch(watched)
 end
 
 ---Open a computer: ask the server (it validates reach, job lock and that nobody else is using it),
----then turn to face it, start typing and boot the NUI to the lock screen.
+---then turn to face it, start typing, take the camera up to its screen and boot the NUI to the
+---lock screen there. A computer with no screen to go to boots fullscreen.
 ---@param id string computer id
 ---@param coords vector3 the machine's position (config coords, or the prop's coords for model computers)
 ---@param isModel boolean model computer? (the server only trusts client coords for those)
 ---@param style? string force a look (Desktop.Styles key) instead of the computer's configured one
-function state.open(id, coords, isModel, style)
+---@param prop? integer|false the prop the computer is; nil = look for one at `coords`, false = it has none
+function state.open(id, coords, isModel, style, prop)
     if current or opening then return end
     opening = true
     local res = lib.callback.await('sd-computers:server:open', false, id, isModel and { x = coords.x, y = coords.y, z = coords.z } or nil, style)
@@ -88,14 +105,24 @@ function state.open(id, coords, isModel, style)
         return
     end
 
-    current = { id = id, coords = coords }
+    local session = { id = id, coords = coords, instance = res.data and res.data.computer and res.data.computer.instance }
+    current = session
     TaskTurnPedToFaceCoord(cache.ped, coords.x, coords.y, coords.z, 600)
     SetTimeout(600, function()
         if current then playAnim() end
     end)
+    watch(session)
+
+    -- (a model computer's coords ARE its prop's; a location's are its zone's, with the prop somewhere in it)
+    if prop == nil then prop = quads.near(coords, isModel and PROP_RADIUS or quads.ZONE_RADIUS) end
+    local rect = view.enter(prop or nil) -- (yields while the camera travels)
+    if current ~= session then return end -- (walked off on the way)
+    if rect then
+        res.data.view = rect
+        res.data.desktop.monitor = false -- (the prop is the monitor: retro leaves its own chassis off)
+    end
     SetNuiFocus(true, true)
     SendNUIMessage({ action = 'computers:open', data = res.data })
-    watch(current)
     log.debug('computer', 'opened %s', id)
 end
 
@@ -106,8 +133,9 @@ RegisterNetEvent('sd-computers:client:forceClose', function(reason)
     state.close(reason, true)
 end)
 
----Resource stopping: release focus and the animation (the NUI dies with the resource).
+---Resource stopping: release focus, the camera and the animation (the NUI dies with the resource).
 function state.shutdown()
+    view.shutdown()
     if current then
         SetNuiFocus(false, false)
         stopAnim()

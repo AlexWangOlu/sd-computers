@@ -10,6 +10,12 @@ local state = require 'client.computers.state'
 local placed = require 'client.computers.placed'
 ---@type table Placement gizmo (client.admin.placer): nothing is used while an admin is placing.
 local placer = require 'client.admin.placer'
+---@type table Prop picker (client.admin.picker): nothing is used while an admin is picking either.
+local picker = require 'client.admin.picker'
+---@type table Which props are a computer on their own right now (client.computers.auto).
+local auto = require 'client.computers.auto'
+---@type table The prop models known as a computer (shared.props).
+local props = require 'shared.props'
 
 ---@type table Target option look (config.Interact.Target).
 local T = (config.Interact and config.Interact.Target) or {}
@@ -26,8 +32,12 @@ local function option(def)
         icon = T.icon or 'fas fa-desktop',
         distance = T.distance or 1.8,
         groups = def.groups, -- ox_target hides the option from everyone else (the server enforces it regardless)
-        -- (a prop an admin placed as a computer of its own is not ALSO this model computer)
-        canInteract = function(entity) return not state.isOpen() and not placer.isActive() and not placed.isPlaced(entity) end,
+        canInteract = function(entity)
+            -- (a prop an admin made a computer of its own is not ALSO this model computer)
+            if state.isOpen() or placer.isActive() or picker.isActive() or placed.isPlaced(entity) then return false end
+            -- (a model computer is the props the admin panel has it on for, which can change at any time)
+            return def.coords ~= nil or auto.is(def, GetEntityModel(entity))
+        end,
         onSelect = function(data)
             if def.coords then
                 state.open(def.id, def.coords, false)
@@ -35,10 +45,35 @@ local function option(def)
             end
             local entity = type(data) == 'table' and data.entity or data
             if type(entity) ~= 'number' or not DoesEntityExist(entity) then return end
-            state.open(def.id, GetEntityCoords(entity), true)
+            -- (in the style the admin panel gave this prop, or its computer, when it gave one)
+            state.open(def.id, GetEntityCoords(entity), true, auto.style(GetEntityModel(entity)), entity)
         end,
     }
 end
+
+---@type table<string, table<string, boolean>> computer id -> the models its option is on already.
+local onModels = {}
+
+---Put a model computer's option on every prop it COULD be (its own models, and the spare ones the
+---panel can give it) that does not have it yet. The option itself says whether a prop is one right
+---now, so nothing is ever taken off; this runs again when an admin adds a prop from the panel.
+---@param def table computers.lua entry that is a prop model
+local function addModels(def)
+    local have = onModels[def.id] or {}
+    onModels[def.id] = have
+    local new = {}
+    for _, name in ipairs((props.candidates(def))) do
+        if not have[name] then
+            have[name] = true
+            new[#new + 1] = name
+        end
+    end
+    if #new > 0 then target.addModel(new, { option(def) }) end
+end
+
+props.onCustom(function()
+    for _, def in ipairs(props.defs) do addModels(def) end
+end)
 
 for _, def in ipairs(config.Computers or {}) do
     if def.coords then
@@ -51,7 +86,7 @@ for _, def in ipairs(config.Computers or {}) do
             options = { option(def) },
         })
     elseif def.model then
-        target.addModel(def.model, { option(def) })
+        addModels(def)
     else
         log.warn('computers', 'computer %s has neither coords nor model - skipped', tostring(def.id))
     end
@@ -62,6 +97,8 @@ end
 ---(or omit them to use the player's position - e.g. a held laptop). The server still enforces
 ---reach and the computer's job lock, so this grants nothing the player couldn't do at the desk.
 ---`opts.style` forces a look for this open ('modern' | 'retro' | 'mac' - any Desktop.Styles key).
+---The camera goes up to the prop's screen as it does from the target option; with no coords
+---there is no prop to go to, and the desktop is fullscreen.
 ---@param id string computers.lua id
 ---@param coords? vector3 prop coords for a model computer
 ---@param opts? { style?: string }
@@ -71,8 +108,10 @@ exports('OpenComputer', function(id, coords, opts)
         if def.id == id then
             if def.coords then
                 state.open(def.id, def.coords, false, style)
+            elseif coords then
+                state.open(def.id, coords, true, style)
             else
-                state.open(def.id, coords or GetEntityCoords(cache.ped), true, style)
+                state.open(def.id, GetEntityCoords(cache.ped), true, style, false)
             end
             return true
         end

@@ -28,7 +28,7 @@ export default function LibHack({ run, onClose }: { run: HackRun; onClose: () =>
 
   const title = run.title ? `${run.title} - ${run.program}` : run.program;
   return (
-    <div ref={exitRef} className="lib-root absolute inset-0 z-[10000] flex items-center justify-center bg-black/55 fade-in" style={accentVars('#4cc2ff', 'dark')}>
+    <div ref={exitRef} className="lib-root mirror-block absolute inset-0 z-[10000] flex items-center justify-center bg-black/55 fade-in" style={accentVars('#4cc2ff', 'dark')}>
       <div className="w-[min(1180px,96vw)] h-[min(760px,92vh)] flex flex-col rounded-win overflow-hidden bg-win shadow-win win-enter font-ui text-t1">
         <div className="h-8 shrink-0 flex items-center select-none">
           <span className="pl-3 pr-2 flex items-center"><AppIcon app="hack" size={16} /></span>

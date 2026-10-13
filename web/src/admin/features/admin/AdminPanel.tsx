@@ -9,6 +9,8 @@ import { TABS } from '@/admin/types';
 import type { Tab } from '@/admin/types';
 import { OverviewTab } from './overview/OverviewTab';
 import { ComputersTab } from './computers/ComputersTab';
+import { AutomaticTab, autoCount } from './automatic/AutomaticTab';
+import { PropsTab } from './props/PropsTab';
 import { StylesTab } from './styles/StylesTab';
 
 // The panel shell is sd-bombs' own (and sd-scooters' before it), tab for tab: same frame, same
@@ -56,6 +58,8 @@ export const AdminPanel = () => {
 
   const counts: Partial<Record<Tab, number>> = {
     computers: snapshot.computers.length,
+    automatic: autoCount(snapshot.auto),
+    props: snapshot.props.length,
     styles: snapshot.styles.length,
   };
 
@@ -119,6 +123,8 @@ export const AdminPanel = () => {
             <div key={tab} className={`absolute inset-0 ${enter.current.cls}`}>
               {tab === 'overview' && <OverviewTab />}
               {tab === 'computers' && <ComputersTab />}
+              {tab === 'automatic' && <AutomaticTab />}
+              {tab === 'props' && <PropsTab />}
               {tab === 'styles' && <StylesTab />}
             </div>
           </ErrorBoundary>

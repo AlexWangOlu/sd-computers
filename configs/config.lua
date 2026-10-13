@@ -22,6 +22,7 @@ local config = {
     Phone = require 'configs.shared.phone', -- optional sd-phone link: phone mail, Messages + Notes apps (inert without sd-phone)
     Interact = require 'configs.shared.interact', -- target label/icon/distance, typing animation, walk-away distance (server re-checks it)
     Admin = require 'configs.shared.admin', -- the /computeradmin panel: who may use it, the placement gizmo, the props a computer can be placed as
+    Screens = require 'configs.shared.screens', -- the screen drawn on a computer's prop: lock face when idle, a live copy of the session when in use
 }
 
 -- Server-only (sensitive): computer PINs, hack targets + their rewards, banking backend, log

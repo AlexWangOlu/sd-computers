@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MonitorUp } from 'lucide-react';
 import { useAdmin } from '@/admin/store/admin';
-import { t, tOr } from '@/admin/i18n';
+import { styleLike, t, tOr } from '@/admin/i18n';
 import { Badge, Field, Heading } from '@/admin/components/shared';
 import { ComputerSetupModal } from '../computers/ComputerSetupModal';
 import { StylePreview } from '../computers/StylePreview';
@@ -70,7 +70,7 @@ export const StylesTab = () => {
                     {s.default && <Badge>{t('styles.default')}</Badge>}
                   </span>
                   <span className="block text-[11.5px] mono mt-0.5 truncate" style={{ color: 'var(--text-3)' }}>
-                    {s.key} · {s.build}
+                    {[styleLike(s.key), s.key, s.build].filter(Boolean).join(' · ')}
                   </span>
                 </span>
                 <span className="mono text-[12px] flex-shrink-0" style={{ color: 'var(--text-3)' }}>
@@ -96,7 +96,7 @@ export const StylesTab = () => {
                 <span className="text-[14px] font-semibold">{style.name}</span>
                 {style.default && <Badge>{t('styles.default')}</Badge>}
                 <span className="ml-auto mono text-[11.5px]" style={{ color: 'var(--text-3)' }}>
-                  {style.key} · {t('styles.computers_using', String(counts[style.key] ?? 0))}
+                  {[styleLike(style.key), style.key, t('styles.computers_using', String(counts[style.key] ?? 0))].filter(Boolean).join(' · ')}
                 </span>
               </div>
               <p className="text-[12.5px] leading-relaxed m-0 mb-1" style={{ color: 'var(--text-2)' }}>

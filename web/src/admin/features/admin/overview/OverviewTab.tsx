@@ -45,7 +45,7 @@ export const OverviewTab = () => {
   const [placing, setPlacing] = useState(false);
 
   const all = snapshot.computers;
-  const placed = all.filter(c => c.source === 'placed');
+  const placed = all.filter(c => c.source === 'placed' || c.source === 'world'); // (made from this panel: placed, or picked)
   const stats: { label: string; value: string; tab: Tab }[] = [
     { label: t('stats.computers'), value: String(all.length), tab: 'computers' },
     { label: t('stats.placed'), value: String(placed.length), tab: 'computers' },
@@ -53,7 +53,7 @@ export const OverviewTab = () => {
     { label: t('stats.in_use'), value: String(all.reduce((n, c) => n + c.users.length, 0)), tab: 'computers' },
     { label: t('stats.locked'), value: String(all.filter(c => c.groups && Object.keys(c.groups).length > 0).length), tab: 'computers' },
     { label: t('stats.pin'), value: String(all.filter(c => c.pin).length), tab: 'computers' },
-    { label: t('stats.props'), value: String(snapshot.props.length), tab: 'computers' },
+    { label: t('stats.props'), value: String(snapshot.props.length), tab: 'props' },
     { label: t('stats.styles'), value: String(snapshot.styles.length), tab: 'styles' },
   ];
 

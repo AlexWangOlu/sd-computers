@@ -51,6 +51,10 @@ local pinState = {}
 ---breach in progress) - a hook list instead of a require, so session.lua never depends on its users.
 local closeHooks = {}
 
+---@type fun(src: integer, s: ComputerSession)[] Run when a session starts (mirror.lua lights the
+---computer's screen for the players around it).
+local openHooks = {}
+
 ---@type number Server-side reach: the client's walk-away distance plus slack for latency + desync.
 local REACH = ((config.Interact and config.Interact.MaxDistance) or 2.5) + 2.0
 
@@ -249,6 +253,10 @@ function session.open(src, id, coords, styleOverride)
     }
     sessions[src] = s
     busy[instance] = src
+    for _, fn in ipairs(openHooks) do
+        local ok, err = pcall(fn, src, s)
+        if not ok then log.error('session', 'open hook failed: %s', tostring(err)) end
+    end
     log.debug('session', 'open src=%s computer=%s instance=%s style=%s boss=%s', src, id, instance, style, tostring(bossJob))
 
     local pins = config.Security and config.Security.Pins or {}
@@ -344,6 +352,12 @@ end
 ---@param fn fun(src: integer, s: ComputerSession)
 function session.onClose(fn)
     closeHooks[#closeHooks + 1] = fn
+end
+
+---Register a function to run whenever a session starts (the computer is at its lock screen).
+---@param fn fun(src: integer, s: ComputerSession)
+function session.onOpen(fn)
+    openHooks[#openHooks + 1] = fn
 end
 
 ---End a player's session (shut down / walked away / dropped): log the logoff if they were signed

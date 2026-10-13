@@ -18,16 +18,27 @@ export default defineConfig({
     assetsDir: 'assets',
     target: 'chrome103', // FiveM's CEF is Chromium 103 (navigator.userAgent in game) - no toSorted, :has(), color-mix, dvh
     rollupOptions: {
-      // The OS, and the /computeradmin panel it holds in an iframe (src/AdminFrame.tsx): a page of
-      // its own, so its stylesheet (sd-bombs' admin UI) and the OS's never meet.
+      // index.html is the resource's NUI page (src/host): it holds the OS (os.html) and the
+      // /computeradmin panel (admin.html) as two frames - the OS so it can be laid over a prop's
+      // screen with a window of its own, the panel so its stylesheet (sd-bombs' admin UI) and the
+      // OS's never meet. screen.html is the page a computer's prop shows in the world (src/screen),
+      // loaded by the game as a DUI.
       input: {
         index: fileURLToPath(new URL('./index.html', import.meta.url)),
+        os: fileURLToPath(new URL('./os.html', import.meta.url)),
         admin: fileURLToPath(new URL('./admin.html', import.meta.url)),
+        screen: fileURLToPath(new URL('./screen.html', import.meta.url)),
       },
       output: {
-        // What both pages share from node_modules (React, zustand, the icons) in one chunk with a
-        // name that says so, instead of one named after whichever module Rollup met first.
-        manualChunks: id => (id.includes('node_modules') ? 'vendor' : undefined),
+        // What the pages share from node_modules (React, zustand, the icons) in one chunk with a
+        // name that says so, instead of one named after whichever module Rollup met first. rrweb is
+        // left out of it: the recorder is fetched only while a screen is being watched, and the
+        // replayer belongs to screen.html alone. The OS's stylesheets, which screen.html borrows
+        // for its lock faces, get the same treatment (os.css).
+        manualChunks: id => {
+          if (id.includes('node_modules')) return id.includes('rrweb') ? undefined : 'vendor';
+          return /[\\/]src[\\/]styles(\.css$|[\\/])/.test(id) ? 'os' : undefined;
+        },
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name].[ext]',
