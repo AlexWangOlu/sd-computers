@@ -7,6 +7,7 @@ import './styles/retro.css';
 import './styles/mac.css';
 import './styles/sites.css';
 import './styles/games.css';
+import './styles/richdoc.css';
 import './styles/paper.css';
 
 // No <StrictMode>: its dev-only double mount would run HackRunner's "unmounted mid-game = fail"

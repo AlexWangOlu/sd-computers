@@ -33,11 +33,13 @@
 --   apps      optional app list (ids from configs/shared/desktop.lua Apps). nil = Desktop.DefaultApps.
 --             'boss' is added automatically when `boss` is set - you don't need to list it. Nor
 --             the apps that are for a player rather than a computer: the Company Board (anyone
---             with a job), Security Cameras (anyone allowed to watch a camera here) and the
---             phone apps (Messages, Notes, Photos, Contacts, while sd-phone is linked). Those
+--             with a job), Security Cameras (anyone allowed to watch a camera here), Photos,
+--             and the phone apps (Messages, Notes, Contacts, while sd-phone is linked). Those
 --             appear on every computer; list one here only to choose where it sits.
 --   board     false = no Company Board on this computer (configs/shared/board.lua).
 --   cameras   false = no Security Cameras on this computer (configs/shared/cameras.lua).
+--   photos    false = no Photos on this computer, and no pictures in documents written there
+--             (configs/shared/photos.lua).
 --   phone     false = none of the phone apps on this computer, and no Phone Link to link a phone
 --             to it with (configs/shared/phone.lua).
 --   pin       NOT here - PINs are sensitive and live server-side in configs/server/security.lua.

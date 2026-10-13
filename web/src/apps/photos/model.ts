@@ -13,14 +13,14 @@ export const asArray = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : 
 export const drawable = (p: Pick<Photo, 'url' | 'video'>): boolean => /^https?:\/\//i.test(p.url) || (!p.video && /^data:image\//i.test(p.url));
 
 /** A photos:list row, defensively (null when it has no id or no address). */
-function normPhoto(raw: unknown): Photo | null {
+export function normPhoto(raw: unknown): Photo | null {
   if (!raw || typeof raw !== 'object') return null;
   const o = raw as Partial<Record<keyof Photo, unknown>>;
   const id = typeof o.id === 'string' ? o.id : typeof o.id === 'number' ? String(o.id) : '';
   const url = typeof o.url === 'string' ? o.url : '';
   if (!id || !url) return null;
   const ts = Math.floor(Number(o.ts) || 0);
-  return { id, url, ts: ts > 0 ? ts : 0, video: o.video === true, favorite: o.favorite === true };
+  return { id, url, ts: ts > 0 ? ts : 0, video: o.video === true, favorite: o.favorite === true, place: o.place === 'computer' ? 'computer' : 'phone' };
 }
 
 /** The whole list: one row per id, newest first (same-second photos keep the phone's order, undated ones go last). */

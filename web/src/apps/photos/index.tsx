@@ -1,20 +1,27 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Heart, Image as ImageIcon, ImageOff, Images, Play, RefreshCw } from 'lucide-react';
+import { Heart, Image as ImageIcon, ImageOff, Images, Play, Plus, RefreshCw } from 'lucide-react';
 import type { AppProps } from '../registry';
 import { selectActiveId, useOS } from '@/store/os';
 import { rpc } from '@/nui/rpc';
 import { t } from '@/i18n';
-import { Button, Empty, InfoBar, Spinner } from '@/ui/controls';
+import { Button, Dialog, Empty, InfoBar, Spinner, TextInput } from '@/ui/controls';
 import Viewer from './Viewer';
+import { addPhoto } from './Picker';
 import { countLabel, cx, dayHeading, drawable, groupByDay, normList, takenAt, type DayGroup } from './model';
 import type { ListData, Photo } from './types';
 
-// Photos - the character's PHONE gallery over the optional sd-phone link (photos:list), to look
-// at: nothing here takes, imports or deletes a photo. index.tsx is the whole window (loading, the
-// grid by day, shortcuts); the viewer is next to it and the data helpers are in model.ts.
+// Photos - the character's pictures. Their own are added here by their link, are there on every
+// computer, and can be taken out again; the PHONE's gallery shows beside them over the optional
+// sd-phone link, to look at (taking, sorting and deleting those stays on the phone). One list from
+// the server (photos:list). index.tsx is the whole window (loading, the grid by day, adding,
+// shortcuts); the viewer is next to it, the picker other apps borrow is Picker.tsx, and the data
+// helpers are in model.ts.
 
 /** The first load fills the window, a manual one spins the Refresh button, a silent one shows nothing. */
 type LoadMode = 'initial' | 'manual' | 'silent';
+
+/** Which of the two places the grid shows. */
+type Filter = 'all' | 'computer' | 'phone';
 
 /** Tiles grow with the window: about four across at the smallest size, never wider than 190px. */
 const GRID = 'repeat(auto-fill, minmax(clamp(112px, 15%, 190px), 1fr))';
@@ -24,8 +31,13 @@ export default function Photos({ win }: AppProps) {
   const clock24 = useOS(s => !!s.payload?.desktop.clock24);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState('');
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [all, setAll] = useState<Photo[]>([]);
   const [capped, setCapped] = useState(false);
+  /** the phone's gallery is in the list */
+  const [phone, setPhone] = useState(false);
+  const [room, setRoom] = useState({ count: 0, max: 200 });
+  const [filter, setFilter] = useState<Filter>('all');
+  const [adding, setAdding] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   /** Why the last manual refresh failed (the grid stays as it was). */
   const [notice, setNotice] = useState<string | null>(null);
@@ -56,8 +68,10 @@ export default function Photos({ win }: AppProps) {
       }
       return;
     }
-    setPhotos(normList(r.data?.photos));
+    setAll(normList(r.data?.photos));
     setCapped(r.data?.capped === true);
+    setPhone(r.data?.phone === true);
+    setRoom({ count: Number(r.data?.count) || 0, max: Number(r.data?.max) || 200 });
     setNotice(null);
     setStatus('ready');
   }, []);
@@ -77,7 +91,28 @@ export default function Photos({ win }: AppProps) {
     wasActive.current = isActive;
   }, [isActive, status, load]);
 
+  // (the phone's place went away: the grid is not left filtered to nothing)
+  const shownFilter: Filter = phone ? filter : 'all';
+  const photos = useMemo(() => (shownFilter === 'all' ? all : all.filter(p => p.place === shownFilter)), [all, shownFilter]);
   const index = viewing === null ? -1 : photos.findIndex(p => p.id === viewing);
+
+  /** Take one of the character's own pictures out. The viewer moves on to its neighbour. */
+  const remove = useCallback(
+    async (p: Photo) => {
+      const r = await rpc('photos:delete', { id: p.id });
+      if (!mounted.current) return;
+      if (!r.ok) {
+        setNotice(r.error || t('ui.common.error'));
+        return;
+      }
+      const at = photos.findIndex(x => x.id === p.id);
+      const next = photos[at + 1] ?? photos[at - 1] ?? null;
+      setAll(list => list.filter(x => x.id !== p.id));
+      setRoom(v => ({ ...v, count: Math.max(0, v.count - 1) }));
+      setViewing(next ? next.id : null);
+    },
+    [photos],
+  );
 
   // The open photo was deleted on the phone: a refresh took it out from under the viewer.
   useEffect(() => {
@@ -164,7 +199,7 @@ export default function Photos({ win }: AppProps) {
         <div className="flex-1 min-h-0 overflow-y-auto os-scroll">
           {photos.length === 0 ? (
             <Empty icon={<Images size={40} strokeWidth={1.25} />} title={t('ui.photos.empty_title')}>
-              {t('ui.photos.empty_hint')}
+              {t(shownFilter === 'phone' ? 'ui.photos.empty_phone' : phone ? 'ui.photos.empty_hint_phone' : 'ui.photos.empty_hint')}
             </Empty>
           ) : (
             <div className="pb-5 page-in">
@@ -186,6 +221,33 @@ export default function Photos({ win }: AppProps) {
           <span className="shrink-0 text-subtitle font-semibold text-t1">{t('ui.photos.title')}</span>
           {status === 'ready' && photos.length > 0 && <span className="min-w-0 text-caption text-t2 truncate">{countLabel(photos)}</span>}
         </div>
+        {phone && status === 'ready' && (
+          <div className="shrink-0 flex items-center rounded-ctl border border-stroke overflow-hidden" role="radiogroup" aria-label={t('ui.photos.filter')}>
+            {(['all', 'computer', 'phone'] as const).map(f => (
+              <button
+                key={f}
+                type="button"
+                role="radio"
+                aria-checked={shownFilter === f}
+                onClick={() => setFilter(f)}
+                className={cx('h-7 px-3 text-caption', shownFilter === f ? 'bg-accent text-accent-on' : 'text-t2 hover:bg-subtle')}
+              >
+                {t(`ui.photos.filter_${f}`)}
+              </button>
+            ))}
+          </div>
+        )}
+        <Button
+          compact
+          variant="accent"
+          icon={<Plus size={14} />}
+          onClick={() => setAdding(true)}
+          disabled={status !== 'ready' || room.count >= room.max}
+          title={room.count >= room.max ? t('ui.photos.full', room.max) : t('ui.photos.add_hint')}
+          className="shrink-0"
+        >
+          {t('ui.photos.add')}
+        </Button>
         <Button
           compact
           icon={refreshing ? <Spinner size={14} /> : <RefreshCw size={14} />}
@@ -197,8 +259,84 @@ export default function Photos({ win }: AppProps) {
         </Button>
       </div>
       <div className="flex-1 min-h-0 bg-layer border-t border-stroke">{content}</div>
-      {index >= 0 && <Viewer photos={photos} index={index} clock24={clock24} onStep={step} onClose={close} />}
+      {index >= 0 && <Viewer photos={photos} index={index} clock24={clock24} onStep={step} onClose={close} onDelete={p => void remove(p)} />}
+      {adding && (
+        <AddDialog
+          onClose={() => setAdding(false)}
+          onAdded={p => {
+            setAll(list => [p, ...list.filter(x => x.id !== p.id)]);
+            setRoom(v => ({ ...v, count: v.count + 1 }));
+            setAdding(false);
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+/** A picture is added by its link: the server says whether that host is one pictures may come from. */
+function AddDialog({ onClose, onAdded }: { onClose: () => void; onAdded: (p: Photo) => void }) {
+  const [link, setLink] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (!busy) onClose();
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [busy, onClose]);
+
+  const add = async () => {
+    if (!link.trim() || busy) return;
+    setBusy(true);
+    setError(null);
+    const r = await addPhoto(link);
+    setBusy(false);
+    if (r.photo) onAdded(r.photo);
+    else setError(r.error ?? t('ui.common.error'));
+  };
+
+  return (
+    <Dialog
+      title={t('ui.photos.add_title')}
+      onClose={() => !busy && onClose()}
+      actions={
+        <>
+          <Button variant="accent" icon={busy ? <Spinner size={14} /> : <Plus size={15} />} disabled={busy || !link.trim()} onClick={() => void add()}>
+            {t('ui.photos.add')}
+          </Button>
+          <Button disabled={busy} onClick={onClose}>
+            {t('ui.common.cancel')}
+          </Button>
+        </>
+      }
+    >
+      <div className="mb-3">{t('ui.photos.add_body')}</div>
+      {error && (
+        <div className="mb-3">
+          <InfoBar severity="error">{error}</InfoBar>
+        </div>
+      )}
+      <TextInput
+        autoFocus
+        value={link}
+        onChange={e => setLink(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') void add();
+        }}
+        placeholder={t('ui.photos.link_placeholder')}
+        aria-label={t('ui.photos.link_label')}
+        autoComplete="off"
+        spellCheck={false}
+        disabled={busy}
+        className="w-full"
+      />
+    </Dialog>
   );
 }
 

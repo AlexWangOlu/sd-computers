@@ -23,6 +23,8 @@ interface StoredFile {
   id: number;
   name: string;
   body: string;
+  /** 'rich' = body is a formatted document as JSON */
+  format?: 'rich';
   createdAt: number;
   updatedAt: number;
 }
@@ -352,7 +354,7 @@ const handlers: Record<string, MockHandler> = {
     if (id === null) return fail(INVALID);
     const f = files.find(x => x.id === id);
     if (!f) return fail(MISSING);
-    const data: FileFull = { ...toRow(f), body: f.body };
+    const data: FileFull = { ...toRow(f), body: f.body, format: f.format ?? 'text' };
     return ok(data);
   },
 
@@ -361,7 +363,8 @@ const handlers: Record<string, MockHandler> = {
     if (p.id !== undefined && p.id !== null && id === null) return fail(INVALID);
     const name = cleanName(p.name);
     if (!name) return fail(NAME_REQUIRED);
-    const body = clipChars(typeof p.body === 'string' ? p.body : '', MAX_BODY);
+    const rich = p.format === 'rich';
+    const body = rich ? String(p.body ?? '') : clipChars(typeof p.body === 'string' ? p.body : '', MAX_BODY);
 
     let f = id !== null ? files.find(x => x.id === id) : undefined;
     if (!f) id = null;
@@ -370,10 +373,11 @@ const handlers: Record<string, MockHandler> = {
     if (f) {
       f.name = name;
       f.body = body;
+      f.format = rich ? 'rich' : undefined;
       f.updatedAt = now();
     } else {
       if (files.length >= MAX_FILES) return fail(full());
-      f = { id: nextId++, name, body, createdAt: now(), updatedAt: now() };
+      f = { id: nextId++, name, body, format: rich ? 'rich' : undefined, createdAt: now(), updatedAt: now() };
       files.push(f);
     }
     return ok(toRow(f));

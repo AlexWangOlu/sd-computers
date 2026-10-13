@@ -6,11 +6,20 @@ local rpc = require 'server.computers.rpc'
 local phone = require 'server.computers.phone'
 ---@type table UTF-8-safe clipping (shared.text).
 local text = require 'shared.text'
+---@type table Rich documents (server.computers.richdoc): what a formatted document may hold.
+local richdoc = require 'server.computers.richdoc'
+---@type table Photos (server.computers.photos): which pictures a document of this player may hold.
+local photos = require 'server.computers.photos'
+---@type table Printing (server.computers.printing): a document can be printed.
+local printing = require 'server.computers.printing'
 
--- Files: the character's documents. A document is a name and a body of plain text, kept in
--- computers_files under the character's citizenid, so what is written on one computer is there on
--- every other one. Every query names the session's own citizenid: a row id sent by the NUI is
--- never enough to reach somebody else's document.
+-- Files: the character's documents. A document is a name and a body, kept in computers_files
+-- under the character's citizenid, so what is written on one computer is there on every other
+-- one. The body is either plain text (`format` 'text': what a document was before it could be
+-- formatted, and what one copied from the phone is) or a formatted document as JSON ('rich':
+-- server/computers/richdoc.lua - a typeface, and blocks of text, lists and pictures). Every query
+-- names the session's own citizenid: a row id sent by the NUI is never enough to reach somebody
+-- else's document.
 --
 -- With sd-phone linked, the phone's own documents show as a second place. They are read through
 -- sd-phone's plain exports (its server/documents/init.lua), which work out the owner from the
@@ -64,6 +73,22 @@ function files.ensureSchema()
             KEY idx_citizen (citizenid)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ]])
+    -- (a table made before documents could be formatted has no `format` column yet)
+    local has = MySQL.query.await("SHOW COLUMNS FROM computers_files LIKE 'format'")
+    if not has or #has == 0 then
+        MySQL.query.await("ALTER TABLE computers_files ADD COLUMN format VARCHAR(8) NOT NULL DEFAULT 'text' AFTER body")
+    end
+end
+
+---A stored body as the formatted document it is (nil for plain text, or one that will not read).
+---@param body string|nil
+---@param format string|nil
+---@return RichDoc|nil
+local function richOf(body, format)
+    if format ~= 'rich' or type(body) ~= 'string' then return nil end
+    local ok, raw = pcall(json.decode, body)
+    if not ok then return nil end
+    return (richdoc.clean(raw, math.huge))
 end
 
 -- ── Rows ──────────────────────────────────────────────────────────────────────────────────
@@ -211,33 +236,57 @@ end)
 rpc.register('files:read', 'files', function(_, s, p)
     local id = idOf(p.id)
     if not id then return rpc.fail('err.invalid') end
-    local r = MySQL.single.await('SELECT ' .. META .. ', body FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
+    local r = MySQL.single.await('SELECT ' .. META .. ', body, format FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
     if not r then return rpc.fail('files.missing') end
     local out = shape(r)
     out.body = r.body or ''
+    out.format = r.format == 'rich' and 'rich' or 'text'
     return rpc.ok(out)
 end)
 
 ---Create or update a document. No id is a new one, and so is an id that is gone (deleted from the
 ---database while it was open): the text on screen is kept rather than refused.
----@param p { id?: integer, name: string, body: string }
-rpc.register('files:save', 'files', function(_, s, p)
+---`format` 'rich' = `body` is a formatted document as JSON (server/computers/richdoc.lua): it is cut
+---down to what a document can be, and a picture in it has to be one out of the player's gallery.
+---@param p { id?: integer, name: string, body: string, format?: 'text'|'rich' }
+rpc.register('files:save', 'files', function(src, s, p)
     local id = idOf(p.id)
     if p.id ~= nil and not id then return rpc.fail('err.invalid') end
     local name = cleanName(p.name)
     if name == '' then return rpc.fail('files.name_required') end
-    local body = text.clip(type(p.body) == 'string' and p.body or '', MAX_BODY)
 
     local list = namesOf(s.citizenid)
     if id and not owns(list, id) then id = nil end
     if taken(list, name, id) then return rpc.fail('files.name_taken', name) end
 
+    local body, format = '', 'text'
+    if p.format == 'rich' then
+        local ok, raw = pcall(json.decode, type(p.body) == 'string' and #p.body <= 400000 and p.body or '')
+        -- (one character over the limit is read, so that a document too long is refused and not cut short)
+        local doc, stats = richdoc.clean(ok and raw or nil, MAX_BODY + 1)
+        if not doc then return rpc.fail('err.invalid') end
+        if stats.chars > MAX_BODY then return rpc.fail('files.too_long', MAX_BODY) end
+        -- The pictures the stored document has may stay, whatever has become of the gallery since.
+        local kept = {}
+        if id and #stats.images > 0 then
+            local old = MySQL.single.await('SELECT body, format FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
+            local was = old and richOf(old.body, old.format)
+            if was then
+                for _, url in ipairs(select(2, richdoc.clean(was, math.huge)).images) do kept[url] = true end
+            end
+        end
+        if not photos.allowed(src, s, stats.images, kept) then return rpc.fail('files.picture_unknown') end
+        body, format = json.encode(doc), 'rich'
+    else
+        body = text.clip(type(p.body) == 'string' and p.body or '', MAX_BODY)
+    end
+
     if id then
-        MySQL.update.await('UPDATE computers_files SET name = ?, body = ?, size = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND citizenid = ?',
-            { name, body, #body, id, s.citizenid })
+        MySQL.update.await('UPDATE computers_files SET name = ?, body = ?, format = ?, size = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND citizenid = ?',
+            { name, body, format, #body, id, s.citizenid })
     else
         if #list >= MAX_FILES then return rpc.fail('files.full', MAX_FILES) end
-        id = MySQL.insert.await('INSERT INTO computers_files (citizenid, name, body, size) VALUES (?, ?, ?, ?)', { s.citizenid, name, body, #body })
+        id = MySQL.insert.await('INSERT INTO computers_files (citizenid, name, body, format, size) VALUES (?, ?, ?, ?, ?)', { s.citizenid, name, body, format, #body })
     end
 
     local row = id and metaOf(s.citizenid, id)
@@ -270,6 +319,19 @@ rpc.register('files:delete', 'files', function(_, s, p)
     if not id then return rpc.fail('err.invalid') end
     MySQL.query.await('DELETE FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
     return rpc.ok()
+end)
+
+-- A document as a printed page: the stored one, read here, so what prints is what was saved. A
+-- formatted document prints as it is set; one that is still plain text prints as a typed page.
+---@param p { id: integer }
+printing.source('file', 'files', function(_, s, p)
+    local id = idOf(p.id)
+    if not id then return nil, locale('err.invalid') end
+    local r = MySQL.single.await('SELECT name, body, format FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
+    if not r then return nil, locale('files.missing') end
+    local doc = richOf(r.body, r.format)
+    if doc then return { kind = 'document', title = r.name, rich = doc } end
+    return { kind = 'text', title = r.name, body = r.body or '' }
 end)
 
 -- ── Phone ─────────────────────────────────────────────────────────────────────────────────
@@ -356,13 +418,16 @@ end)
 registerPhone('files:toPhone', function(src, s, p)
     local id = idOf(p.id)
     if not id then return rpc.fail('err.invalid') end
-    local r = MySQL.single.await('SELECT name, body FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
+    local r = MySQL.single.await('SELECT name, body, format FROM computers_files WHERE id = ? AND citizenid = ?', { id, s.citizenid })
     if not r then return rpc.fail('files.missing') end
+    -- (the phone keeps text: a formatted document goes over as its words, without its pictures)
+    local rich = richOf(r.body, r.format)
+    local content = rich and richdoc.text(rich) or r.body or ''
 
     -- The phone cuts a long name itself, but by bytes: a name clipped here can't end mid-character.
     -- notify = false: the player is looking at the desk's own "copied" message, not at the phone.
     local docId = phone.export('createDocument', src, {
-        name = clipBytes(r.name, PHONE_NAME), kind = 'text', content = r.body or '', notify = false,
+        name = clipBytes(r.name, PHONE_NAME), kind = 'text', content = content, notify = false,
     })
     if type(docId) ~= 'string' then return rpc.fail('files.phone_refused') end
     return rpc.ok({ id = docId })

@@ -95,9 +95,10 @@ end
 
 ---@type table<string, boolean> Apps no computer simply has: session.lua installs each for the
 ---player it is for - the Business Manager for a boss, the Company Board for someone with a job,
----Security Cameras for someone who may watch at least one camera there - and Phone Link wherever
----sd-phone is linked and asks for its code (server/computers/phone.lua).
-local PER_PLAYER = { boss = true, board = true, cameras = true, phonelink = true }
+---Security Cameras for someone who may watch at least one camera there, Phone Link wherever
+---sd-phone is linked and asks for its code (server/computers/phone.lua) - and Photos on every
+---computer that has not opted out of it (configs/shared/photos.lua), whatever its `apps` list says.
+local PER_PLAYER = { boss = true, board = true, cameras = true, phonelink = true, photos = true }
 
 ---The apps installed on a computer: its own `apps` list or Desktop.DefaultApps, filtered to apps
 ---the Desktop registry actually knows. The per-player apps and the phone apps are never returned

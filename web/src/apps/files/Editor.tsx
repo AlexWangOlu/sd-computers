@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { ArrowLeft, Check, Download, FileText, Image as ImageIcon, ImageOff, Lock, Paperclip, PenLine, Printer, Save, Smartphone, Trash2 } from 'lucide-react';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
 import { Button, Empty, IconButton, InfoBar, Spinner, TextInput } from '@/ui/controls';
-import { askDelete, copyFromPhone, copyToPhone, dismissSaveError, editBody, editName, isDirty, retryOpen, save, setFocus, useFiles, type OpenFile, type OpenPhone } from './store';
+import { askDelete, copyFromPhone, copyToPhone, dismissSaveError, editBody, editName, isDirty, rebaseBody, retryOpen, save, setFocus, useFiles, type OpenFile, type OpenPhone } from './store';
 import { cx, fmtCount, fmtSize, fmtWhen } from './model';
 import type { PhoneFull, PhoneKind } from './types';
 import { useWidth } from './hooks';
 import { askPrint, usePrinting } from '@/os/print/PrintDialog';
+import { docLength, parseDoc } from '@/lib/richdoc';
+import { RichEditor } from './RichEditor';
 
-/** The page a document is read and written on: the shell's own type, at a size made for reading. */
+/** The page a phone document is read on: the shell's own type, at a size made for reading. */
 const PAGE: CSSProperties = { fontSize: 15, lineHeight: 1.6, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' };
 const PAGE_CLASS = 'flex-1 min-h-[96px] w-full resize-none border-0 outline-none bg-layer text-t1 placeholder:text-t3 px-6 py-4 os-scroll';
 
@@ -68,8 +70,9 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
   const clock24 = useOS(s => !!s.payload?.desktop.clock24);
   const printing = usePrinting();
   const [ref, width] = useWidth<HTMLDivElement>();
+  const pictures = useOS(s => !!s.payload?.computer.apps.some(a => a.id === 'photos'));
   const nameRef = useRef<HTMLInputElement>(null);
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const bodyRef = useRef<HTMLDivElement | null>(null);
 
   const ready = open.status === 'ready';
   const draft = open.id === null;
@@ -85,7 +88,10 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
     setFocus(null);
   }, [focus, ready]);
 
-  const used = open.body.length;
+  const used = useMemo(() => {
+    const doc = parseDoc(open.body);
+    return doc ? docLength(doc) : 0;
+  }, [open.body]);
   const full = used >= limits.maxBody;
   const nearlyFull = !full && used >= limits.maxBody * 0.95;
 
@@ -119,9 +125,10 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
         )}
         {printing && (
           <IconButton
-            title={t('ui.print.print')}
-            onClick={() => askPrint('files', { source: 'text', title: open.name.trim() || t('ui.files.untitled'), data: { title: open.name.trim(), body: open.body } })}
-            disabled={!ready || open.body.trim() === ''}
+            // (what prints is the stored document, read by the server: so it is saved first)
+            title={t(draft || dirty ? 'ui.print.save_first' : 'ui.print.print')}
+            onClick={() => open.id !== null && askPrint('files', { source: 'file', title: open.savedName, data: { id: open.id } })}
+            disabled={!ready || draft || dirty || (used === 0 && !/"t":"(img|hr)"/.test(open.body))}
             className="shrink-0"
           >
             <Printer size={16} />
@@ -144,18 +151,7 @@ function FileEditor({ open, onBack }: { open: OpenFile; onBack?: () => void }) {
         <Pending status={open.status} error={open.error} />
       ) : (
         <>
-          <textarea
-            ref={bodyRef}
-            value={open.body}
-            onChange={e => editBody(e.target.value)}
-            maxLength={limits.maxBody}
-            spellCheck={false}
-            autoComplete="off"
-            placeholder={t('ui.files.body_placeholder')}
-            aria-label={t('ui.files.body_label')}
-            className={PAGE_CLASS}
-            style={PAGE}
-          />
+          <RichEditor value={open.body} onChange={editBody} onRebase={rebaseBody} limit={limits.maxBody} pageRef={bodyRef} canInsertPictures={pictures} />
           <div className="h-7 shrink-0 flex items-center gap-3 px-3 border-t border-stroke text-caption text-t2">
             <SaveMark saving={busy === 'save'} dirty={dirty} draft={draft} />
             <span className="flex-1 min-w-0 truncate text-t3">{!draft && !dirty && open.updatedAt ? t('ui.files.modified', fmtWhen(open.updatedAt, clock24)) : ''}</span>

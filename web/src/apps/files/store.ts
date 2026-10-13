@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { rpc } from '@/nui/rpc';
 import { t } from '@/i18n';
+import { emptyDoc, fromText, parseDoc } from '@/lib/richdoc';
 import type { FileFull, FileRow, Limits, ListData, PhoneFull, PhoneRow } from './types';
 import {
   DEFAULT_LIMITS,
@@ -31,7 +32,11 @@ import {
  * document in the editor or take the editor away - guardLeave() is the one place that asks.
  */
 
-/** A Documents file in the editor. `id` null = a new one that hasn't been saved yet. */
+/**
+ * A Documents file in the editor. `id` null = a new one that hasn't been saved yet. Its `body` is a
+ * formatted document as JSON (src/lib/richdoc.tsx): one the server still keeps as plain text is turned
+ * into one as it is opened, a paragraph a line, and is saved as one from then on.
+ */
 export interface OpenFile {
   kind: 'file';
   /** goes up with every document opened: the editor is keyed by it, late replies check it */
@@ -127,6 +132,9 @@ export const useFiles = create<FilesState>(() => initial());
 
 const set = useFiles.setState;
 const get = useFiles.getState;
+
+/** A document with nothing on it. */
+const BLANK = JSON.stringify(emptyDoc());
 
 let listSeq = 0;
 let phoneSeq = 0;
@@ -278,7 +286,8 @@ async function fetchFile(seq: number, id: number): Promise<void> {
     set({ open: { ...o, status: 'error', error: r.error ?? t('ui.common.error') } });
     return;
   }
-  const body = typeof r.data.body === 'string' ? r.data.body : '';
+  const raw = typeof r.data.body === 'string' ? r.data.body : '';
+  const body = JSON.stringify((r.data.format === 'rich' && parseDoc(raw)) || fromText(raw));
   const name = typeof r.data.name === 'string' && r.data.name ? r.data.name : o.name;
   set({ open: { ...o, status: 'ready', error: undefined, name, body, savedName: name, savedBody: body, updatedAt: Number(r.data.updatedAt) || o.updatedAt } });
 }
@@ -403,7 +412,7 @@ export function newDocument(): void {
     set({
       place: 'documents',
       search: '',
-      open: { kind: 'file', seq: ++openSeq, id: null, status: 'ready', name, body: '', savedName: name, savedBody: '', updatedAt: 0 },
+      open: { kind: 'file', seq: ++openSeq, id: null, status: 'ready', name, body: BLANK, savedName: name, savedBody: BLANK, updatedAt: 0 },
       view: 'doc',
       focus: 'name',
     });
@@ -419,13 +428,21 @@ export function editName(value: string): void {
   if (name !== o.name) set({ open: { ...o, name, saveError: undefined } });
 }
 
-export function editBody(value: string): void {
+/** What is on the page now, as JSON. (The page keeps to the limit itself: this is not text to cut short.) */
+export function editBody(body: string): void {
   const o = openFile();
   if (!o || o.status !== 'ready') return;
-  // Never past the limit - but a document that already is (the limit was lowered since it was
-  // written) isn't cut short by the first keystroke.
-  const body = clip(value, Math.max(get().limits.maxBody, o.body.length));
   if (body !== o.body) set({ open: { ...o, body } });
+}
+
+/**
+ * The page has written the document that was opened out its own way: the same document, so it is
+ * what was saved as well as what is there - unless something has been typed since.
+ */
+export function rebaseBody(body: string): void {
+  const o = openFile();
+  if (!o || o.status !== 'ready' || o.body !== o.savedBody) return;
+  set({ open: { ...o, body, savedBody: body } });
 }
 
 export function dismissSaveError(): void {
@@ -444,7 +461,7 @@ export async function save(): Promise<boolean> {
   }
   const body = o.body;
   set({ busy: 'save', open: { ...o, saveError: undefined } });
-  const r = await rpc<FileRow>('files:save', o.id !== null ? { id: o.id, name, body } : { name, body });
+  const r = await rpc<FileRow>('files:save', o.id !== null ? { id: o.id, name, body, format: 'rich' } : { name, body, format: 'rich' });
   const row = r.ok ? normFile(r.data) : null;
   const cur = openFile(o.seq);
   if (!row) {

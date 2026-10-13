@@ -227,6 +227,25 @@ interface Photo {
   id: string;
   url: string;
   video: boolean;
+  place?: string;
+}
+
+/** The stills in the player's PHONE gallery, and whether that gallery is on this computer at all. */
+interface Gallery {
+  phone: boolean;
+  photos: Photo[];
+}
+
+/**
+ * The Photos app's list, down to what a post can carry. That app is on every computer and also
+ * holds the pictures a character added at a desk, which the phone would drop from a post: only the
+ * ones that are the phone's count here.
+ */
+async function phoneGallery(): Promise<{ gallery?: Gallery; error?: string }> {
+  const res = await rpc<{ photos?: unknown; phone?: unknown }>('photos:list');
+  if (!res.ok) return { error: res.error ?? t('ui.common.error') };
+  const rows = Array.isArray(res.data?.photos) ? (res.data.photos as Photo[]) : [];
+  return { gallery: { phone: res.data?.phone === true, photos: rows.filter(p => p && typeof p.url === 'string' && p.place === 'phone' && !p.video) } };
 }
 
 /**
@@ -240,14 +259,10 @@ export function PhotoPicker({ max, picked, onDone, onClose }: { max: number; pic
 
   useEffect(() => {
     let live = true;
-    void rpc<{ photos?: unknown }>('photos:list').then(res => {
+    void phoneGallery().then(r => {
       if (!live) return;
-      if (!res.ok) {
-        setError(res.error ?? t('ui.common.error'));
-        return;
-      }
-      const rows = Array.isArray(res.data?.photos) ? (res.data.photos as Photo[]) : [];
-      setPhotos(rows.filter(p => p && typeof p.url === 'string' && !p.video));
+      if (r.gallery) setPhotos(r.gallery.photos);
+      else setError(r.error ?? t('ui.common.error'));
     });
     return () => {
       live = false;
@@ -300,8 +315,24 @@ export function PhotoPicker({ max, picked, onDone, onClose }: { max: number; pic
 
 /** The pictures on a post being written: what is on it, and (the phone linked here) a way to choose. */
 export function PhotoField({ images, max, onChange }: { images: string[]; max: number; onChange: (urls: string[]) => void }) {
-  const hasPhotos = useHasApp('photos');
+  const hasApp = useHasApp('photos');
+  // Having Photos says nothing about the phone any more: the list itself says whether its gallery is here.
+  const [linked, setLinked] = useState<boolean | null>(null);
   const [picking, setPicking] = useState(false);
+
+  useEffect(() => {
+    if (!hasApp) {
+      setLinked(false);
+      return;
+    }
+    let live = true;
+    void phoneGallery().then(r => {
+      if (live) setLinked(r.gallery?.phone === true);
+    });
+    return () => {
+      live = false;
+    };
+  }, [hasApp]);
   return (
     <div>
       {images.length > 0 && (
@@ -316,7 +347,7 @@ export function PhotoField({ images, max, onChange }: { images: string[]; max: n
           ))}
         </div>
       )}
-      {hasPhotos ? <Btn onClick={() => setPicking(true)}>{t('ui.browser.live_pick')}</Btn> : <p className="s-faint text-[12px]">{t('ui.browser.live_pick_unlinked')}</p>}
+      {linked === null ? null : linked ? <Btn onClick={() => setPicking(true)}>{t('ui.browser.live_pick')}</Btn> : <p className="s-faint text-[12px]">{t('ui.browser.live_pick_unlinked')}</p>}
       {picking && (
         <PhotoPicker
           max={max}

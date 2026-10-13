@@ -32,7 +32,7 @@ export interface AppProps {
  * App id -> component. The ids are configs/shared/desktop.lua's Apps keys (plus 'hack', the
  * window Command Prompt spawns for a minigame, and the three games the Games shelf opens as
  * programs of their own). A new app needs an entry here AND in that config.
- * 'messages', 'notes', 'photos' and 'contacts' only ever appear while the sd-phone link is live (the
+ * 'messages', 'notes' and 'contacts' only ever appear while the sd-phone link is live (the
  * server installs them, after 'phonelink' has linked the phone where it asks for that); 'boss',
  * 'board' and 'cameras' only for a player they are for.
  */

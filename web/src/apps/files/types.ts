@@ -20,9 +20,11 @@ export interface FileRow {
   updatedAt: number;
 }
 
-/** files:read - the document with its text. */
+/** files:read - the document with what is in it. */
 export interface FileFull extends FileRow {
+  /** plain text, or - `format` 'rich' - a formatted document as JSON (src/lib/richdoc.tsx) */
   body: string;
+  format?: 'text' | 'rich';
 }
 
 /** files:list */

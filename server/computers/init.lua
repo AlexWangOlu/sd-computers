@@ -44,6 +44,7 @@ auto.load() -- which props in the world are a computer, as the admin panel left 
 require('server.computers.files').ensureSchema() -- Files: the characters' documents
 require('server.computers.board').ensureSchema() -- Company Board: the jobs' announcements
 require('server.computers.phone').ensureSchema() -- Phone Link: which machines a character's phone is linked to
+require('server.computers.photos').ensureSchema() -- Photos: the characters' own pictures
 require('server.computers.printing').ensureSchema() -- Printing: the pages, and what waits in which printer's tray
 require('server.computers.printing').load() -- (after the printers: a page whose printer is gone waits nowhere)
 
@@ -55,7 +56,7 @@ require 'server.computers.boss'
 require 'server.computers.hacks'
 require 'server.computers.phonelink' -- Phone Link: the code that puts the phone's apps on a machine
 require 'server.computers.phoneapps' -- Messages + Notes over the optional sd-phone link (inert without it)
-require 'server.computers.photos' -- Photos: the phone's gallery, over the same link
+require 'server.computers.photos' -- Photos: the character's pictures, and the phone's gallery beside them over the same link
 require 'server.computers.contacts' -- Contacts: the phone's address book, over the same link
 require 'server.computers.bank' -- Bank: the character's balance + statement (read-only)
 require 'server.computers.browser' -- Browser: the sites of configs/shared/browser.lua

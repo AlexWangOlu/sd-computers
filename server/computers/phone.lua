@@ -19,10 +19,10 @@ local RES = P.Resource or 'sd-phone'
 local phone = {}
 
 ---@type string[] App ids that come from the phone, in the order they're appended to a computer.
-phone.APPS = { 'messages', 'notes', 'photos', 'contacts' }
+phone.APPS = { 'messages', 'notes', 'contacts' }
 
 ---@type table<string, string> App id -> the Phone config switch that enables it.
-local SWITCH = { messages = 'Messages', notes = 'Notes', photos = 'Photos', contacts = 'Contacts' }
+local SWITCH = { messages = 'Messages', notes = 'Notes', contacts = 'Contacts' }
 
 ---@type boolean|nil Cached link state; nil = re-probe. Cleared whenever sd-phone starts or stops.
 local cached
@@ -151,10 +151,11 @@ function phone.unpair(citizenid, instance)
     paired[citizenid .. '|' .. instance] = false
 end
 
----Whether anything on a computer comes from the phone at all (an app, or the Phone place in Files).
+---Whether anything on a computer comes from the phone at all (an app, the Phone place in Files, or
+---the phone's gallery in Photos).
 ---@return boolean
 local function anyPhoneSide()
-    if P.Files ~= false then return true end
+    if P.Files ~= false or P.Photos ~= false then return true end
     for _, id in ipairs(phone.APPS) do
         if P[SWITCH[id]] ~= false then return true end
     end

@@ -171,6 +171,8 @@ local function appList(def, apps)
     for _, id in ipairs(phone.APPS) do
         if apps[id] and not placed[id] then table.insert(order, at, id); at = at + 1; placed[id] = true end
     end
+    -- (Photos sits with them: it is where the phone's gallery shows)
+    if apps.photos and not placed.photos then table.insert(order, at, 'photos'); at = at + 1; placed.photos = true end
     -- (Phone Link sits with the apps it unlocks, linked or not)
     if apps.phonelink and not placed.phonelink then table.insert(order, at, 'phonelink'); placed.phonelink = true end
     for _, id in ipairs({ 'board', 'cameras' }) do
@@ -274,6 +276,8 @@ function session.open(src, id, coords, styleOverride)
     if hasBoard(src, def) then apps.board = true end
     if #cameras.visible(src, def) > 0 then apps.cameras = true end
     if phone.linkApp(def) then apps.phonelink = true end
+    -- (Photos is the character's own pictures: every computer has it unless it says `photos = false`)
+    if (config.Photos or {}).Enabled ~= false and def.photos ~= false then apps.photos = true end
     for app in pairs(phone.apps(src, def, citizenid, instance)) do apps[app] = true end
 
     local style = registry.style(def, styleOverride)

@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from 'react';
-import { ChevronLeft, ChevronRight, Heart, ImageOff, VideoOff, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, ImageOff, Trash2, VideoOff, X } from 'lucide-react';
 import { t } from '@/i18n';
 import { useExitFx } from '@/hooks/useExitFx';
 import { Spinner } from '@/ui/controls';
@@ -20,17 +20,20 @@ export default function Viewer({
   clock24,
   onStep,
   onClose,
+  onDelete,
 }: {
   photos: Photo[];
   index: number;
   clock24: boolean;
   onStep: (by: number) => void;
   onClose: () => void;
+  /** take the one showing out of the character's own pictures (the phone's are not this app's to take out) */
+  onDelete?: (photo: Photo) => void;
 }) {
   const exitRef = useExitFx('fade-out');
   const photo = photos[index];
   if (!photo) return null;
-  const label = takenAt(photo, clock24) || t(photo.video ? 'ui.photos.video' : 'ui.photos.photo');
+  const label = (photo.place === 'computer' ? t('ui.photos.added_at', takenAt(photo, clock24)) : takenAt(photo, clock24)) || t(photo.video ? 'ui.photos.video' : 'ui.photos.photo');
   // A press on the scrim itself, not on the picture or a button, closes.
   const onScrim = (e: MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) onClose();
@@ -47,6 +50,11 @@ export default function Viewer({
         )}
         {photos.length > 1 && <span className="shrink-0 text-caption opacity-70 tabular-nums">{t('ui.photos.viewer_of', index + 1, photos.length)}</span>}
         <span className="flex-1" />
+        {onDelete && photo.place === 'computer' && (
+          <button type="button" title={t('ui.photos.delete')} aria-label={t('ui.photos.delete')} onClick={() => onDelete(photo)} className={cx(navBtn, 'w-9 h-9')}>
+            <Trash2 size={16} />
+          </button>
+        )}
         <button type="button" title={t('ui.common.close')} aria-label={t('ui.common.close')} onClick={onClose} className={cx(navBtn, 'w-9 h-9')}>
           <X size={18} />
         </button>

@@ -17,8 +17,8 @@ local text = require 'shared.text'
 -- story from the newsroom, a message to a company - is done as the player at the desk, through the
 -- phone's own action for it: its limits, its owner checks and its staff rules are the ones that
 -- hold. The one thing a desk cannot give a post is a picture of its own: the phone only takes
--- photos out of the poster's gallery, so a picture is picked from there (the Photos app's list),
--- which a computer has only while that player's phone is linked to it.
+-- photos out of the poster's gallery, so a picture is picked from there (the phone's side of the
+-- Photos app's list), which a computer has only while that player's phone is linked to it.
 --
 -- Every picture address that comes back goes through the same https test the rest of the Browser
 -- uses before the page sees it.

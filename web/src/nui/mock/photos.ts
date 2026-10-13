@@ -2,9 +2,10 @@ import type { MockHandler } from './index';
 import { fail, ok } from './index';
 import type { ListData, Photo } from '@/apps/photos/types';
 
-// Browser mock for photos:list (server/computers/photos.lua over sd-phone's getPhotos export):
-// the gallery newest first, times in unix seconds, read-only. The pictures are inline SVG so the
-// dev page draws them offline; the real ones are https URLs on the server's media host.
+// Browser mock for photos:* (server/computers/photos.lua): the character's own pictures (added by
+// link, deletable) and the phone's gallery over sd-phone's getPhotos export (read-only), in one
+// list, times in unix seconds. The pictures are inline SVG so the dev page draws them offline; the
+// real ones are https URLs.
 //
 // Dev switches (browser console, then press Refresh in the app):
 //   window.__phoneDown = true               fails like a dropped sd-phone link (as in Messages;
@@ -13,8 +14,6 @@ import type { ListData, Photo } from '@/apps/photos/types';
 //   localStorage['mock:photos'] = 'video'   adds a clip (it can't play offline: the viewer says so)
 //   localStorage['mock:photos'] = 'broken'  adds a photo whose picture won't load
 //   localStorage['mock:photos'] = 'full'    flags the list as cut off at the phone's page size
-
-const UNAVAILABLE = 'The phone link is unavailable right now.';
 
 const MIN = 60;
 const HOUR = 60 * MIN;
@@ -85,7 +84,15 @@ const plate = (table: string, food: string, side: string): string =>
 
 // ── The gallery ─────────────────────────────────────────────────────────────────────────────
 
-const photo = (id: string, secsAgo: number, url: string, favorite = false): Photo => ({ id, url, ts: ago(secsAgo), video: false, favorite });
+const photo = (id: string, secsAgo: number, url: string, favorite = false): Photo => ({ id, url, ts: ago(secsAgo), video: false, favorite, place: 'phone' });
+
+/** The character's own pictures: added on a computer, by their link. */
+let nextOwn = 3;
+let own: Photo[] = [
+  { id: 'pc:2', url: plate('#3a2f2a', '#e0a23b', '#7fae5a'), ts: ago(2 * HOUR), video: false, favorite: false, place: 'computer' },
+  { id: 'pc:1', url: city('#1b2540', '#56407a', '#0d1120', '#ffe08a'), ts: ago(4 * DAY), video: false, favorite: false, place: 'computer' },
+];
+const MAX_OWN = 200;
 
 /** Fourteen photos over the last ten days, newest first. */
 const photos: Photo[] = [
@@ -105,8 +112,8 @@ const photos: Photo[] = [
   photo('c4v7b0n3m6lp', 9 * DAY + 4 * HOUR, city('#0f2433', '#1f5a6b', '#081219', '#9be7ff')),
 ];
 
-const CLIP: Photo = { id: 'e1r4t7y0u3iq', url: 'https://media.example.invalid/sdphone-clip.webm', ts: ago(12 * MIN), video: true, favorite: false };
-const BROKEN: Photo = { id: 'w6q9a2s5d8fr', url: 'data:image/png;base64,AAAA', ts: ago(20 * MIN), video: false, favorite: false };
+const CLIP: Photo = { id: 'e1r4t7y0u3iq', url: 'https://media.example.invalid/sdphone-clip.webm', ts: ago(12 * MIN), video: true, favorite: false, place: 'phone' };
+const BROKEN: Photo = { id: 'w6q9a2s5d8fr', url: 'data:image/png;base64,AAAA', ts: ago(20 * MIN), video: false, favorite: false, place: 'phone' };
 
 const linkDown = (): boolean => {
   if ((window as unknown as { __phoneDown?: boolean }).__phoneDown) return true;
@@ -127,13 +134,30 @@ const variant = (): string => {
 
 const handlers: Record<string, MockHandler> = {
   'photos:list': () => {
-    if (linkDown()) return fail(UNAVAILABLE);
+    // (the link down is not an error any more: the character's own pictures still show)
+    const phone = !linkDown();
     const v = variant();
-    let list = v === 'empty' ? [] : [...photos];
-    if (v === 'video') list = [CLIP, ...list];
-    if (v === 'broken') list = [BROKEN, ...list];
-    const data: ListData = { photos: list, capped: v === 'full' };
+    let list = !phone || v === 'empty' ? [] : [...photos];
+    if (phone && v === 'video') list = [CLIP, ...list];
+    if (phone && v === 'broken') list = [BROKEN, ...list];
+    const mine = v === 'empty' ? [] : own;
+    const data: ListData = { photos: [...mine, ...list], capped: v === 'full', phone, count: mine.length, max: MAX_OWN };
     return ok(data);
+  },
+  'photos:add': p => {
+    const url = typeof p.url === 'string' ? p.url.trim() : '';
+    if (!/^https:\/\/\S+$/i.test(url)) return fail('That is not a link to a picture. It has to start with https://');
+    if (!/^https:\/\/([^/]+\.)?(imgur\.com|fivemanage\.com|discordapp\.com|discordapp\.net|ibb\.co)(\/|$)/i.test(url)) return fail('Pictures cannot be linked from that site here.');
+    if (own.some(x => x.url === url)) return fail('That picture is already in your pictures.');
+    if (own.length >= MAX_OWN) return fail(`Your pictures are full (${MAX_OWN}). Delete one first.`);
+    // (offline, a real link would not draw: the picture kept is a stand-in for it)
+    const row: Photo = { id: `pc:${nextOwn++}`, url: hills('#8ec5ff', '#e8f4ff', '#fff6c9', '#35705a'), ts: Math.floor(Date.now() / 1000), video: false, favorite: false, place: 'computer' };
+    own = [row, ...own];
+    return ok(row);
+  },
+  'photos:delete': p => {
+    own = own.filter(x => x.id !== p.id);
+    return ok();
   },
 };
 

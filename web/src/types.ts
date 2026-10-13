@@ -2,11 +2,11 @@
 // change one, change both.
 
 /**
- * 'messages', 'notes', 'photos' and 'contacts' are the phone apps: only installed while sd-phone is
+ * 'messages', 'notes' and 'contacts' are the phone apps: only installed while sd-phone is
  * linked (server/computers/phone.lua) and, where it asks for the code, once the character has linked
  * their phone to the machine in 'phonelink' - the app that is there whenever sd-phone is. 'boss',
  * 'board' and 'cameras' are installed per player: for a boss, for someone with a job, and for
- * someone allowed to watch at least one camera.
+ * someone allowed to watch at least one camera. 'photos' is on every computer that has not opted out.
  */
 export type AppId =
   | 'mail'

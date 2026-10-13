@@ -21,7 +21,7 @@ export const mockPayload: OpenPayload = {
       { id: 'cmd', label: 'Command Prompt', w: 900, h: 540 },
       { id: 'notepad', label: 'Notepad', w: 820, h: 560 },
       { id: 'calculator', label: 'Calculator', w: 340, h: 520 },
-      { id: 'files', label: 'Files', w: 980, h: 620 },
+      { id: 'files', label: 'Files', w: 1180, h: 740 },
       { id: 'browser', label: 'Browser', w: 1100, h: 700 },
       { id: 'bank', label: 'Bank', w: 940, h: 640 },
       { id: 'board', label: 'Company Board', w: 940, h: 620 },

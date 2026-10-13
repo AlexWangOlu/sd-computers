@@ -1,0 +1,330 @@
+/* A written document's own typography (src/lib/richdoc.tsx). The same rules set the page in the
+   Files editor and on a printed sheet, so what is typed is what prints. Everything is in em of the
+   container's font size, and by tag: the editor's markup is whatever the browser writes as one
+   types, so there are no classes to hang a rule on. */
+
+.rd {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rd p,
+.rd blockquote,
+.rd ul,
+.rd ol {
+  margin: 0 0 0.7em;
+}
+.rd p,
+.rd li,
+.rd blockquote {
+  white-space: pre-wrap;
+}
+.rd p {
+  min-height: 1.5em;
+}
+
+.rd h1,
+.rd h2,
+.rd h3 {
+  font-weight: 700;
+  line-height: 1.22;
+}
+.rd h1 {
+  margin: 0.15em 0 0.5em;
+  font-size: 1.75em;
+}
+.rd h2 {
+  margin: 0.35em 0 0.45em;
+  font-size: 1.34em;
+}
+.rd h3 {
+  margin: 0.35em 0 0.35em;
+  font-size: 1.1em;
+}
+
+.rd blockquote {
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 3px solid rgba(128, 128, 128, 0.55);
+  font-style: italic;
+}
+
+.rd ul,
+.rd ol {
+  padding-left: 1.7em;
+}
+.rd ul {
+  list-style: disc outside;
+}
+.rd ol {
+  list-style: decimal outside;
+}
+.rd li {
+  margin-bottom: 0.2em;
+}
+
+.rd b,
+.rd strong {
+  font-weight: 700;
+}
+.rd i,
+.rd em {
+  font-style: italic;
+}
+.rd u {
+  text-decoration: underline;
+}
+.rd s,
+.rd strike {
+  text-decoration: line-through;
+}
+
+/* A part set in a typeface, a size or an ink of its own. The editor writes these as <font> (it is
+   the browser's own editing), the printed page as a span that says the same thing: one rule each.
+   The lists are FONTS, SIZES and INKS in src/lib/richdoc.tsx - change one, change both. Sizes are
+   in em, so a part keeps its share of the sheet however big the sheet is drawn. */
+.rd font[face='serif'],
+.rd [data-f='serif'] {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.rd font[face='sans'],
+.rd [data-f='sans'] {
+  font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif;
+}
+.rd font[face='mono'],
+.rd [data-f='mono'] {
+  font-family: 'JetBrains Mono Variable', 'JetBrains Mono', Consolas, monospace;
+}
+.rd font[face='typewriter'],
+.rd [data-f='typewriter'] {
+  font-family: 'Courier New', Courier, monospace;
+}
+.rd font[face='classic'],
+.rd [data-f='classic'] {
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', serif;
+}
+.rd font[face='hand'],
+.rd [data-f='hand'] {
+  font-family: 'Segoe Print', 'Ink Free', 'Bradley Hand ITC', 'Comic Sans MS', cursive;
+}
+
+.rd font[size] {
+  font-size: 1em;
+}
+.rd font[size='1'],
+.rd font[size='2'],
+.rd [data-z='s'] {
+  font-size: 0.8em;
+}
+.rd font[size='4'],
+.rd font[size='5'],
+.rd [data-z='l'] {
+  font-size: 1.35em;
+}
+.rd font[size='6'],
+.rd font[size='7'],
+.rd [data-z='xl'] {
+  font-size: 1.8em;
+  line-height: 1.25;
+}
+
+.rd [data-c='blue'] {
+  color: #1d4f9c;
+}
+.rd [data-c='red'] {
+  color: #b3261e;
+}
+.rd [data-c='green'] {
+  color: #256b3c;
+}
+.rd [data-c='purple'] {
+  color: #6a3d9a;
+}
+.rd [data-c='grey'] {
+  color: #6d6f76;
+}
+
+/* Lines to sign on: the ones that follow one another share a row, two across. Over each line is
+   the room the ink goes in; under it, whose line it is and - signed - who by. */
+.rd .sig-row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8%;
+  margin: 1.1em 0 0.5em;
+}
+.rd .sig {
+  position: relative;
+  flex: 0 0 46%;
+  min-width: 0;
+  margin-bottom: 0.7em;
+  white-space: normal;
+}
+.rd .sig-space {
+  position: relative;
+  height: 3.2em;
+}
+/* (the cross a line to sign on starts with) */
+.rd .sig:not(.is-signed) .sig-space::before {
+  content: '\00d7';
+  position: absolute;
+  left: 0.1em;
+  bottom: -0.05em;
+  font-size: 1.25em;
+  line-height: 1;
+  opacity: 0.5;
+}
+.rd .sig-line {
+  border-bottom: 1px solid currentColor;
+  opacity: 0.7;
+}
+.rd .sig-label {
+  min-height: 1.3em;
+  margin-top: 0.3em;
+  font-size: 0.8em;
+  line-height: 1.3;
+  opacity: 0.8;
+}
+.rd .sig-who {
+  font-size: 0.7em;
+  line-height: 1.35;
+  opacity: 0.62;
+}
+/* The ink: it stands on the line and dips a little under it, the way a hand signs. A signature
+   drawn on white (the phone's are) loses its white on the paper. */
+.rd .sig-ink {
+  position: absolute;
+  left: 7%;
+  bottom: -0.55em;
+  height: 3.5em;
+  max-width: 88%;
+  object-fit: contain;
+  object-position: left bottom;
+  transform: rotate(-2.5deg);
+  transform-origin: left bottom;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* A picture: a share of the page's width, in the middle unless it is put to one side. */
+.rd figure {
+  width: 50%;
+  margin: 0.4em auto 0.9em;
+}
+.rd figure[data-w='25'] {
+  width: 25%;
+}
+.rd figure[data-w='75'] {
+  width: 75%;
+}
+.rd figure[data-w='100'] {
+  width: 100%;
+}
+.rd figure[data-a='left'] {
+  margin-left: 0;
+}
+.rd figure[data-a='right'] {
+  margin-right: 0;
+}
+.rd figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.rd figcaption {
+  margin-top: 0.4em;
+  font-size: 0.82em;
+  line-height: 1.35;
+  text-align: center;
+  opacity: 0.72;
+}
+
+.rd hr {
+  margin: 1.1em 0;
+  border: 0;
+  border-top: 1px solid currentColor;
+  opacity: 0.35;
+}
+
+/* ── The Files editor: the sheet a document is written on, on its desk ───────────────────── */
+
+.doc-desk {
+  padding: 22px 18px 30px;
+}
+.doc-page {
+  position: relative;
+  width: 100%;
+  max-width: 794px;
+  min-height: 100%;
+  margin: 0 auto;
+  /* (the margins of a sheet, narrowing with the window so a small one still has room to write in) */
+  --doc-pad: clamp(22px, 8%, 64px);
+  padding: calc(var(--doc-pad) * 0.9) var(--doc-pad) var(--doc-pad);
+  border-radius: 2px;
+  background: #fdfcf9;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.28),
+    0 10px 26px rgba(0, 0, 0, 0.2);
+  color: #1c1c1f;
+  font-size: 15.5px;
+  outline: none;
+  cursor: text;
+  user-select: text;
+}
+.doc-page.is-blank::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: var(--doc-pad);
+  top: calc(var(--doc-pad) * 0.9);
+  color: #9a9aa2;
+  pointer-events: none;
+}
+.doc-page figure {
+  cursor: pointer;
+  user-select: none;
+}
+.doc-page figure.is-selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+}
+.doc-page .sig-row {
+  user-select: none;
+}
+.doc-page .sig {
+  border-radius: 2px;
+  cursor: pointer;
+}
+.doc-page .sig.is-selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 5px;
+}
+/* (a line nobody is named for yet says what it is) */
+.doc-page .sig-label:empty::before {
+  content: var(--sig-hint, '');
+  font-style: italic;
+  opacity: 0.7;
+}
+.doc-page ::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+/* What the ink button opens: the inks, a spot each. */
+.doc-inks-list button {
+  width: 22px;
+  height: 22px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background-clip: padding-box;
+  cursor: pointer;
+}
+.doc-inks-list button:hover,
+.doc-inks-list button[aria-pressed='true'] {
+  border-color: rgba(128, 128, 128, 0.7);
+}
+/* The rule between two groups of buttons on the toolbar. */
+.doc-sep {
+  flex: none;
+  width: 1px;
+  height: 18px;
+  margin: 0 5px;
+  background: currentColor;
+  opacity: 0.18;
+}
