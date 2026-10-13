@@ -18,6 +18,8 @@ local inventory = require 'bridge.server.inventory'
 local player = require 'bridge.server.player'
 ---@type table UTF-8-safe clipping (shared.text).
 local text = require 'shared.text'
+---@type table Rich documents (server.computers.richdoc): a formatted document, as a page carries one.
+local richdoc = require 'server.computers.richdoc'
 
 ---@type table Printers config (config.Printers).
 local P = config.Printers or {}
@@ -41,10 +43,14 @@ local KEEP_DAYS = math.max(0, math.floor(tonumber(P.KeepDays) or 0))
 local MAX_CHARS = math.max(100, math.floor(tonumber(P.MaxChars) or 20000))
 ---@type number Metres from a printer its tray can be reached from.
 local REACH = (tonumber((P.Target or {}).distance) or 1.8) + 2.0
+---@type boolean Whether a printed page can be signed.
+local SIGNING = P.Signatures ~= false
+---@type integer Longest signature kept, in characters of its data address (a small PNG is a few thousand).
+local SIG_CHARS = 60000
 
 -- Printing. A page is a small document - a title, an optional letterhead, labelled fields, a body
 -- of text, a table, a picture - kept in computers_prints. An app never sends one: it names a
--- SOURCE ('text', 'mail', 'statement', 'logs' ...) and what in it to print, and that source's
+-- SOURCE ('text', 'file', 'mail', 'statement', 'logs' ...) and what in it to print, and that source's
 -- function, which lives with the app, builds the page from the server's own data. So a page with
 -- a bank's letterhead on it came from the bank's rows, whatever the NUI asked for; the one source
 -- that prints what the player typed ('text') can only make a plain typed page.
@@ -53,6 +59,10 @@ local REACH = (tonumber((P.Target or {}).distance) or 1.8) + 2.0
 -- until somebody standing at that printer takes it. What they are handed is the item
 -- config.Printers.Item, whose metadata names the page: using it opens the page
 -- (client/computers/paper.lua).
+--
+-- A document can have lines to sign on. They are signed on paper: whoever holds the page up signs
+-- a line and hands the page on for the next. The name and the time under a signature are the
+-- server's own - only the ink is the player's - so a signed line says who really signed it.
 
 ---@type table Printing module; the table returned at end of file.
 local printing = {}
@@ -64,6 +74,7 @@ local printing = {}
 ---@field subhead string|nil the smaller line under it
 ---@field fields { label: string, value: string }[]|nil
 ---@field body string|nil
+---@field rich RichDoc|nil a formatted document (Files): its typeface, and its blocks
 ---@field table { head: string[], rows: string[][] }|nil
 ---@field image string|nil an https address
 ---@field footer string|nil
@@ -100,6 +111,21 @@ function printing.ensureSchema()
             created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY idx_printer (printer)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+    -- `single`: the page is one sheet and no more, so it can be written on where it is kept. A table
+    -- made before pages could be signed has no such column yet.
+    local has = MySQL.query.await("SHOW COLUMNS FROM computers_prints LIKE 'single'")
+    if not has or #has == 0 then
+        MySQL.query.await('ALTER TABLE computers_prints ADD COLUMN single TINYINT NOT NULL DEFAULT 0 AFTER ready_at')
+    end
+    -- The signature a character signs with: drawn once, used on every page after.
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS computers_signatures (
+            citizenid  VARCHAR(64) NOT NULL,
+            image      MEDIUMTEXT  NOT NULL,
+            updated_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (citizenid)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ]])
 end
@@ -172,7 +198,12 @@ function printing.doc(raw)
 
     if type(raw.image) == 'string' and #raw.image <= 400 and raw.image:match('^https?://[%w%-%._~:/%?#%[%]@!%$&\'%(%)%*%+,;=%%]+$') then doc.image = raw.image end
 
-    if not (doc.body or doc.fields or doc.table or doc.image) then return nil end
+    if raw.rich ~= nil then
+        local rich = richdoc.clean(raw.rich, MAX_CHARS)
+        if rich and not richdoc.blank(rich) then doc.rich = rich end
+    end
+
+    if not (doc.body or doc.rich or doc.fields or doc.table or doc.image) then return nil end
     return doc
 end
 
@@ -180,8 +211,9 @@ end
 ---@param doc PrintDoc
 ---@return string
 local function snippetOf(doc)
-    if doc.kind == 'text' and doc.body then
-        return text.clip(text.trim((doc.body:gsub('%s+', ' '))), 120)
+    local words = (doc.kind == 'text' and doc.body) or (doc.rich and richdoc.text(doc.rich)) or nil
+    if words and words:match('%S') then
+        return text.clip(text.trim((words:gsub('%s+', ' '))), 120)
     end
     local key = 'print.kind_' .. doc.kind
     local label = locale(key)
@@ -253,9 +285,9 @@ local function keep(doc, copies, by, printer)
         by = by.cid, name = by.name, computer = by.computer, title = doc.title, snippet = snippetOf(doc),
     }
     entry.id = MySQL.insert.await(
-        'INSERT INTO computers_prints (title, kind, snippet, doc, by_cid, by_name, computer, printer, copies, ready_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO computers_prints (title, kind, snippet, doc, by_cid, by_name, computer, printer, copies, ready_at, single) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         { doc.title, doc.kind, entry.snippet, json.encode(doc), by.cid, by.name and text.clip(by.name, 96), by.computer and text.clip(by.computer, 96),
-            printer and printer.id or nil, printer and copies or 0, entry.readyAt })
+            printer and printer.id or nil, printer and copies or 0, entry.readyAt, copies == 1 and 1 or 0 })
     if not entry.id then return nil end
     if printer then
         trays[printer.id] = trays[printer.id] or {}
@@ -406,32 +438,227 @@ local function read(id)
     return page
 end
 
----The metadata of the printout a player just used. Inventories hand a used item over in
----different ways (a slot number, the item with its metadata, only its name), so each is tried.
+---The metadata of the printout a player just used, and the slot it is in where the inventory
+---says. Inventories hand a used item over in different ways (a slot number, the item with its
+---metadata, only its name), so each is tried.
 ---@param src integer
 ---@param item any
 ---@param slot any
 ---@return table|nil metadata
+---@return any slot
 local function usedMetadata(src, item, slot)
     if type(slot) ~= 'number' and type(item) == 'table' then slot = item.slot end
     local held = slot ~= nil and inventory.getSlot(src, slot) or nil
-    if held and held.name == ITEM and type(held.metadata) == 'table' and held.metadata.print_id then return held.metadata end
+    if held and held.name == ITEM and type(held.metadata) == 'table' and held.metadata.print_id then return held.metadata, slot end
     if type(item) == 'table' then
         local meta = item.metadata or item.info
-        if type(meta) == 'table' and meta.print_id then return meta end
+        if type(meta) == 'table' and meta.print_id then return meta, slot end
     end
     -- (an inventory that says only which item it was: the first printout carried is the one opened)
     local first = inventory.getSlots(src, ITEM)[1]
-    return first and first.metadata or nil
+    return first and first.metadata or nil, first and first.slot or nil
 end
+
+-- ── Signing ───────────────────────────────────────────────────────────────────────────────
+-- Copies of one page are the same item until one of them is signed. That copy becomes a page of
+-- its own - a row of its own, marked `single` - and the item in the player's hand is changed to
+-- name it; the copies nobody signed stay as they were. A page that is one sheet already is
+-- written on where it is kept.
+
+---@type table<integer, { id: integer, slot: any }> player -> the page they are holding up.
+local holding = {}
+
+AddEventHandler('playerDropped', function() holding[source] = nil end)
+
+---@type string The base64 alphabet, in order.
+local B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+---The bytes the first `chars` characters of some base64 hold.
+---@param s string
+---@param chars integer
+---@return string
+local function b64head(s, chars)
+    local out, acc, bits = {}, 0, 0
+    for i = 1, math.min(#s, chars) do
+        local v = B64:find(s:sub(i, i), 1, true)
+        if not v then break end
+        acc = ((acc << 6) | (v - 1)) & 0xFFFFFF
+        bits = bits + 6
+        if bits >= 8 then
+            bits = bits - 8
+            out[#out + 1] = string.char((acc >> bits) & 0xFF)
+        end
+    end
+    return table.concat(out)
+end
+
+---A signature as it is kept: a PNG as a data address, small in characters AND in pixels. The
+---picture is drawn by the game of everyone who is handed the page, so what its header says its
+---size is gets read here: a few kilobytes can unpack into a picture big enough to hurt.
+---@param v any what the page sent
+---@return string|nil image
+local function inkOf(v)
+    if type(v) ~= 'string' or #v > SIG_CHARS then return nil end
+    local data = v:match('^data:image/png;base64,([A-Za-z0-9+/]+=?=?)$')
+    if not data then return nil end
+    local head = b64head(data, 44)
+    if #head < 24 or head:sub(1, 8) ~= '\137PNG\r\n\26\n' or head:sub(13, 16) ~= 'IHDR' then return nil end
+    local w, h = string.unpack('>I4I4', head, 17)
+    if w < 8 or h < 8 or w > 1200 or h > 600 then return nil end
+    return v
+end
+
+---The signature a character signs with, if they have drawn one.
+---@param cid string|nil
+---@return string|nil image
+local function savedInk(cid)
+    return cid and MySQL.scalar.await('SELECT image FROM computers_signatures WHERE citizenid = ?', { cid }) or nil
+end
+
+---A page as it is sent to the player holding it up: with whether there is anything on it for
+---them to sign, and the name they would sign as.
+---@param src integer
+---@param page table { id, doc, by, from, at }
+---@return table
+local function handed(src, page)
+    local out = { id = page.id, doc = page.doc, by = page.by, from = page.from, at = page.at }
+    if SIGNING and type(page.doc.rich) == 'table' and #richdoc.signs(page.doc.rich) > 0 then
+        out.signing = { name = player.getName(src) }
+    end
+    return out
+end
+
+---The slot a player has a page in: the one they opened it from if it is still there, else any.
+---@param src integer
+---@param id integer the page
+---@param slot any
+---@return { slot: any, count: integer, metadata: table }|nil
+local function slotOf(src, id, slot)
+    local s = slot ~= nil and inventory.getSlot(src, slot) or nil
+    if s and s.name == ITEM and type(s.metadata) == 'table' and tonumber(s.metadata.print_id) == id then return s end
+    for _, e in ipairs(inventory.getSlots(src, ITEM)) do
+        if e.slot ~= nil and type(e.metadata) == 'table' and tonumber(e.metadata.print_id) == id then
+            return { slot = e.slot, count = e.count, metadata = e.metadata }
+        end
+    end
+    return nil
+end
+
+---Who has signed a page, as the item's tooltip says it.
+---@param rich RichDoc
+---@return string|nil
+local function signedBy(rich)
+    local names, seen = {}, {}
+    for _, b in ipairs(richdoc.signs(rich)) do
+        local name = type(b.sig) == 'table' and b.sig.name or nil
+        if name and not seen[name] then
+            seen[name] = true
+            names[#names + 1] = name
+        end
+    end
+    return #names > 0 and text.clip(table.concat(names, ', '), 120) or nil
+end
+
+---Change one sheet in a player's hand into the item `meta` describes.
+---@param src integer
+---@param at { slot: any, count: integer, metadata: table } where it is
+---@param meta table
+---@return boolean ok
+local function restamp(src, at, meta)
+    if at.slot == nil then return false end
+    if (tonumber(at.count) or 1) <= 1 and inventory.setMetadata(src, at.slot, meta, ITEM) then return true end
+    -- (one of a stack, or an inventory that cannot rewrite a slot: one sheet out, the new one in)
+    if not inventory.removeFromSlot(src, ITEM, 1, at.slot) then return false end
+    if inventory.add(src, ITEM, 1, meta) then return true end
+    inventory.add(src, ITEM, 1, at.metadata)
+    return false
+end
+
+---The signature this player signs with, for the page they are holding up to show them.
+---@param src integer
+---@return { ok: boolean, image?: string, name?: string }
+lib.callback.register('sd-computers:server:paper:signature', function(src)
+    if not SIGNING or not holding[src] then return { ok = false } end
+    return { ok = true, image = savedInk(player.getIdentifier(src)), name = player.getName(src) }
+end)
+
+---Sign a line of the page a player is holding up. `image` is a signature drawn just now, which
+---becomes the one they sign with from here on; without it the one they have is used. Whose name
+---goes under it, and when, is never the page's to say.
+---@param src integer
+---@param p { field: integer, image?: string }
+---@return { ok: boolean, error?: string, page?: table }
+lib.callback.register('sd-computers:server:paper:sign', function(src, p)
+    local function no(key, ...) return { ok = false, error = locale(key, ...) } end
+    if not ENABLED or not SIGNING then return no('print.sign_off') end
+    local h = holding[src]
+    if not h or type(p) ~= 'table' then return no('print.sign_not_holding') end
+    if not ratelimit.take(src, 'paper:sign', 1) then return no('err.slow_down') end
+
+    -- Still in their hands: the server looks for the sheet, the page is not taken at its word.
+    local at = slotOf(src, h.id, h.slot)
+    if not at then
+        holding[src] = nil
+        return no('print.sign_not_holding')
+    end
+
+    local row = MySQL.single.await('SELECT title, kind, snippet, doc, by_cid, by_name, computer, single, UNIX_TIMESTAMP(created_at) AS at FROM computers_prints WHERE id = ?', { h.id })
+    local doc = row and json.decode(row.doc or '') or nil
+    if type(doc) ~= 'table' or type(doc.rich) ~= 'table' then return no('print.sign_gone') end
+    local n = math.tointeger(tonumber(p.field))
+    local line = n and richdoc.signs(doc.rich)[n + 1] or nil
+    if not line then return no('err.invalid') end
+    if line.sig then return no('print.sign_taken') end
+
+    local cid = player.getIdentifier(src)
+    if not cid then return no('err.internal') end
+    local image
+    if p.image ~= nil then
+        image = inkOf(p.image)
+        if not image then return no('print.sign_bad') end
+        MySQL.query.await('INSERT INTO computers_signatures (citizenid, image) VALUES (?, ?) ON DUPLICATE KEY UPDATE image = VALUES(image)', { cid, image })
+    else
+        image = savedInk(cid)
+        if not image then return no('print.sign_draw_first') end
+    end
+    line.sig = { name = text.clip(player.getName(src) or '?', 64), at = os.time(), img = image }
+
+    local body, id = json.encode(doc), h.id
+    local own = tonumber(row.single) == 1
+    if own then
+        MySQL.update.await('UPDATE computers_prints SET doc = ? WHERE id = ?', { body, id })
+    else
+        id = MySQL.insert.await(
+            'INSERT INTO computers_prints (title, kind, snippet, doc, by_cid, by_name, computer, printer, copies, ready_at, single, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, 0, 0, 1, FROM_UNIXTIME(?))',
+            { row.title, row.kind, row.snippet or '', body, row.by_cid, row.by_name, row.computer, tonumber(row.at) or os.time() })
+        if not id then return no('err.internal') end
+    end
+
+    local meta = {}
+    for k, v in pairs(at.metadata) do meta[k] = v end
+    meta.print_id, meta.signed_by = id, signedBy(doc.rich)
+    -- (a sheet written on where it is kept is signed whatever its tooltip says; a new page has to
+    -- be in the player's hand, or it is nowhere)
+    if not restamp(src, at, meta) and not own then
+        MySQL.query('DELETE FROM computers_prints WHERE id = ?', { id })
+        return no('print.sign_failed')
+    end
+
+    cache[h.id], cache[id] = nil, nil
+    local now = slotOf(src, id, at.slot)
+    holding[src] = { id = id, slot = now and now.slot or nil }
+    local page = read(id)
+    return page and { ok = true, page = handed(src, page) } or no('print.sign_gone')
+end)
 
 if ENABLED then
     local ok, err = pcall(inventory.registerUsable, ITEM, function(src, item, _, slot)
-        local meta = usedMetadata(src, item, slot)
+        local meta, at = usedMetadata(src, item, slot)
         local id = type(meta) == 'table' and math.tointeger(tonumber(meta.print_id)) or nil
         local page = id and read(id) or nil
+        holding[src] = page and { id = id, slot = at } or nil
         -- (a page thrown away after KeepDays, or an item that never was one of ours: it opens faded)
-        TriggerClientEvent('sd-computers:client:paper', src, page or { faded = true, title = type(meta) == 'table' and meta.label or nil })
+        TriggerClientEvent('sd-computers:client:paper', src, page and handed(src, page) or { faded = true, title = type(meta) == 'table' and meta.label or nil })
     end)
     if not ok then log.warn('print', 'the %s item could not be made usable: %s', ITEM, tostring(err)) end
 end
@@ -485,7 +712,7 @@ end)
 
 ---Export: print a page of your own at a printer. It waits in the tray like any other.
 ---@param printerId integer a printer's id (GetPrinters)
----@param doc table { title, kind?, letterhead?, subhead?, fields?, body?, table?, image?, footer? }
+---@param doc table { title, kind?, letterhead?, subhead?, fields?, body?, rich?, table?, image?, footer? }
 ---@param opts? { copies?: integer, by?: string, from?: string, citizenid?: string } who it says printed it, and from where
 ---@return boolean ok
 ---@return string|nil why 'disabled' | 'no_printer' | 'bad_page' | 'tray_full' | 'failed'

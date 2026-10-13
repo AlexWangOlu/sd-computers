@@ -21,6 +21,12 @@ return {
 
     ReadAnimation = true, -- the character looks down at a clipboard while a page is open
 
+    -- A document written in Files can have lines to sign on. Whoever holds the printed page signs a
+    -- line (drawn with the mouse or typed, and kept for next time) and hands the page on for the
+    -- next. The name and the date under a signature are the server's, not the player's to choose.
+    -- false = the lines still print, but nobody can sign them.
+    Signatures = true,
+
     -- The option a printer gets (ox_target / qb-target / qtarget).
     Target = { label = 'Take printouts', icon = 'fas fa-print', distance = 1.8 },
 

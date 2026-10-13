@@ -58,7 +58,7 @@ function notifyMail(d: MailPush): void {
  *   computers:lib:open       StartHack export: a standalone hack.exe window, no desktop needed
  *   computers:paper:open     a printout was used: the page, held up over the game (src/os/Paper.tsx)
  * Browser dev (`npm run dev`): opens itself with the mock payload. URL hashes: #desktop skips
- * boot+lock, #lib opens a standalone hack, #paper a printed page (?kind=text|mail|statement|logs|faded),
+ * boot+lock, #lib opens a standalone hack, #paper a printed page (?kind=text|document|contract|long|mail|statement|logs|faded),
  * #<app> (e.g. #mail) also opens that app.
  * ?style=retro / ?style=mac picks the computer's look. ?frame=x,y,w,h (fractions of the window)
  * lays it out as it sits on a prop's screen. /screen.html?mode=live in a second tab shows what this
@@ -156,7 +156,7 @@ export default function App() {
     // (on a prop's screen the prop is the monitor: retro leaves its own chassis off, as Lua asks it to)
     if (query.has('frame')) mockPayload.desktop.monitor = false;
     if (hash === 'paper') {
-      setPaper(mockPage(query.get('kind')));
+      setPaper(mockPage(query.get('kind'), query.get('font') as never));
       return;
     }
     if (hash === 'lib') {
@@ -191,7 +191,7 @@ export default function App() {
         </div>
       )}
       {lib && <LibHack run={lib} onClose={() => setLib(null)} />}
-      {paper && <Paper page={paper} onClose={() => setPaper(null)} />}
+      {paper && <Paper page={paper} onClose={() => setPaper(null)} onPage={setPaper} />}
     </>
   );
 }

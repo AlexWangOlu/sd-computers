@@ -12,8 +12,9 @@ local P = config.Printers or {}
 
 -- A printed page, in the hand. Using the item (config.Printers.Item) has the server look the page
 -- up and send it here, and this puts it on the screen: a sheet of paper over the game, drawn by the
--- OS page with no computer open (web/src/os/Paper.tsx), the way a StartHack window is. Nothing is
--- asked of the server from the page: it is read, and it is closed.
+-- OS page with no computer open (web/src/os/Paper.tsx), the way a StartHack window is. The page is
+-- read and it is closed; the one thing it asks of the server is to sign a line on it, which the
+-- server does for whoever really holds the sheet (server/computers/printing.lua).
 
 ---@type boolean Whether a page is up.
 local open = false
@@ -33,7 +34,7 @@ local function close()
 end
 
 ---Server push: the page of the printout this player just used.
----@param page { id?: integer, doc?: table, by?: string, from?: string, at?: integer, faded?: boolean, title?: string }
+---@param page { id?: integer, doc?: table, by?: string, from?: string, at?: integer, signing?: { name: string }, faded?: boolean, title?: string }
 RegisterNetEvent('sd-computers:client:paper', function(page)
     if type(page) ~= 'table' then return end
     -- (the resource has one NUI page, and its focus: a computer or the panel has it already)
@@ -58,12 +59,26 @@ RegisterNUICallback('computers:paper:close', function(_, cb)
     close()
 end)
 
+---NUI callback: the signature this player signs with, if they have drawn one.
+RegisterNUICallback('computers:paper:signature', function(_, cb)
+    if not open then return cb({ ok = false }) end
+    cb(lib.callback.await('sd-computers:server:paper:signature', false) or { ok = false })
+end)
+
+---NUI callback: sign a line of the page that is up. The answer is the page as it is now.
+---@param data { field: integer, image?: string }
+RegisterNUICallback('computers:paper:sign', function(data, cb)
+    if not open or type(data) ~= 'table' then return cb({ ok = false }) end
+    cb(lib.callback.await('sd-computers:server:paper:sign', false, { field = data.field, image = data.image }) or { ok = false })
+end)
+
 -- What a printout's tooltip adds under its name, where the inventory can show it (ox_inventory).
 CreateThread(function()
     pcall(inventory.registerDisplayMetadata, {
         printed_by = locale('print.meta_by'),
         printed_at = locale('print.meta_at'),
         printed_from = locale('print.meta_from'),
+        signed_by = locale('print.meta_signed'),
     })
 end)
 

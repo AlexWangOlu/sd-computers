@@ -1,31 +1,42 @@
 /* A printed page, in the hand (src/os/Paper.tsx): what using a printout opens. It belongs to no
    desktop style, so nothing here reads the OS's variables: paper, ink and the dark it is held up
-   against. The kind of page (.is-text, .is-mail, .is-statement, .is-logs) only changes the stock. */
+   against. A sheet is always A4 - 794 x 1123 in its own pixels, scaled to the display - and the
+   kind of page (.is-text, .is-document, .is-mail, .is-statement, .is-logs) only changes the stock. */
 
 .paper-root {
+  /* Paper fibre: fine noise, tiled. */
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .26 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   position: absolute;
   inset: 0;
   z-index: 10001;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0 34px;
-  background: rgba(8, 9, 12, 0.74);
+  background: radial-gradient(ellipse at 50% 42%, rgba(22, 24, 30, 0.7), rgba(4, 5, 8, 0.86));
   user-select: none;
 }
 
-/* The page scrolls inside this when it is longer than the display; the padding leaves its shadow room. */
-.paper-scroll {
-  max-width: 100%;
-  max-height: 100%;
-  overflow-y: auto;
-  padding: 36px 56px 64px;
+/* ── The scene ───────────────────────────────────────────────────────────────────────────── */
+
+/* The sheet stands in a little depth: it leans towards the pointer, and a leaf turns through it. */
+.paper-scene {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 0 6px;
+  perspective: 2400px;
+  perspective-origin: 50% 38%;
 }
-.paper-scroll::-webkit-scrollbar {
+.paper-root.is-zoomed .paper-scene {
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: 34px 0 40px;
+}
+.paper-root.is-zoomed .paper-scene::-webkit-scrollbar {
   width: 10px;
 }
-.paper-scroll::-webkit-scrollbar-thumb {
+.paper-root.is-zoomed .paper-scene::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.28);
@@ -35,31 +46,181 @@
 @keyframes paperIn {
   from {
     opacity: 0;
-    transform: translateY(34px) rotate(-1.4deg);
+    transform: translateY(46px) rotateX(24deg) rotateZ(-2.2deg);
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: rotateX(var(--rx, 2.5deg)) rotateY(var(--ry, 0deg));
   }
 }
 
-.paper {
+.paper-tilt {
   position: relative;
-  width: 760px;
-  max-width: 100%;
-  min-height: 440px;
-  margin: 0 auto;
-  padding: 56px 62px 34px;
-  border-radius: 2px;
-  background: #fbfaf5 linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 120px);
+  flex: none;
+  transform: rotateX(var(--rx, 2.5deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 220ms ease-out;
+  animation: paperIn 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* The leaning box takes no press of its own. It lies in the same plane as the sheet on it, and
+   where two planes tie the browser can hand a press to the box, not to what is on the sheet: a
+   line to sign on would then answer or not by where the pointer had last tilted the page. */
+.paper-tilt,
+.paper-under {
+  pointer-events: none;
+}
+.paper-tilt > .paper-scale {
+  pointer-events: auto;
+}
+
+/* A sheet is drawn at A4 in its own pixels and scaled from its top-left corner to fit. */
+.paper-scale {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 794px;
+  height: 1123px;
+  transform-origin: 0 0;
+}
+
+.paper-sheet {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1.5px;
+  background-color: #fdfcf8;
+  background-image:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 42%),
+    linear-gradient(302deg, rgba(96, 82, 58, 0.07) 0%, rgba(96, 82, 58, 0) 46%),
+    var(--paper-grain);
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.35);
+    inset 0 0 0 1px rgba(70, 58, 36, 0.07),
+    0 1px 1px rgba(0, 0, 0, 0.3),
+    0 18px 30px rgba(0, 0, 0, 0.36),
+    0 46px 80px rgba(0, 0, 0, 0.4);
   color: #1c1c1f;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14.5px;
-  line-height: 1.55;
-  animation: paperIn 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-size: 15.5px;
+}
+
+/* The two folds a letter has been through, and the light sliding across the sheet as it leans. */
+.paper-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.032) 46%, rgba(255, 255, 255, 0.42) 50%, rgba(0, 0, 0, 0.012) 56%, rgba(0, 0, 0, 0) 100%) 0 33.4% / 100% 34px no-repeat,
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.032) 46%, rgba(255, 255, 255, 0.42) 50%, rgba(0, 0, 0, 0.012) 56%, rgba(0, 0, 0, 0) 100%) 0 66.6% / 100% 34px no-repeat;
+}
+.paper-sheet::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 180%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 62%);
+  transform: translateX(calc(var(--sheen, 0) * 0.5%));
+  transition: transform 220ms ease-out;
+}
+
+/* The sheets still under the one showing: their edges, a little out of square. */
+.paper-under {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5px;
+  background: #efece2 var(--paper-grain);
+  box-shadow:
+    inset 0 0 0 1px rgba(70, 58, 36, 0.1),
+    0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.paper-under.is-1 {
+  transform: translate3d(4px, 5px, -2px) rotateZ(0.35deg);
+}
+.paper-under.is-2 {
+  transform: translate3d(8px, 10px, -4px) rotateZ(-0.3deg);
+}
+
+/* ── Turning a page ──────────────────────────────────────────────────────────────────────── */
+
+@keyframes leafOut {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(-178deg);
+  }
+}
+@keyframes leafFade {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The leaf turns on its left edge, like a page held at the corner; its other side is blank. */
+.paper-leaf {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+}
+.paper-leaf.is-out {
+  animation: leafOut 620ms cubic-bezier(0.45, 0.05, 0.3, 1) forwards;
+}
+.paper-leaf.is-in {
+  animation: leafOut 620ms cubic-bezier(0.45, 0.05, 0.3, 1) reverse forwards;
+}
+/* Each side is seen from its own face only. (The fade is on the sides, not on the leaf: an element
+   that is fading is drawn flat, and a flat leaf shows its print through its back.) */
+.paper-leaf .paper-scale,
+.paper-back {
+  backface-visibility: hidden;
+}
+.paper-leaf.is-out .paper-back {
+  animation: leafFade 620ms linear forwards;
+}
+.paper-leaf.is-in .paper-back {
+  animation: leafFade 620ms linear reverse forwards;
+}
+.paper-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5px;
+  background: #f4f1e8 var(--paper-grain);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+  transform: rotateY(180deg);
+}
+
+/* ── What is printed ─────────────────────────────────────────────────────────────────────── */
+
+.paper-content {
+  position: absolute;
+  top: 74px;
+  left: 78px;
+  right: 78px;
+  height: 963px;
+  overflow: hidden;
+}
+
+/* A piece is never cut in two, and keeps its own margins (so heights add up when pieces are dealt on to sheets). */
+.paper-piece {
+  display: flow-root;
+}
+.paper-piece.is-tight > * {
+  margin-bottom: 0;
+}
+.paper-piece.is-tight > ul,
+.paper-piece.is-tight > ol {
+  margin-bottom: 0.2em;
 }
 
 /* The line across the top: a bank, a department, a business. */
@@ -68,13 +229,13 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   padding-bottom: 10px;
   border-bottom: 2px solid #1c1c1f;
+  font-family: Georgia, 'Times New Roman', serif;
 }
 .paper-letterhead {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 27px;
+  font-size: 29px;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.01em;
@@ -82,7 +243,6 @@
 .paper-subhead {
   min-width: 0;
   overflow: hidden;
-  font-family: Georgia, 'Times New Roman', serif;
   font-size: 11.5px;
   letter-spacing: 0.14em;
   text-align: right;
@@ -92,17 +252,16 @@
   color: #5c5c61;
 }
 
-.paper-title {
-  margin: 0 0 16px;
+.rd .paper-title {
+  margin: 0 0 18px;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
   line-height: 1.25;
-  word-break: break-word;
 }
 
 .paper-fields {
-  margin: 0 0 20px;
+  margin: 0 0 22px;
 }
 .paper-field {
   display: flex;
@@ -111,10 +270,10 @@
 }
 .paper-field dt {
   flex: none;
-  width: 132px;
+  width: 138px;
   font-size: 11px;
   letter-spacing: 0.1em;
-  line-height: 22px;
+  line-height: 23px;
   text-transform: uppercase;
   color: #6a6a70;
 }
@@ -122,25 +281,25 @@
   flex: 1;
   min-width: 0;
   margin: 0;
-  word-break: break-word;
 }
 
-.paper-body {
-  white-space: pre-wrap;
-  word-break: break-word;
+/* A line of a typed page: lines follow one another as they were typed. */
+.rd .paper-line {
+  min-height: 1.5em;
+  margin: 0;
 }
 .paper-image {
   display: block;
   max-width: 100%;
-  max-height: 520px;
+  max-height: 560px;
   margin: 0 auto 18px;
   border: 1px solid rgba(0, 0, 0, 0.22);
 }
 
 .paper-table {
   width: 100%;
-  margin-top: 4px;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 12.5px;
   line-height: 1.4;
 }
@@ -158,7 +317,6 @@
   padding: 4px 10px 4px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.13);
   vertical-align: top;
-  word-break: break-word;
 }
 .paper-table th:last-child,
 .paper-table td:last-child {
@@ -171,92 +329,144 @@
   color: #55555a;
 }
 
-/* What the printer put on every page: who, from which machine, when. */
+/* What the printer put at the foot of every sheet: who, from which machine, when, which page. */
 .paper-foot {
+  position: absolute;
+  left: 78px;
+  right: 78px;
+  bottom: 38px;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   gap: 14px;
-  margin-top: 30px;
   padding-top: 9px;
   border-top: 1px solid rgba(0, 0, 0, 0.26);
+  font-family: 'Courier New', Courier, monospace;
   font-size: 10.5px;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   color: #74747a;
+}
+.paper-foot span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .paper-foot span:last-child {
   flex: none;
-  text-align: right;
 }
 
 /* ── The stock each kind of page is on ───────────────────────────────────────────────────── */
 
+/* A document: a little more margin, and its own typeface (set on the sheet by the page). */
+.paper-sheet.is-document .paper-content,
+.paper-sheet.is-document .paper-foot {
+  left: 92px;
+  right: 92px;
+}
+
 /* A mail message: the headers boxed off, the way a mail program prints them. */
-.paper.is-mail .paper-fields {
+.paper-sheet.is-mail .paper-fields {
   padding: 10px 14px;
   border: 1px solid rgba(0, 0, 0, 0.22);
   background: rgba(0, 0, 0, 0.025);
 }
 
 /* A statement: figures in a column, money to the right. */
-.paper.is-statement .paper-table th:last-child,
-.paper.is-statement .paper-table td:last-child {
+.paper-sheet.is-statement .paper-table :is(th, td):nth-child(1) {
+  width: 25%;
+  white-space: nowrap;
+}
+.paper-sheet.is-statement .paper-table :is(th, td):last-child {
+  width: 19%;
   text-align: right;
   white-space: nowrap;
 }
-.paper.is-statement .paper-table td:first-child {
-  white-space: nowrap;
+.paper-sheet.is-statement .paper-table td:first-child {
   color: #55555a;
 }
 
 /* A system log: green-bar listing paper, with the sprocket holes still on. */
-.paper.is-logs {
-  width: 900px;
-  padding: 44px 74px 30px;
-  background: repeating-linear-gradient(180deg, #f6fbf4 0, #f6fbf4 44px, #e2f1dd 44px, #e2f1dd 88px);
-  font-size: 13px;
+.paper-sheet.is-logs {
+  background-image:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(302deg, rgba(60, 82, 58, 0.09) 0%, rgba(60, 82, 58, 0) 46%),
+    var(--paper-grain),
+    repeating-linear-gradient(180deg, #f6fbf4 0, #f6fbf4 44px, #e0f0da 44px, #e0f0da 88px);
+  font-size: 12.5px;
 }
-.paper.is-logs::before,
-.paper.is-logs::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  background: radial-gradient(circle at 20px 22px, rgba(8, 9, 12, 0.74) 0, rgba(8, 9, 12, 0.74) 5.5px, transparent 6px) 0 0 / 40px 44px repeat-y;
+.paper-sheet.is-logs .paper-content,
+.paper-sheet.is-logs .paper-foot {
+  left: 66px;
+  right: 66px;
 }
-.paper.is-logs::before {
-  left: 0;
-  border-right: 1px dashed rgba(0, 0, 0, 0.22);
+/* (listing paper is not folded like a letter: where the folds would be, it has its holes and the
+   perforation the strips tear off along) */
+.paper-sheet.is-logs::before {
+  background:
+    radial-gradient(circle at 20px 22px, rgba(10, 12, 16, 0.8) 0, rgba(10, 12, 16, 0.8) 5.5px, rgba(0, 0, 0, 0.16) 6.5px, transparent 7px) 0 0 / 40px 44px repeat-y,
+    radial-gradient(circle at 20px 22px, rgba(10, 12, 16, 0.8) 0, rgba(10, 12, 16, 0.8) 5.5px, rgba(0, 0, 0, 0.16) 6.5px, transparent 7px) 100% 0 / 40px 44px repeat-y,
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0, rgba(0, 0, 0, 0.24) 4px, transparent 4px, transparent 8px) 42px 0 / 1px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0, rgba(0, 0, 0, 0.24) 4px, transparent 4px, transparent 8px) calc(100% - 42px) 0 / 1px 100% no-repeat;
 }
-.paper.is-logs::after {
-  right: 0;
-  border-left: 1px dashed rgba(0, 0, 0, 0.22);
+.paper-sheet.is-logs .paper-content {
+  top: 60px;
+  height: 977px;
 }
-.paper.is-logs .paper-letterhead,
-.paper.is-logs .paper-title {
+.paper-sheet.is-logs .paper-head,
+.paper-sheet.is-logs .paper-title {
   font-family: 'Courier New', Courier, monospace;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.paper.is-logs .paper-title {
+.paper-sheet.is-logs .paper-title {
   font-size: 15px;
 }
-.paper.is-logs .paper-table {
-  font-size: 11.5px;
+.paper-sheet.is-logs .paper-table {
+  font-size: 11px;
 }
-.paper.is-logs .paper-table td {
+.paper-sheet.is-logs .paper-table td {
   border-bottom-color: transparent;
 }
 /* (the time, the level, the source and the event id each keep to one line: the message is what wraps) */
-.paper.is-logs .paper-table td:not(:last-child) {
+.paper-sheet.is-logs .paper-table :is(th, td):nth-child(1) {
+  width: 23%;
+}
+.paper-sheet.is-logs .paper-table :is(th, td):nth-child(2) {
+  width: 13%;
+}
+.paper-sheet.is-logs .paper-table :is(th, td):nth-child(3) {
+  width: 16%;
+}
+.paper-sheet.is-logs .paper-table :is(th, td):nth-child(4) {
+  width: 8%;
+}
+.paper-sheet.is-logs .paper-table td:not(:last-child) {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* A page past its keeping time: the ink has gone. */
-.paper.is-faded {
-  min-height: 300px;
-  background: #f1ecdf;
-  color: rgba(28, 28, 31, 0.42);
+.paper-sheet.is-faded {
+  background-color: #efe9d9;
+  color: rgba(28, 28, 31, 0.4);
+}
+
+/* Out of sight: the pieces, to be measured at the sheet's own width. */
+.paper-measure {
+  position: absolute;
+  left: -4000px;
+  top: 0;
+  inset: auto;
+  width: 794px;
+  height: 1123px;
+  visibility: hidden;
+  pointer-events: none;
+}
+.paper-measure .paper-content {
+  height: auto;
+  overflow: visible;
 }
 
 /* ── Round the page ──────────────────────────────────────────────────────────────────────── */
@@ -265,7 +475,7 @@
   position: absolute;
   top: 18px;
   right: 22px;
-  z-index: 1;
+  z-index: 6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,15 +490,305 @@
 .paper-close:hover {
   background: rgba(255, 255, 255, 0.2);
 }
-.paper-hint {
-  position: absolute;
-  bottom: 14px;
-  left: 0;
-  right: 0;
+
+/* Under the sheet: the pages, the reading size, and how to put it down. */
+.paper-bar {
+  flex: none;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  margin: 8px 0 14px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 19px;
+  background: rgba(14, 15, 19, 0.72);
   font-family: 'Inter Variable', Inter, system-ui, sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.02em;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.86);
+}
+.paper-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: inherit;
+  transition: background-color 150ms ease;
+}
+.paper-bar button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}
+.paper-bar button:disabled {
+  opacity: 0.32;
+}
+.paper-bar i {
+  width: 1px;
+  height: 16px;
+  margin: 0 5px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.paper-count {
+  min-width: 86px;
   text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.paper-hint {
+  padding: 0 6px 0 2px;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Signing ─────────────────────────────────────────────────────────────────────────────── */
+
+/* The tab stuck beside a line that is still to be signed: where to press to sign it. */
+.sig-flag {
+  position: absolute;
+  right: 3%;
+  bottom: 7px;
+  padding: 5px 12px 5px 20px;
+  background: linear-gradient(180deg, #ffe264, #f9cf2f);
+  clip-path: polygon(13px 0, 100% 0, 100% 100%, 13px 100%, 0 50%);
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4a3a00;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.35));
+  transform: rotate(-3deg);
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+.sig-flag:hover {
+  transform: rotate(-3deg) translateX(-4px);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45)) brightness(1.05);
+}
+
+/* The dialog a line is signed in: the pad, or a name set in a hand, over the page. */
+.sign-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 5, 8, 0.55);
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  animation: signIn 160ms ease-out;
+}
+@keyframes signIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.sign-card {
+  width: min(560px, calc(100% - 48px));
+  padding: 14px 16px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: #1b1d24;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+}
+.sign-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.sign-head span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sign-head button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: inherit;
+}
+.sign-head button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.sign-tabs {
+  display: inline-flex;
+  gap: 2px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.sign-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.sign-tabs button[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+/* The slip of paper the signature is made on: the same stock as the page, with a line to sign on. */
+.sign-sheet {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1040 / 340;
+  border-radius: 4px;
+  background:
+    var(--paper-grain),
+    linear-gradient(180deg, #fdfcf8, #f6f3ea);
+  overflow: hidden;
+}
+.sign-sheet[hidden] {
+  display: none;
+}
+.sign-sheet.is-waiting {
+  opacity: 0.35;
+}
+.sign-sheet canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+.sign-sheet img {
+  position: relative;
+  max-width: 82%;
+  max-height: 74%;
+  mix-blend-mode: multiply;
+}
+.sign-sheet i {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 22%;
+  border-bottom: 1px dashed rgba(28, 28, 31, 0.3);
   pointer-events: none;
+}
+.sign-here {
+  position: relative;
+  color: rgba(28, 28, 31, 0.38);
+  font-size: 14px;
+  pointer-events: none;
+}
+.sign-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(28, 28, 31, 0.08);
+  color: #2a2a2e;
+}
+.sign-clear:hover {
+  background: rgba(28, 28, 31, 0.16);
+}
+
+.sign-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font: inherit;
+  outline: none;
+  user-select: text;
+}
+.sign-input:focus {
+  border-color: rgba(120, 170, 255, 0.8);
+}
+.sign-hands {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.sign-hands button {
+  height: 58px;
+  padding: 0 10px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fdfcf8, #f6f3ea);
+  color: #16245c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sign-hands button[aria-pressed='true'] {
+  border-color: #6aa3ff;
+}
+
+.sign-note {
+  margin: 9px 2px 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.sign-error {
+  margin: 9px 2px 0;
+  color: #ff8f85;
+  font-size: 12.5px;
+}
+.sign-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+.sign-foot span {
+  flex: 1;
+}
+.sign-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.07);
+  color: inherit;
+  font-size: 13px;
+}
+.sign-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+}
+.sign-btn.is-primary {
+  border-color: transparent;
+  background: #3b82f6;
+  color: #fff;
+  font-weight: 600;
+}
+.sign-btn.is-primary:hover:not(:disabled) {
+  background: #5594f8;
+}
+.sign-btn:disabled {
+  opacity: 0.45;
 }
