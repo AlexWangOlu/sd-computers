@@ -14,6 +14,7 @@ import StartPage from './StartPage';
 import SitePage from './SitePage';
 import FramePage from './FramePage';
 import NotFound from './NotFound';
+import LivePage from './live/LivePage';
 
 /**
  * One tab's page. Every tab stays mounted and the ones not being looked at are only hidden, so a
@@ -29,6 +30,7 @@ function PageLayer({ tab, net, shown, winActive, onOpen }: { tab: Tab; net: Netw
       {view.kind === 'home' && <StartPage key={key} net={net} focus={shown && winActive} onOpen={onOpen} />}
       {view.kind === 'page' && <SitePage key={key} site={view.site} blocks={view.blocks} net={net} onOpen={onOpen} />}
       {view.kind === 'frame' && <FramePage key={key} site={view.site} url={view.url} covered={!winActive} />}
+      {view.kind === 'live' && <LivePage key={key} site={view.site} live={view.live} path={view.path} net={net} shown={shown} onOpen={onOpen} />}
       {view.kind === 'missing' && <NotFound key={key} address={view.address} net={net} onOpen={onOpen} />}
     </div>
   );
@@ -38,7 +40,8 @@ function PageLayer({ tab, net, shown, winActive, onOpen }: { tab: Tab; net: Netw
  * Browser: the closed network of configs/shared/browser.lua. Tabs, a toolbar (Back, Forward,
  * Reload, Home, the address bar) and the bookmarks sit on the window; the page lies under them.
  * An address is looked up in the list the server sent and nowhere else - a built-in page is drawn
- * from its blocks, a `url` site is framed, and anything the list does not have "can't be reached".
+ * from its blocks, a `url` site is framed, a live site's pages are read from the phone (./live),
+ * and anything the list does not have "can't be reached".
  */
 export default function Browser({ win }: AppProps) {
   const winActive = useOS(selectActiveId) === win.id;

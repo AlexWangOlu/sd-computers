@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import type { Block, Network, NoticeKind, Site, SiteLink, Tab, View } from './types';
+import { LIVE_KINDS, type Block, type LiveKind, type Network, type NoticeKind, type Site, type SiteLink, type Tab, type View } from './types';
 
 export const cx = (...c: (string | false | null | undefined)[]): string => c.filter(Boolean).join(' ');
 
@@ -85,6 +85,10 @@ function asSite(v: unknown): Site | null {
   if (!s || !address || address === HOME || !title) return null;
 
   const base = { address, title: title.trim(), bookmark: s.bookmark === true };
+  if (s.live !== undefined && s.live !== null) {
+    const live = LIVE_KINDS.find(k => k === s.live);
+    return live ? { ...base, live } : null;
+  }
   if (s.url !== undefined && s.url !== null) return isHttps(s.url) ? { ...base, url: s.url } : null;
   // An empty Lua table can arrive as {} instead of []: either way it is a page with nothing on it.
   if (obj(s.blocks)) return { ...base, blocks: arr(s.blocks).map(asBlock).filter((b): b is Block => b !== null) };
@@ -110,10 +114,34 @@ export function asNetwork(data: unknown): Network {
 export function resolve(address: string, net: Network): View {
   if (address === HOME) return { kind: 'home' };
   const site = net.byAddress.get(address);
-  if (!site) return { kind: 'missing', address };
+  if (!site) {
+    // A page of a live site ('weazel.news/story/12'): the longest live address this one is under.
+    let under: Site | null = null;
+    for (const s of net.sites) {
+      if (s.live && address.startsWith(`${s.address}/`) && (!under || s.address.length > under.address.length)) under = s;
+    }
+    if (under?.live) return { kind: 'live', site: under, live: under.live, path: address.slice(under.address.length + 1).split('/').filter(Boolean) };
+    return { kind: 'missing', address };
+  }
+  if (site.live) return { kind: 'live', site, live: site.live, path: [] };
   if (site.url) return { kind: 'frame', site, url: site.url };
   return { kind: 'page', site, blocks: site.blocks ?? [] };
 }
+
+/** The address of a page under a live site: its own, then each part of the path. */
+export const under = (site: Site, ...path: (string | number)[]): string => [site.address, ...path.map(p => encodeURIComponent(String(p).toLowerCase()))].join('/');
+
+/** One part of a live page's path, as it was before it went into an address. */
+export function part(path: string[], i: number): string {
+  try {
+    return decodeURIComponent(path[i] ?? '');
+  } catch {
+    return path[i] ?? '';
+  }
+}
+
+/** The live site of one kind, when the network has it (for a link from one site to another). */
+export const liveSite = (net: Network, kind: LiveKind): Site | null => net.sites.find(s => s.live === kind) ?? null;
 
 /** What a tab (and the window's own title strip) calls a page. */
 export function viewTitle(view: View): string {

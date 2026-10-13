@@ -4,12 +4,27 @@ local config = require 'configs.config'
 local log = require 'shared.log'
 ---@type table RPC registration (server.computers.rpc).
 local rpc = require 'server.computers.rpc'
+---@type table Optional sd-phone link (server.computers.phone): where the live sites' pages come from.
+local phone = require 'server.computers.phone'
 
 -- Browser. The network is the list in configs/shared/browser.lua and nothing else. It is checked
 -- once, here, when the resource starts, and the UI gets the whole of it in one read: it looks an
 -- address up in that list and never asks the server for a page. Nothing a player types is fetched -
 -- the only real URLs that ever reach an <iframe> or an <img> are the https ones written in that
 -- file, passed through below.
+--
+-- A `live` site is the exception to "never asks": its address and name are in the list like any
+-- other, but what is on it is one of sd-phone's public apps, read as it is now
+-- (server/computers/web.lua). Such a site is only on the network while the phone can serve it.
+
+---@type table Browser module; the table returned at end of file.
+local browser = {}
+
+---@type table<string, string> A live site's kind (config `live`) -> sd-phone's name for the app behind it.
+browser.LIVE = {
+    news = 'weazelnews', market = 'marketplace', pages = 'pages',
+    directory = 'services', squawk = 'birdy', laws = 'laws', stocks = 'stocks',
+}
 
 ---@type string The built-in start page's address. No site may take it.
 local HOME = 'home'
@@ -120,7 +135,7 @@ end
 
 ---One entry of config.Browser.Sites as the UI gets it: only the fields it uses.
 ---@param def any
----@return table|nil site { address, title, bookmark, url } or { address, title, bookmark, blocks }
+---@return table|nil site { address, title, bookmark } with one of url, blocks or live
 ---@return string|nil why what is wrong with the entry, when it is not a site
 local function site(def)
     if type(def) ~= 'table' then return nil, 'it is not a table' end
@@ -134,6 +149,13 @@ local function site(def)
 
     local out = { address = addr, title = title, bookmark = def.bookmark == true }
 
+    -- A live site has nothing written here at all: its pages are the phone's.
+    if def.live ~= nil then
+        if type(def.live) ~= 'string' or not browser.LIVE[def.live] then return nil, 'its live is not a site the browser knows' end
+        out.live = def.live
+        return out
+    end
+
     -- A url wins over blocks: the entry is the owner's real page, shown in a frame.
     if def.url ~= nil then
         out.url = https(def.url)
@@ -141,7 +163,7 @@ local function site(def)
         return out
     end
 
-    if type(def.blocks) ~= 'table' then return nil, 'it has neither blocks nor a url' end
+    if type(def.blocks) ~= 'table' then return nil, 'it has neither blocks, a url nor a live' end
     out.blocks = {}
     for i = 1, #def.blocks do
         local b = block(def.blocks[i])
@@ -185,9 +207,37 @@ end
 ---resource starts, so this is built once.
 local network = build()
 
----Where a new window opens, and every site there is. Read-only and the same for everyone.
-rpc.register('browser:sites', 'browser', function()
-    return rpc.ok(network)
+---@type table<string, boolean> The kinds of live site the config has an address for.
+local listed = {}
+for _, s in ipairs(network.sites) do
+    if s.live then listed[s.live] = true end
+end
+
+---Whether a kind of live site is on the network right now: the config lists it and the phone
+---runs the app behind it.
+---@param src integer
+---@param kind string
+---@return boolean
+function browser.has(src, kind)
+    return listed[kind] == true and phone.sites(src)[browser.LIVE[kind]] == true
+end
+
+browser.https = https
+
+---Where a new window opens, and every site there is. Read-only and the same for everyone - the
+---live sites among them for as long as the phone can serve them.
+rpc.register('browser:sites', 'browser', function(src)
+    if next(listed) == nil then return rpc.ok(network) end
+    local have = phone.sites(src)
+    local sites, home = {}, network.home
+    for _, s in ipairs(network.sites) do
+        if not s.live or have[browser.LIVE[s.live]] then
+            sites[#sites + 1] = s
+        elseif s.address == home then
+            home = HOME -- (a Home that is not there today)
+        end
+    end
+    return rpc.ok({ home = home, sites = sites })
 end)
 
-return {}
+return browser

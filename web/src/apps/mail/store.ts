@@ -444,8 +444,18 @@ export function confirmSignOut(email: string): void {
 
 // ── Launch props + live pushes ──────────────────────────────────────────────────────────────
 
-/** win.props from a new-mail toast: { mailbox, messageId } -> that account, Inbox, that message. */
+/**
+ * win.props from a new-mail toast: { mailbox, messageId } -> that account, Inbox, that message.
+ * From the Browser's "Email" on an ad: { to, subject? } -> a new message to that address, from
+ * the account being looked at (nothing, when no account is signed into here).
+ */
 export async function applyLaunch(props: Record<string, unknown> | undefined): Promise<void> {
+  const to = typeof props?.to === 'string' ? props.to.trim().toLowerCase() : '';
+  if (to) {
+    const from = get().active;
+    if (from) openCompose({ from, to: [to], subject: typeof props?.subject === 'string' ? props.subject : '', body: '', focus: 'body' });
+    return;
+  }
   const mailbox = typeof props?.mailbox === 'string' ? props.mailbox.toLowerCase() : '';
   if (!mailbox) return;
   // Built-in Mail ids are numbers, the phone's are strings - take either as given.

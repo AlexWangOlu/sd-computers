@@ -9,6 +9,7 @@ import '@fontsource/vt323/400.css';
 import '../styles.css';
 import '../styles/retro.css';
 import '../styles/mac.css';
+import '../styles/sites.css';
 import '@rrweb/replay/dist/style.css';
 import './screen.css';
 import { setLocale } from '@/i18n';

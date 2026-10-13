@@ -1,4 +1,4 @@
-import { Globe, House, Plus, Unplug, X } from 'lucide-react';
+import { Globe, House, Plus, Rss, Unplug, X } from 'lucide-react';
 import { t } from '@/i18n';
 import { ExitFx } from '@/hooks/useExitFx';
 import type { View } from './types';
@@ -14,6 +14,7 @@ export interface TabInfo {
 export function KindIcon({ kind, size = 14 }: { kind: TabInfo['kind']; size?: number }) {
   if (kind === 'home') return <House size={size} />;
   if (kind === 'missing') return <Unplug size={size} />;
+  if (kind === 'live') return <Rss size={size} />;
   return <Globe size={size} />;
 }
 

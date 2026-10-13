@@ -53,6 +53,7 @@ require 'server.computers.photos' -- Photos: the phone's gallery, over the same 
 require 'server.computers.contacts' -- Contacts: the phone's address book, over the same link
 require 'server.computers.bank' -- Bank: the character's balance + statement (read-only)
 require 'server.computers.browser' -- Browser: the sites of configs/shared/browser.lua
+require 'server.computers.web' -- Browser: its live sites, read from sd-phone's public apps over the link
 require 'server.admin.panel' -- the /computeradmin panel's verbs: list, place, change, move, remove
 
 ---Retention purge at boot, then every 6 hours.

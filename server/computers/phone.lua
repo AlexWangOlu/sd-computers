@@ -31,6 +31,12 @@ local version
 
 ---@type integer Oldest link protocol this build understands.
 local MIN_VERSION = 1
+---@type integer The link protocol the phone's public apps came in at (the Browser's live sites).
+local SITES_VERSION = 2
+---@type integer Seconds what the phone says it runs is believed for.
+local SITES_TTL = 30
+---@type { at: integer, have: table<string, boolean> }|nil Which public apps the phone runs, as last asked.
+local sites
 
 ---Probe sd-phone: started, and shipping the link export at a version we speak.
 ---@return boolean
@@ -61,13 +67,13 @@ function phone.linked()
 end
 
 AddEventHandler('onResourceStart', function(name)
-    if name == RES then cached = nil end
+    if name == RES then cached, sites = nil, nil end
 end)
 
 AddEventHandler('onResourceStop', function(name)
     if name == RES then
         if cached then log.info('phone', '%s stopped - computers fall back to built-in Mail', RES) end
-        cached = false
+        cached, sites = false, nil
     end
 end)
 
@@ -221,7 +227,7 @@ end
 ---({ success, data?, message? }) or, when the call itself failed (sd-phone stopped mid-call, a
 ---link error), a failure envelope in the same shape.
 ---@param src integer
----@param app 'mail'|'messages'|'notes'|'phone'
+---@param app string 'mail'|'messages'|'notes'|'phone', and since link v2 the public apps
 ---@param action string
 ---@param payload table|nil
 ---@return { success: boolean, data?: any, message?: string, messageKey?: string, messageVars?: table }
@@ -256,6 +262,21 @@ end
 ---@return table rpc reply
 function phone.rpc(src, app, action, payload, map)
     return phone.reply(phone.call(src, app, action, payload), map)
+end
+
+---Which of the phone's public apps the Browser can show as sites right now, by the phone's own
+---name for each (pages, marketplace, weazelnews, birdy, services, laws, stocks). Empty with no
+---sd-phone, with one whose link is older than they are, or with those apps switched off there.
+---@param src integer any player: the link only answers for one
+---@return table<string, boolean>
+function phone.sites(src)
+    if not phone.linked() or (version or 0) < SITES_VERSION then return {} end
+    local now = os.time()
+    if sites and now - sites.at < SITES_TTL then return sites.have end
+    local res = phone.call(src, 'phone', 'sites')
+    local have = res.success and type(res.data) == 'table' and res.data or {}
+    sites = { at = now, have = have }
+    return have
 end
 
 ---Call a plain sd-phone export (sendMail, getMailAccounts ...), nil when it isn't there.

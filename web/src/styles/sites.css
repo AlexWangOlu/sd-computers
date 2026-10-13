@@ -1,0 +1,970 @@
+/* The Browser's live sites (src/apps/browser/live): seven websites, each a brand of its own.
+ *
+ * A website does not follow the desktop it is looked at on: its colours, its type and its buttons
+ * are its own in every theme and in every look (retro and mac included). So nothing in here uses
+ * the OS's tokens, and the pages use none of the control kit's ctl-* markers that the looks
+ * re-skin - a site has its own few controls (.s-btn, .s-input ...), drawn from the variables its
+ * brand sets below. Only the scrollbar is the desktop's, as it is in any browser.
+ *
+ * .site          what every site shares: the reset and the controls
+ * .site-<brand>  one brand: its variables, and the pieces only it has (a masthead, a ticker tape)
+ */
+
+.site {
+  --s-bg: #fff;
+  --s-surface: #fff;
+  --s-hover: #f1f3f5;
+  --s-field: #fff;
+  --s-ink: #16181d;
+  --s-muted: #5f6672;
+  --s-faint: #8b929e;
+  --s-line: #e2e5ea;
+  --s-line-strong: #c9ced6;
+  --s-brand: #2563eb;
+  --s-on-brand: #fff;
+  --s-link: #1d4ed8;
+  --s-focus: rgba(37, 99, 235, 0.25);
+  --s-radius: 6px;
+  --s-font: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
+  --s-head: var(--s-font);
+  --s-mono: 'JetBrains Mono Variable', ui-monospace, Consolas, monospace;
+
+  min-height: 100%;
+  background: var(--s-bg);
+  color: var(--s-ink);
+  font-family: var(--s-font);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: none;
+  -webkit-font-smoothing: antialiased;
+  image-rendering: auto;
+  color-scheme: light;
+}
+.site h1,
+.site h2,
+.site h3 {
+  font-family: var(--s-head);
+  color: var(--s-ink);
+}
+.site .s-link {
+  color: var(--s-link);
+  cursor: pointer;
+}
+.site .s-link:hover {
+  text-decoration: underline;
+}
+.site .s-muted {
+  color: var(--s-muted);
+}
+.site .s-faint {
+  color: var(--s-faint);
+}
+.site .s-mono {
+  font-family: var(--s-mono);
+}
+.site .s-rule {
+  border-color: var(--s-line);
+}
+.site .s-surface {
+  background: var(--s-surface);
+  border: 1px solid var(--s-line);
+  border-radius: var(--s-radius);
+}
+
+/* ── A site's own controls ───────────────────────────────────────────────────────────────── */
+
+.site .s-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--s-line-strong);
+  border-radius: var(--s-radius);
+  background: var(--s-surface);
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s ease, filter 0.12s ease, border-color 0.12s ease;
+}
+.site .s-btn:hover {
+  background: var(--s-hover);
+}
+.site .s-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.site .s-btn--primary {
+  background: var(--s-brand);
+  border-color: var(--s-brand);
+  color: var(--s-on-brand);
+}
+.site .s-btn--primary:hover {
+  background: var(--s-brand);
+  filter: brightness(1.1);
+}
+.site .s-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.site .s-btn--danger {
+  background: #c62828;
+  border-color: #c62828;
+  color: #fff;
+}
+.site .s-btn--danger:hover {
+  background: #c62828;
+  filter: brightness(1.1);
+}
+.site .s-btn--sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.site .s-input,
+.site .s-area,
+.site .s-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--s-line-strong);
+  border-radius: var(--s-radius);
+  background: var(--s-field);
+  color: var(--s-ink);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.site .s-area {
+  height: auto;
+  padding: 8px 10px;
+  line-height: 1.55;
+  resize: none;
+}
+.site .s-select {
+  cursor: pointer;
+}
+.site .s-input:focus,
+.site .s-area:focus,
+.site .s-select:focus {
+  border-color: var(--s-brand);
+  box-shadow: 0 0 0 3px var(--s-focus);
+}
+/* (said this loudly so that no look's own placeholder colour gets in first) */
+.os-root .site.site .s-input::placeholder,
+.os-root .site.site .s-area::placeholder {
+  color: var(--s-faint);
+  opacity: 1;
+}
+.site .s-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--s-muted);
+}
+
+.site .s-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.site .s-check-box {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--s-line-strong);
+  border-radius: 4px;
+  background: var(--s-field);
+  color: var(--s-on-brand);
+}
+.site .s-check.is-on .s-check-box {
+  background: var(--s-brand);
+  border-color: var(--s-brand);
+}
+
+.site .s-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--s-line);
+  border-radius: 999px;
+  background: var(--s-surface);
+  color: var(--s-ink);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site .s-chip:hover {
+  background: var(--s-hover);
+}
+.site .s-chip.is-on {
+  background: var(--s-brand);
+  border-color: var(--s-brand);
+  color: var(--s-on-brand);
+  font-weight: 600;
+}
+
+.site .s-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  flex: none;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--s-hover);
+  color: var(--s-muted);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.site .s-tag--good {
+  background: rgba(22, 163, 74, 0.14);
+  color: #15803d;
+}
+.site .s-tag--warn {
+  background: rgba(217, 119, 6, 0.16);
+  color: #b45309;
+}
+.site .s-tag--bad {
+  background: rgba(220, 38, 38, 0.13);
+  color: #b91c1c;
+}
+
+.site .s-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--s-line);
+  border-left-width: 4px;
+  border-radius: var(--s-radius);
+  background: var(--s-surface);
+  font-size: 13px;
+}
+.site .s-note--error {
+  border-left-color: #dc2626;
+}
+.site .s-note--success {
+  border-left-color: #16a34a;
+}
+.site .s-note--info {
+  border-left-color: var(--s-brand);
+}
+
+@keyframes siteSpin {
+  to { transform: rotate(360deg); }
+}
+.site .s-spin {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--s-line);
+  border-top-color: var(--s-brand);
+  border-radius: 50%;
+  animation: siteSpin 0.8s linear infinite;
+}
+
+.site .s-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+.site .s-modal {
+  width: min(480px, 92%);
+  border-radius: calc(var(--s-radius) + 4px);
+  background: var(--s-surface);
+  color: var(--s-ink);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.site .s-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--s-line);
+  background: var(--s-hover);
+}
+.site .s-thumb {
+  background: var(--s-hover);
+  color: var(--s-faint);
+}
+
+/* ── Weazel News: a paper. White, red, and serif where it is being read ─────────────────── */
+
+.site-weazel {
+  --s-ink: #111;
+  --s-muted: #555;
+  --s-faint: #888;
+  --s-line: #e3e3e3;
+  --s-line-strong: #c4c4c4;
+  --s-hover: #f4f4f4;
+  --s-brand: #c8102e;
+  --s-link: #a50d25;
+  --s-focus: rgba(200, 16, 46, 0.22);
+  --s-radius: 2px;
+  --s-head: Georgia, 'Times New Roman', serif;
+}
+.wz-top {
+  background: #111;
+  color: #cfcfcf;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.wz-logo {
+  display: inline-flex;
+  align-items: stretch;
+  font-family: 'Arial Black', 'Inter Variable', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.wz-logo > span:first-child {
+  padding: 8px 12px 8px 14px;
+  background: var(--s-brand);
+  color: #fff;
+  transform: skewX(-8deg);
+}
+.wz-logo > span:last-child {
+  padding: 8px 10px;
+  color: #111;
+}
+.wz-nav {
+  background: var(--s-brand);
+  color: #fff;
+}
+.wz-nav button {
+  height: 38px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.wz-nav button:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
+.wz-nav button.is-on {
+  background: #111;
+}
+@keyframes wzTicker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.wz-ticker {
+  display: flex;
+  align-items: stretch;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+}
+.wz-ticker-flag {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  background: #ffd200;
+  color: #111;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.wz-kicker {
+  color: var(--s-brand);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.wz-headline {
+  font-family: var(--s-head);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #111;
+}
+button:hover > .wz-headline,
+button:hover .wz-headline {
+  color: var(--s-brand);
+}
+.wz-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.wz-section::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: var(--s-brand);
+}
+.wz-section::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: #111;
+}
+.wz-body p {
+  font-family: var(--s-head);
+  font-size: 17px;
+  line-height: 1.7;
+  color: #1c1c1c;
+}
+.wz-body p:first-child::first-letter {
+  float: left;
+  margin: 6px 8px 0 0;
+  font-size: 54px;
+  line-height: 0.8;
+  font-weight: 700;
+  color: var(--s-brand);
+}
+.wz-foot {
+  background: #111;
+  color: #9a9a9a;
+  font-size: 11px;
+}
+
+/* ── Marketplace: light grey, white cards, the picture and the price first ──────────────── */
+
+.site-market {
+  --s-bg: #f0f2f5;
+  --s-hover: #e9ecf0;
+  --s-ink: #1c1e21;
+  --s-muted: #5d6470;
+  --s-line: #dfe3e8;
+  --s-line-strong: #ccd0d7;
+  --s-brand: #0866ff;
+  --s-link: #0759dd;
+  --s-focus: rgba(8, 102, 255, 0.22);
+  --s-radius: 9px;
+}
+.mk-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
+  border-bottom: 1px solid var(--s-line);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.mk-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--s-brand);
+  color: #fff;
+}
+.mk-search {
+  height: 38px;
+  border-radius: 999px;
+  background: #f0f2f5;
+}
+.site-market .mk-search .s-input {
+  height: 38px;
+  padding-left: 38px;
+  border-color: transparent;
+  border-radius: 999px;
+  background: transparent;
+}
+.site-market .mk-pill {
+  border-radius: 999px;
+}
+.mk-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease, transform 0.14s ease;
+}
+.mk-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  transform: translateY(-1px);
+}
+.mk-panel {
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.mk-side button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--s-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.mk-side button:hover {
+  background: #e4e6eb;
+}
+.mk-side button.is-on {
+  background: #e7f0ff;
+  color: var(--s-brand);
+  font-weight: 600;
+}
+
+/* ── Yellow Pages: the phone book. Yellow, black, and the number where the eye lands ────── */
+
+.site-pages {
+  --s-ink: #141414;
+  --s-muted: #4d4d4d;
+  --s-line: #dcdcdc;
+  --s-line-strong: #141414;
+  --s-hover: #f6f3e4;
+  --s-brand: #141414;
+  --s-on-brand: #ffd400;
+  --s-link: #141414;
+  --s-focus: rgba(255, 212, 0, 0.55);
+  --s-radius: 0px;
+  --s-head: 'Arial Black', 'Inter Variable', Arial, sans-serif;
+}
+.yp-head {
+  background: #ffd400;
+  color: #141414;
+  border-bottom: 4px solid #141414;
+}
+.yp-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Arial Black', 'Inter Variable', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.yp-logo > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #141414;
+  color: #ffd400;
+  font-size: 20px;
+}
+.site-pages .yp-find .s-input {
+  height: 42px;
+  border-width: 2px;
+  font-size: 15px;
+}
+.site-pages .yp-find .s-btn {
+  height: 42px;
+  padding: 0 20px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.yp-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--s-line);
+  text-align: left;
+  cursor: pointer;
+}
+.yp-row:hover .yp-name {
+  text-decoration: underline;
+}
+.yp-name {
+  font-family: var(--s-head);
+  font-size: 18px;
+  line-height: 1.2;
+  color: #141414;
+}
+.yp-call {
+  flex: none;
+  width: 190px;
+  padding: 10px 12px;
+  background: #ffd400;
+  color: #141414;
+  text-align: center;
+}
+.yp-call small {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.yp-call b {
+  display: block;
+  font-family: var(--s-head);
+  font-size: 17px;
+  line-height: 1.3;
+}
+.yp-count {
+  padding-bottom: 8px;
+  border-bottom: 3px solid #141414;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.yp-foot {
+  background: #141414;
+  color: #ffd400;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Business Directory: the city's own page. Teal, roomy, who is in right now ─────────── */
+
+.site-dir {
+  --s-bg: #f3f7f6;
+  --s-hover: #e8f1ef;
+  --s-ink: #12302c;
+  --s-muted: #4f6a66;
+  --s-line: #d5e3e0;
+  --s-line-strong: #b9cecb;
+  --s-brand: #0f766e;
+  --s-link: #0b5f59;
+  --s-focus: rgba(15, 118, 110, 0.24);
+  --s-radius: 10px;
+}
+.dr-hero {
+  padding: 34px 0 62px;
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 55%, #134e4a 100%);
+  color: #fff;
+}
+.dr-hero h1 {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.dr-card {
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(18, 48, 44, 0.08);
+}
+.dr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7f7c;
+}
+.dr-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a9b8b5;
+}
+.dr-status.is-open {
+  color: #15803d;
+}
+.dr-status.is-open::before {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+}
+
+/* ── Squawk: black, hairlines, one blue ─────────────────────────────────────────────────── */
+
+.site-squawk {
+  --s-bg: #000;
+  --s-surface: #16181c;
+  --s-hover: #1d1f23;
+  --s-field: #16181c;
+  --s-ink: #e7e9ea;
+  --s-muted: #8b98a5;
+  --s-faint: #71767b;
+  --s-line: #2f3336;
+  --s-line-strong: #3e4347;
+  --s-brand: #1d9bf0;
+  --s-link: #1d9bf0;
+  --s-focus: rgba(29, 155, 240, 0.3);
+  --s-radius: 999px;
+  --s-font: 'Segoe UI', 'Inter Variable', system-ui, sans-serif;
+  color-scheme: dark;
+}
+.sq-side .sq-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 18px;
+  color: #e7e9ea;
+  cursor: pointer;
+}
+.sq-side .sq-nav:hover {
+  background: #181818;
+}
+.sq-side .sq-nav.is-on {
+  font-weight: 700;
+}
+.sq-top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--s-line);
+}
+.sq-post {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--s-line);
+}
+.sq-post:hover {
+  background: #080808;
+}
+.sq-box {
+  border-radius: 16px;
+  background: #16181c;
+}
+.sq-trend {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  cursor: pointer;
+}
+.sq-trend:hover {
+  background: #1d1f23;
+}
+
+/* ── Laws and Fines: the state's own site. Navy, a seal, and nothing playful ────────────── */
+
+.site-laws {
+  --s-bg: #f4f5f7;
+  --s-hover: #eceff3;
+  --s-ink: #1b1f27;
+  --s-muted: #4a5261;
+  --s-line: #d6dae1;
+  --s-line-strong: #aab2c0;
+  --s-brand: #1b365d;
+  --s-link: #17458f;
+  --s-focus: rgba(27, 54, 93, 0.25);
+  --s-radius: 3px;
+  --s-font: 'Segoe UI', Arial, 'Inter Variable', sans-serif;
+  --s-head: Georgia, 'Times New Roman', serif;
+}
+.gv-strip {
+  background: #e9ecf1;
+  color: #3b4352;
+  font-size: 11px;
+}
+.gv-head {
+  background: #1b365d;
+  color: #fff;
+  border-bottom: 4px solid #b08d2e;
+}
+.gv-head h1 {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.gv-seal {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px double #d9b95c;
+  border-radius: 50%;
+  background: #14294a;
+  color: #d9b95c;
+}
+.gv-nav {
+  background: #fff;
+  border-bottom: 1px solid var(--s-line);
+}
+.gv-nav button {
+  height: 44px;
+  padding: 0 4px;
+  margin-right: 22px;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  color: var(--s-ink);
+  cursor: pointer;
+}
+.gv-nav button:hover {
+  border-bottom-color: #aab2c0;
+}
+.gv-nav button.is-on {
+  border-bottom-color: #b08d2e;
+  font-weight: 700;
+  color: #1b365d;
+}
+.gv-table {
+  background: #fff;
+  border: 1px solid var(--s-line);
+}
+.gv-th {
+  background: #eef1f5;
+  border-bottom: 2px solid #1b365d;
+  color: #1b365d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.gv-tr {
+  border-bottom: 1px solid var(--s-line);
+}
+.gv-tr:nth-child(even) {
+  background: #f8f9fb;
+}
+.gv-tr > button:hover {
+  background: #eef3fb;
+}
+.gv-class {
+  font-size: 12px;
+  font-weight: 700;
+}
+.gv-class--felony {
+  color: #9b1c1c;
+}
+.gv-class--misdemeanor {
+  color: #92600a;
+}
+.gv-class--infraction {
+  color: #4a5261;
+}
+.gv-foot {
+  background: #14294a;
+  color: #b9c3d6;
+  font-size: 12px;
+}
+
+/* ── Stock Market: a trading screen. Black, amber, and numbers in a fixed width ─────────── */
+
+.site-stocks {
+  --s-bg: #0a0d11;
+  --s-surface: #12171d;
+  --s-hover: #19202a;
+  --s-field: #12171d;
+  --s-ink: #d9dee5;
+  --s-muted: #8a94a3;
+  --s-faint: #5e6876;
+  --s-line: #1f2732;
+  --s-line-strong: #2c3644;
+  --s-brand: #f0b90b;
+  --s-on-brand: #0a0d11;
+  --s-link: #f0b90b;
+  --s-focus: rgba(240, 185, 11, 0.28);
+  --s-radius: 3px;
+  color-scheme: dark;
+}
+.sx-head {
+  background: #06080b;
+  border-bottom: 1px solid var(--s-line);
+}
+.sx-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+.sx-logo > span:first-child {
+  padding: 4px 8px;
+  background: #f0b90b;
+  color: #0a0d11;
+  font-family: var(--s-mono);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+@keyframes sxTape {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.sx-tape {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  overflow: hidden;
+  background: #0e1318;
+  border-bottom: 1px solid var(--s-line);
+  font-family: var(--s-mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.sx-panel {
+  background: var(--s-surface);
+  border: 1px solid var(--s-line);
+  border-radius: 3px;
+}
+.sx-cap {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--s-faint);
+}
+.sx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--s-line);
+  text-align: left;
+  cursor: pointer;
+}
+.sx-row:hover,
+.sx-row.is-on {
+  background: var(--s-hover);
+}
+.sx-row.is-on {
+  box-shadow: inset 2px 0 0 #f0b90b;
+}
+.sx-up {
+  color: #2ebd85;
+}
+.sx-down {
+  color: #f6465d;
+}

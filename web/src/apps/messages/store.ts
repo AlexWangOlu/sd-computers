@@ -112,6 +112,8 @@ let localSeq = 0;
 let noticeTimer = 0;
 /** A conversation the window was opened for, opened once the list is in. */
 let launchAfterLoad: string | null = null;
+/** A number to write to once the list has loaded (the Browser's "Message" on an ad). */
+let numberAfterLoad: string | null = null;
 
 /** Our unconfirmed bubbles per thread, so they survive switching threads and reloads. */
 const outbox = new Map<string, Bubble[]>();
@@ -218,6 +220,11 @@ export async function loadList(mode: 'initial' | 'manual' | 'silent' = 'silent')
     listError: null,
   });
   syncOpenThread();
+  if (numberAfterLoad) {
+    const number = numberAfterLoad;
+    numberAfterLoad = null;
+    startConversation(number);
+  }
   if (launchAfterLoad) {
     const id = launchAfterLoad;
     launchAfterLoad = null;
@@ -523,8 +530,23 @@ const launchId = (props: Record<string, unknown> | undefined): string => {
   return typeof c === 'string' ? c : typeof c === 'number' ? String(c) : '';
 };
 
-/** win.props from a new-text toast: { conversation } -> open that thread. */
+const launchNumber = (props: Record<string, unknown> | undefined): string => (typeof props?.number === 'string' ? props.number : '');
+
+/**
+ * win.props from a new-text toast: { conversation } -> open that thread. From the Browser's
+ * "Message" on an ad: { number } -> the thread with that number, or a new one to it.
+ */
 export function applyLaunch(props: Record<string, unknown> | undefined): void {
+  const number = launchNumber(props);
+  if (number) {
+    if (get().status !== 'ready') {
+      numberAfterLoad = number;
+      return;
+    }
+    set({ search: '' });
+    startConversation(number);
+    return;
+  }
   const id = launchId(props);
   if (!id) return;
   if (get().status !== 'ready') {
@@ -542,6 +564,7 @@ export async function initMessages(windowId: string, props: Record<string, unkno
   resetMessages();
   winId = windowId;
   launchAfterLoad = launchId(props) || null;
+  numberAfterLoad = launchNumber(props) || null;
   await loadList('initial');
 }
 
