@@ -68,15 +68,27 @@ than a 1080p one, which the shell already clamps windows to.
   `<PrintSlot app="mail" />` once at its root, and `askPrint('mail', { source, data, title })` from
   its Print command (hide the command unless `usePrinting()`). The app never sends a page: `source`
   names something the server knows how to print and `data` what in it (`'mail'` + `{ email, id }`,
-  `'statement'`, `'logs'` + `{ filter }`); only `'text'` (`{ title, body }`) carries what the player
-  typed. To make something new printable, register a source next to the app's endpoints:
+  `'statement'`, `'logs'` + `{ filter }`, `'file'` + `{ id }`); only `'text'` (`{ title, body }`)
+  carries what the player typed. To make something new printable, register a source next to the app's endpoints:
   `printing.source(name, app, function(src, s, data) return page end)` in `server/computers/*.lua`.
   - `print:printers` {} -> `{ enabled, printers: [{ id, label, distance, waiting, full }], maxCopies, pageSeconds }` (the printers in reach of this computer)
   - `print:submit` { printer, copies, source, data } -> `{ printer, copies, seconds }`
   - A printout held in the hand is `src/os/Paper.tsx` (its own stylesheet, `src/styles/paper.css`), drawn by
-    the OS page with no computer open: Lua sends `computers:paper:open` with `{ id, doc, by, from, at }`
+    the OS page with no computer open: Lua sends `computers:paper:open` with `{ id, doc, by, from, at, signing? }`
     (or `{ faded, title }`) and hears the NUI callback `computers:paper:close`. `#paper` (with
-    `?kind=text|mail|statement|logs|faded`) shows one in a browser.
+    `?kind=text|document|contract|long|mail|statement|logs|faded`, and `&font=` for a document) shows one in a
+    browser. The sheet is always A4 (794 x 1123, scaled to fit the screen): what is on it is cut into
+    pieces, measured off screen and dealt onto as many sheets as it takes, so a page never grows
+    with its text. `doc.rich` is a written document (`src/lib/richdoc.tsx`), drawn by the same
+    `RichBlock` and the same `.rd` rules (`src/styles/richdoc.css`) as the Files editor.
+  - Signing: `signing` = `{ name }` says the page has lines to sign and who the holder would sign
+    as. A line is signed from `src/os/SignDialog.tsx` through two NUI callbacks:
+    `computers:paper:signature` {} -> `{ ok, image?, name }` (the signature they already have) and
+    `computers:paper:sign` { field, image? } -> `{ ok, page?, error? }` (`field` = which line of the
+    document, from 0; `image` = a new signature as a PNG data address, kept from then on; the
+    answer is the page as it now is, to draw in place of the old one). The sheet's leaning box takes
+    no pointer events of its own (`paper.css`): it ties in depth with the sheet on it, and a press
+    would otherwise land on the box or on the line by where the page was last tilted.
 - **Props:** every app gets `{ win }` (`AppProps` from `src/apps/registry.tsx`); `win.props` may
   carry launch arguments (e.g. Mail opened from a toast gets `{ mailbox, messageId }`).
 - **Server calls:** `rpc<T>(endpoint, payload)` from `src/nui/rpc.ts` -> `Promise<{ ok, data?, error? }>`.
@@ -177,11 +189,19 @@ Installed per player: only for someone whose job has a board (`configs/shared/bo
 
 ### Files (`files.lua`) - app id `files`
 - `files:list` {} -> `{ files: FileRow[], phone: boolean, limits: { maxFiles, maxName, maxBody } }` (no text, newest-changed first; `phone` = the phone's documents can be shown too)
-- `files:read` { id } -> `FileRow & { body }` ; `files:save` { id?, name, body } -> `FileRow` (no id, or an id that is gone = a new document) ; `files:rename` { id, name } -> `FileRow` ; `files:delete` { id } -> ok
+- `files:read` { id } -> `FileRow & { body, format }` ; `files:save` { id?, name, body, format? } -> `FileRow` (no id, or an id that is gone = a new document) ; `files:rename` { id, name } -> `FileRow` ; `files:delete` { id } -> ok
+- `format` = `'text'` (plain, what older documents are) or `'rich'`: `body` is then the JSON of a `RichDoc` = `{ v: 1, font, blocks }`; a run of text is `{ s, b?, i?, u?, x?, f?, z?, c? }` (`f` a typeface, `z` a size, `c` an ink of its own, each a key from `FONTS` / `SIZES` / `INKS`), and a line to sign on is the block `{ t: 'sign', label? }`, which only a printed page ever carries a `sig` on (`src/lib/richdoc.tsx`: `parseDoc`, `fromText` for a plain one, `docToHtml` / `domToDoc` for the editor, `RichBlock` to draw one). The server rebuilds it on every save (`server/computers/richdoc.lua`), keeps only what it knows, and refuses a picture that is not in the player's Photos (`files.picture_unknown`). The editor always saves `'rich'`.
+- The editor (`RichEditor.tsx`) is a `contentEditable` page driven by the browser's own editing commands; `tidy()` flattens whatever markup that leaves into the blocks a document can hold. A part in a typeface, size or ink of its own is what those commands write, a `<font face size color>`, which `richdoc.css` styles by its attributes (the same lists as `FONTS` / `SIZES` / `INKS`: change one, change both). With text selected the typeface box changes that text; with none it sets the whole document. Its picture button is the Photos app's picker (below), so it is only there while the session has Photos.
 - `files:phoneList` {} -> `{ files: PhoneRow[] }` ; `files:phoneRead` { id } -> `PhoneRow & { body, url?, signatures: [{ signer, signedAt }] }` (`url` for pictures only)
 - `files:toPhone` { id } -> `{ id }` (copies one of mine to the phone) ; `files:fromPhone` { id } -> `FileRow` (saves a copy of a phone document)
 - `FileRow` = `{ id: number, name, size, createdAt, updatedAt }` ; `PhoneRow` = `{ id: string, name, kind: 'text'|'image'|'file', size, locked, createdAt, updatedAt }` (bytes, unix seconds)
-- Names are unique per character (ignoring case). Documents roam with the character; phone documents are read-only from the desk. Nothing in the System Logs.
+- Names are unique per character (ignoring case). Documents roam with the character; phone documents are read-only from the desk, and a rich document copied to the phone goes as its plain text. Nothing in the System Logs.
+
+### Photos (`photos.lua`) - app id `photos` (types: `src/apps/photos/types.ts`)
+On every computer (unless `Photos.Enabled = false` or the computer says `photos = false`), whatever its `apps` list says.
+- `photos:list` {} -> `{ photos: Photo[], capped, phone, count, max, anyHost }` ; `Photo` = `{ id, url, ts (unix seconds), video, favorite, place: 'computer'|'phone' }`. The character's own pictures (`place = 'computer'`, id `pc:<n>`) and, while the phone is linked to this machine (`phone`), its gallery beside them (at most 200; `capped` = the phone holds more). `count` / `max` are the character's own.
+- `photos:add` { url } -> `Photo` (an https link on a host `configs/shared/photos.lua` lists; `anyHost` = that list is off) ; `photos:delete` { id } -> ok (their own only: the phone's gallery is looked at here, not changed)
+- `src/apps/photos/Picker.tsx` is the gallery as something to choose from, for another app: `<PhotoPicker onPick onClose />` (it can add a picture too) and `addPhoto(url)`.
 
 ### Browser (`browser.lua`) - app id `browser`
 - `browser:sites` {} -> `{ home, sites: Site[] }` (read-only: `configs/shared/browser.lua`, sanitised - a bad entry is skipped and named in the server console)
@@ -204,7 +224,7 @@ Read as the page is opened, through `useLive()` (`live/useLive.ts`): what an end
 - `web:squawk` { view: 'feed' } -> `{ posts, tags }`, { view: 'tag', tag } -> `{ posts }`, { view: 'profile', handle } -> `{ profile, posts }` (always read as a visitor)
 - `web:laws` {} -> `{ offences: [{ code, label, class, months, fine, description }] }`
 - `web:stocks` {} -> `{ assets: [{ symbol, name, kind, color?, price, change, history }] }`
-- The photo picker on a post is the Photos app's own `photos:list`, so it is only offered while the session has that app (the phone linked to this machine). The contact buttons open other apps by their launch props: `openApp('messages', { number })` and `openApp('mail', { to, subject })`.
+- The photo picker on a post is the Photos app's own `photos:list`, down to the phone's side of it (`place === 'phone'`): the phone drops anything else from a post. It is only offered while the reply says the phone's gallery is here (`phone`). The contact buttons open other apps by their launch props: `openApp('messages', { number })` and `openApp('mail', { to, subject })`.
 
 ### Games - app id `games`, no server calls (best results live in `localStorage['sd_computers:games']`).
 - The app is only the shelf (`src/apps/games/index.tsx`): a box for each game and the best the player has done at it. The games are programs of their own, the way a hack is: `openGame(id)` in `shared.ts` opens `openWindow({ id: 'game:' + id, app: id, ... })` with `id` = `'mines' | 'solitaire' | 'snake'`, so each has its own window, title, taskbar entry and icon (`os/icons.tsx`, `os/mac/MacIcon.tsx`, `os/retro/glyphs.tsx`). One window per game: opening one that is running brings it forward.
@@ -234,7 +254,7 @@ until the character has linked their phone to the machine in Phone Link.
 #### Phone Link - app id `phonelink` (`phonelink.lua`; types: `src/apps/phonelink/types.ts`)
 Installed per player wherever sd-phone is linked and asks for the code (never listed in a computer's
 own apps). Every endpoint replies with `LinkState` = `{ linked, since? (unix seconds), carrying,
-requirePhone, unlocks: ('messages'|'notes'|'photos'|'contacts'|'files')[], digits, minutes,
+requirePhone, unlocks: ('messages'|'notes'|'photos'|'contacts'|'files')[] (`photos` and `files` = the phone's side of those apps), digits, minutes,
 code?: { expiresIn, resendIn } (seconds, from when the reply was made), computer? }`.
 - `phonelink:state` {} -> `LinkState`
 - `phonelink:send` {} -> `LinkState` with `code`. The code goes to the phone as a notification; refused without a phone on the player, or within `resendIn` of the last one.
@@ -259,8 +279,6 @@ code?: { expiresIn, resendIn } (seconds, from when the reply was made), computer
 - Limits: body <= 20000 chars, 200 notes per character (the phone's rules; the server returns the error).
 - No push: notes edited on the phone appear on the next list refresh.
 
-#### Photos - app id `photos` (`photos.lua`; types: `src/apps/photos/types.ts`)
-- `photos:list` {} -> `{ photos: [{ id, url, ts (unix seconds), video, favorite }], capped }` (newest first, at most 200; `capped` = the phone holds more). Read-only: the gallery is looked at here, not changed.
 
 #### Contacts - app id `contacts` (`contacts.lua`; types: `src/apps/contacts/types.ts`)
 - `contacts:list` {} -> `{ contacts: Contact[] }` (by name); `Contact` = `{ id, name, number (digits), initials?, color?, avatar?, favorite, email?, address? }`

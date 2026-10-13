@@ -225,8 +225,8 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 > [!TIP]
 > **Running [sd-phone](https://github.com/Samuels-Development/sd-phone)? The computers pick it up.**
 > A computer becomes another screen for the character's phone: Mail switches to the phone's own
-> mailboxes, four more apps appear (Messages, Notes, Photos and Contacts), and Files and Bank show
-> the phone's documents and banking history. Players link their phone to a machine with a code
+> mailboxes, three more apps appear (Messages, Notes and Contacts), and Files, Photos and Bank show
+> the phone's documents, gallery and banking history. Players link their phone to a machine with a code
 > from the Phone Link app. sd-computers is complete without it.
 > [More below](#sd-phone-link-optional).
 
@@ -238,15 +238,16 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 | **Event Viewer** | That computer's System Logs: sign-ins and failed PINs, lockouts, apps opened, mail sent, Business Manager actions, hack attempts and breaches, plus anything other resources write. Filterable; clearing it leaves a "log was cleared by X" entry (event 1102) |
 | **Command Prompt** | A real-feeling `cmd.exe` (`ipconfig`, `systeminfo`, `ping`, `tasklist` and more) that launches the hacking minigames: free practice (`hack maze hard`) and configured breach targets (`targets`, `breach fleeca-ledger`) that pay rewards server-side |
 | **Business Manager** | The boss menu: roster with online and on-duty status, promote, demote and fire, hire the players standing at the computer or anyone online by their player ID (they get an accept prompt either way), society balance chart, deposit and withdraw, statement. Only shown to that job's bosses |
-| **Files** | The character's documents: written on any computer, they follow the character to every other one. With sd-phone, the phone's documents show beside them |
+| **Files** | The character's documents, written in a proper editor: a typeface for the page, and a typeface, size and ink of its own for any part of it; headings, lists, quotes, bold and the rest, alignment, rules, pictures out of Photos with a size, a side and a caption, and lines to sign on. They follow the character to every computer and print the way they are set. With sd-phone, the phone's documents show beside them |
+| **Photos** | The character's pictures: added by their link, they follow the character to every computer, and they are what Files puts into a document. With sd-phone, the phone's gallery shows beside them once the phone is linked |
 | **Browser** | A closed, in-game network: the sites you list in `configs/shared/browser.lua`. With sd-phone those are the city's own, live: Weazel News, the Marketplace, the Yellow Pages, a business directory, Squawk, the penal code and the stock market. You can also write pages right in the config, or embed your own web page. Any other address "can't be reached" |
 | **Bank** | The character's bank balance, cash and recent transactions, to look at. Nothing can be moved from it |
 | **Company Board** | A job's notice board: bosses post, pin and remove announcements, everyone in the job reads them from any computer, and it shows who is on duty. Only shown to players with a job |
 | **Security Cameras** | The cameras a player is allowed to watch from that computer: the ones put up from the admin panel, and the ones in `configs/shared/cameras.lua`. Picking one plays its picture live in the app's window, to look around and zoom with, and **Full screen** puts it over the whole display. Only shown to players with at least one camera to watch; every first look is written to the System Logs |
-| **Print** | Notepad, Files, Mail, Bank and Event Viewer print to a [printer](#printers) near the computer. The page waits in the printer's tray and is taken as an item that opens as the page |
+| **Print** | Notepad, Files, Mail, Bank and Event Viewer print to a [printer](#printers) near the computer. The page waits in the printer's tray and is taken as an item that opens as the sheet of A4 it is |
 | **Games** | A shelf of three, each one a program of its own with its own window, icon and look: Mines on a bomb-disposal console, Solitaire on a felt card table, Snake on an arcade screen. Best results are kept |
 | **Phone Link** | Only with sd-phone: links the character's phone to that machine. It sends a code to the phone as a notification; typing it in puts the phone's apps on the desktop there and then, until they unlink it |
-| **Messages / Notes / Photos / Contacts** | Only with sd-phone, once the phone is linked in Phone Link: the phone's texts, notes, gallery and address book on the desktop |
+| **Messages / Notes / Contacts** | Only with sd-phone, once the phone is linked in Phone Link: the phone's texts, notes and address book on the desktop |
 | **Notepad / Calculator / Settings** | Notes that follow the character to every computer; a full standard calculator; wallpaper, accent colour and dark or light mode, saved per character |
 
 Around the apps: a lock screen with an optional per-computer PIN (checked server-side, with lockout), welcome and shutdown screens, draggable, resizable, snap-to-maximize windows, calendar and quick-settings flyouts, toast notifications, and system sounds for starting up, signing in, windows, clicks and notifications (synthesized, no audio files; each style has its own and can switch them off).
@@ -328,7 +329,7 @@ The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof
 `/computeradmin` (admins) opens a panel listing every computer on the server, who is sitting at which, its style and its job lock, and places new ones without touching a config file:
 
 1. **Place computer**: pick the prop it stands as (`configs/shared/admin.lua` > `Props`), the style it opens in (`modern`, `retro`, `mac`, or the server default), a name, and optionally the jobs that may use it and who gets the Business Manager on it.
-2. The placement gizmo takes over, the same one sd-bombs and sd-scooters use. The prop starts sitting on whatever you were looking at; move and turn it, **Enter** places it.
+2. The placement gizmo takes over, the same one sd-bombs and sd-scooters use. The prop starts on the desk, counter or floor you were looking at when that is close by (`PlaceReach`), and a step in front of you otherwise; move and turn it, **Enter** places it.
 3. It is live at once for everyone, with the same "Use Computer" option as any other computer.
 
 A placed computer can be changed (name, prop, style, jobs, Business Manager), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` cannot be changed there, but a location from that file can be removed from its row and restored again: the file is not touched, the computer just stops being one (nobody can open it, and its monitor goes back to its stock look) until it is restored. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
@@ -403,8 +404,9 @@ Stand a printer near a computer and its apps can print. A page is not handed to 
 
 - **Printing.** Notepad (File > Print, or Ctrl+P), Files, Mail, Bank and Event Viewer each have a Print. It lists the printers within reach of that computer (`Range`, 30 m), nearest first, and asks how many copies.
 - **Taking the pages.** Target the printer and take what is in its tray. Each copy takes a moment to come out (`PageSeconds`). Anyone standing there can take them unless `OwnOnly` is set, a full tray prints nothing more (`TrayLimit`), and what nobody collects is thrown away after an hour (`TrayMinutes`).
-- **The item.** A printout is one inventory item, `printed_document`. Its tooltip says what the page is, who printed it, when and from which machine; using it holds the page up to read. Copies of the same page stack, and it can be handed over, stashed or found on somebody like any other item.
-- **What a page is.** A typed page is plain. A mail message prints with its headers, a bank statement with the bank's letterhead and its rows, a system log on green-bar listing paper. Those three are built by the server from its own data, never from what the page sent, so nobody can print a statement that says something the bank does not.
+- **The item.** A printout is one inventory item, `printed_document`. Its tooltip says what the page is, who printed it, when and from which machine; using it holds the page up to read. It is a sheet of A4, the same size whatever is on it: it leans with the mouse, zooms in for small print (Z), and a long one runs over several sheets that turn with the arrow keys, the mouse wheel or the buttons under it. Copies of the same page stack, and it can be handed over, stashed or found on somebody like any other item.
+- **What a page is.** A Notepad page is plain type. A document from Files prints the way it was set: its typeface, headings, lists and pictures. A mail message prints with its headers, a bank statement with the bank's letterhead and its rows, a system log on green-bar listing paper. Those three are built by the server from its own data, never from what the page sent, so nobody can print a statement that says something the bank does not. A document is read back from where it was saved in the same way, which is why it has to be saved before it prints.
+- **Signing.** A document can have lines to sign on (the pen button in Files; name each for whoever signs it, and two put in one after the other sit side by side). They are signed on paper: whoever holds the printed page presses **Sign here** on a line and signs it, drawn with the mouse or typed in a handwriting, and that signature is kept for every page they sign after. The name and the time under a signature are the server's, so a line says who really signed it. Then the page is handed to the next person, like any item. Copies of a page stack until one is signed; the signed copy is a page of its own, and its tooltip says who has signed it. `Signatures = false` leaves the lines on the page with nobody able to sign them.
 
 Every print is written to that computer's System Logs (event 5001, source Print Spooler).
 
@@ -415,7 +417,7 @@ The **Printers** tab of `/computeradmin` lists every printer with what is waitin
 1. **Place a printer**: name it, pick the prop (`configs/shared/printers.lua` > `Props`), and stand it with the placement gizmo, on a desk or the floor.
 2. Or **Pick existing prop**: aim at a printer or copier the game already has in the world. Nothing is spawned; that prop becomes the printer.
 
-A printer can be renamed, moved, gone to and removed from its row. Removing one throws away what was in its tray. They are kept in the `computers_printers` table, the pages in `computers_prints`.
+A printer can be renamed, moved, gone to and removed from its row. Removing one throws away what was in its tray. They are kept in the `computers_printers` table, the pages in `computers_prints`, and the signature each character signs with in `computers_signatures`.
 
 ## sd-phone link (optional)
 
@@ -426,19 +428,19 @@ sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-
 | **Mail** | The phone's mail: the same `@lifeinvader.com` accounts, inbox (plus Spam), attachments, phone notifications and badges | Built-in `@lsmail.com` Mail |
 | **Messages** | New app: the phone's text threads. Read, reply, start a thread to a number or contact; incoming texts toast on the desktop | Not installed |
 | **Notes** | New app: the phone's notes. Edit the text, view their photos and sketches | Not installed |
-| **Photos** | New app: the phone's gallery, to look at | Not installed |
 | **Contacts** | New app: the phone's address book. Add and remove contacts, and message one straight from it | Not installed |
 | **Files** | Also lists the phone's documents | The character's own documents only |
+| **Photos** | Also shows the phone's gallery, to look at and to put into a document | The character's own pictures only |
 | **Bank** | Takes its statement from the phone's banking history | The banking resource's statement, when it keeps one |
 | **Phone Link** | New app: links the phone to the machine with a code | Not installed |
 | **Browser** | The phone's public apps as sites, live (below) | Only the pages written in the config |
 
-**Linking a phone.** Messages, Notes, Photos, Contacts and the phone's documents in Files are not on a computer until the character has linked their phone to that machine. They open **Phone Link**, send a code to their phone (it arrives as a notification, so they need the phone on them), and type the six digits in. The phone's apps appear on the desktop straight away and stay for that character on that machine until they press **Unlink**. Every machine is linked on its own: one public PC being linked says nothing about the next one. A code works for `LinkCodeMinutes` (5), five wrong tries use it up, and a new one can be sent every 30 seconds. `RequireLink = false` drops the code and the app, and the phone's apps are simply there. Mail and the Bank statement do not wait for the link.
+**Linking a phone.** Messages, Notes, Contacts, the phone's gallery in Photos and the phone's documents in Files are not on a computer until the character has linked their phone to that machine. They open **Phone Link**, send a code to their phone (it arrives as a notification, so they need the phone on them), and type the six digits in. The phone's apps appear on the desktop straight away and stay for that character on that machine until they press **Unlink**. Every machine is linked on its own: one public PC being linked says nothing about the next one. A code works for `LinkCodeMinutes` (5), five wrong tries use it up, and a new one can be sent every 30 seconds. `RequireLink = false` drops the code and the app, and the phone's apps are simply there. Mail and the Bank statement do not wait for the link.
 
 - Needs sd-phone's link file `server/compat/computers.lua` (shipped with sd-phone, one line in its fxmanifest). It runs the phone's own handlers, so a text sent from a desk validates, notifies and threads exactly like one typed on the phone.
 - Detected live: start or stop sd-phone at any time and the next computer you open follows. An sd-phone without the link file is treated as "not installed" (one console warning).
-- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), a switch for each of `Mail`, `Messages`, `Notes`, `Photos`, `Contacts`, `Files` and `Bank`, `RequireLink` and `LinkCodeMinutes` (above), and `RequirePhone` (the four phone apps only for players carrying a phone, default on - with `RequireLink`, whether a machine that is already linked still needs the phone nearby).
-- Per computer: `phone = false` in `computers.lua` keeps the four phone apps and Phone Link off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
+- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), a switch for each of `Mail`, `Messages`, `Notes`, `Photos`, `Contacts`, `Files` and `Bank`, `RequireLink` and `LinkCodeMinutes` (above), and `RequirePhone` (the phone's apps, gallery and documents only for players carrying a phone, default on - with `RequireLink`, whether a machine that is already linked still needs the phone nearby).
+- Per computer: `phone = false` in `computers.lua` keeps the phone's apps, its gallery and documents, and Phone Link off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
 - `SendMail`, `MailAddressExists` and `GetMailAddresses` follow the switch too: while linked they work on the phone's mailboxes (the ones players actually read).
 - sd-phone side: `set sd_phone_computerlink "sd-computers"` lists the resources allowed to drive the link (default sd-computers only; `"off"` disables it).
 
@@ -536,7 +538,7 @@ ensure oxmysql
 ensure sd-computers
 ```
 
-Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_settings`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`, and one each for the features that keep one (`computers_files`, `computers_cameras`, `computers_printers`, `computers_prints` ...).
+Database tables create themselves on first boot: `computers_profiles`, `computers_logs`, `computers_placed`, `computers_settings`, `computers_mail_accounts`, `computers_mail_sessions`, `computers_mail_messages`, and one each for the features that keep one (`computers_files`, `computers_photos`, `computers_cameras`, `computers_printers`, `computers_prints` ...).
 
 The UI ships pre-built in `web/build`, so a plain download or clone runs as is.
 
@@ -594,13 +596,14 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, whether props in the world are computers on their own (`Automatic`, off by default), and the props a computer can be placed as (or picked from the world as) |
 | `configs/shared/screens.lua` | **The screens on the props**: on or off, draw distance, how many are drawn and mirrored at once, texture size, what an idle computer shows, the live copy (on or off, minigame frame rate, watchers per session), and where the screen is on each prop model |
 | `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
-| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, the Messages, Notes, Photos and Contacts apps, the phone's side of Files and Bank, Phone Link's code (RequireLink), RequirePhone |
+| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, the Messages, Notes and Contacts apps, the phone's side of Photos, Files and Bank, Phone Link's code (RequireLink), RequirePhone |
 | `configs/shared/files.lua` | Files: how many documents a character keeps, and how long each may be |
+| `configs/shared/photos.lua` | Photos on or off, how many pictures a character keeps, and **the image hosts a picture may be linked from** (`Hosts`) |
 | `configs/shared/browser.lua` | **The Browser's sites**: the start address and every site a computer can open - sd-phone's public apps live (`live`), pages written in the file (`blocks`), or your own web page (`url`) |
 | `configs/shared/bank.lua` | Bank on or off, how many transactions it lists |
 | `configs/shared/board.lua` | Company Board on or off, jobs that have none, how many announcements a job keeps |
 | `configs/shared/cameras.lua` | **The security cameras** written in the config (more are put up from the admin panel): where each is, the way it looks, who may watch it and from which computers; how far they all turn and zoom, and the look of the picture (`Filter`: black-and-white CCTV, colour, or clean) |
-| `configs/shared/printers.lua` | **Printers**: on or off, the item a printout is, how far a printer reaches, copies per print, how long a copy takes, tray size and how long a page waits in it, who may take pages, the reading animation, and the props a printer can be |
+| `configs/shared/printers.lua` | **Printers**: on or off, the item a printout is, how far a printer reaches, copies per print, how long a copy takes, tray size and how long a page waits in it, who may take pages, the reading animation, whether pages can be signed, and the props a printer can be |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
 | `configs/shared/boss.lua` | Business Manager on or off, hire radius, hiring by player ID on or off, deposit sources, withdraw target |
 | `configs/server/security.lua` | Optional **PINs per computer** (none set out of the box) and wrong-PIN lockout |
@@ -625,7 +628,9 @@ Start > Power > Shut down stands you up too, with the shutdown screen. Walking a
 - Every app action goes through one server callback (`server/computers/rpc.lua`) that checks the player has this computer open, is signed in, is still in reach, still passes its job lock, and has that app, before any handler runs.
 - PINs and breach rewards live only in `configs/server/`. The client never sees them.
 - Location computers are distance-checked against their config coords. Model (prop) computers can't be: world props aren't networked, so the prop's position comes from the client. That's fine for public PCs, but put valuable breach targets on location computers.
-- A printed page is built by the server. An app names what to print (a message id, the statement, the log); it does not send the page. Only what a player typed themselves (Notepad, Files) is taken as sent, and that can only ever be a plain page with no letterhead. Taking pages from a tray is checked against where the server sees the player standing.
+- A printed page is built by the server. An app names what to print (a message id, the statement, the log); it does not send the page. Only what a player typed into Notepad is taken as sent, and that can only ever be a plain page with no letterhead; a document from Files is read back from where it was saved. Taking pages from a tray is checked against where the server sees the player standing.
+- A signature is the one thing on a page a player draws. Whose name and what time go under it are the server's, written for whoever it finds holding that sheet in their inventory; a document that is saved or printed cannot carry a signature at all. The ink is a small PNG kept as data, never a link, and its size in pixels is read out of the file before it is kept.
+- A picture is only ever a link, and a link is fetched by the game of whoever looks at it. So Photos takes links only from the hosts in `configs/shared/photos.lua`, a document takes pictures only out of its writer's own gallery, and what a document holds is rebuilt by the server on every save from a short list of things a page can have (paragraphs, headings, lists, quotes, pictures, rules). A page handed to somebody cannot make their game call an address a player chose.
 - A hack win is never trusted: the server mints the run (and, for maze, pipe, typing and signal, generates the puzzle), requires every milestone in order at human pace, refuses anything faster than the difficulty's minimum play time, and only then pays out. These are sd-deaddrop's `proof.lua` / `challenge.lua`.
 - A screen's live copy is relayed by the server, which only passes on what comes from the player holding that computer's session, within size and rate caps, and only to players it has itself measured as standing near the computer (and keeps measuring). On the watching side the copy is rebuilt in a sandboxed frame that cannot run script, and that loads nothing from outside the resource except from the hosts your own wallpaper images come from (`Desktop.Styles`), so a modified client cannot use it to run code on, or pull addresses from, the players around it. Password fields are masked before the recording leaves the player's game.
 
