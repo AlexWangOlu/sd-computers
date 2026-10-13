@@ -219,11 +219,15 @@ local function arrange()
     mirror.assign(wanted)
     mirror.tick()
 
-    -- (the screen the player's own desktop is on right now is that desktop's: nothing is drawn on it)
-    local mine = view.entity()
+    -- Every screen is worked out, the one the player's own desktop is on included. Nothing is
+    -- drawn on that one while the desktop is - but that is asked every frame, by the draw loop, not
+    -- here twice a second: the moment they get up its lock face has to be there already, or for as
+    -- long as this takes to come round again the prop shows the picture it was modelled with.
+    -- (Working it out here is also what keeps that lock face's browser from being given back
+    -- while they sit.)
     local list = {}
     for _, s in ipairs(screens) do
-        if s.entity ~= mine and DoesEntityExist(s.entity) then
+        if DoesEntityExist(s.entity) then
             local txn, u0, v0, u1, v1
             if s.live then
                 txn, u1, v1 = mirror.texture(s.key)
@@ -235,7 +239,7 @@ local function arrange()
             end
             if txn then
                 local tl, tr, bl, br, c, n = quads.place(s.entity, s.quad)
-                list[#list + 1] = { tl = tl, tr = tr, bl = bl, br = br, c = c, n = n, txn = txn, u0 = u0, v0 = v0, u1 = u1, v1 = v1 }
+                list[#list + 1] = { entity = s.entity, tl = tl, tr = tr, bl = bl, br = br, c = c, n = n, txn = txn, u0 = u0, v0 = v0, u1 = u1, v1 = v1 }
             end
         end
     end
@@ -277,11 +281,13 @@ CreateThread(function()
             Wait(500)
         else
             local cam = GetFinalRenderedCamCoord()
+            -- (the screen the player's own desktop is on right now is that desktop's: nothing is drawn on it)
+            local mine = view.entity()
             for i = 1, #list do
                 local d = list[i]
                 local c, n = d.c, d.n
                 local dx, dy, dz = cam.x - c.x, cam.y - c.y, cam.z - c.z
-                if dx * n.x + dy * n.y + dz * n.z > 0.0 then
+                if d.entity ~= mine and dx * n.x + dy * n.y + dz * n.z > 0.0 then
                     -- (out along the way the screen faces, by how far the camera is)
                     local lift = sqrt(dx * dx + dy * dy + dz * dz) * LIFT_PER_METRE
                     local ox, oy, oz = n.x * lift, n.y * lift, n.z * lift
