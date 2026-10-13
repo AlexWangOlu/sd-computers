@@ -4,12 +4,16 @@ local config = require 'configs.config'
 local log = require 'shared.log'
 
 -- Where the screen is on a computer's prop: the rectangle from configs/shared/screens.lua
--- (Screens.Models), worked out once per model. Two things stand on it - the picture drawn on the
--- prop for everyone around (client/screens/world.lua), and the camera that goes up to it for the
--- player using the computer (client/computers/view.lua).
+-- (Screens.Models), or the one an admin drew for that model in the panel (client/admin/screener.lua;
+-- kept by the server, published, and winning over the file's), worked out once per model. Two things
+-- stand on it - the picture drawn on the prop for everyone around (client/screens/world.lua), and the
+-- camera that goes up to it for the player using the computer (client/computers/view.lua).
 
 ---@type table Quads module; the table returned at end of file.
 local quads = {}
+
+---@type string GlobalState key the server publishes the screens drawn in the admin panel under.
+local STATE_KEY = 'sd-computers:screens'
 
 ---@type number Metres from a location computer's zone centre its screen prop is looked for.
 quads.ZONE_RADIUS = 1.25
@@ -29,31 +33,88 @@ quads.ZONE_RADIUS = 1.25
 
 ---@type number Metres every rectangle is drawn in front of where it was measured. A rectangle lying
 ---exactly in the glass fights it for the pixel, and from some angles half of it loses.
-local LIFT = 0.0006
+quads.LIFT = 0.0006
 
----@type table<integer, ScreenQuad> model hash -> where its screen is.
-local byModel = {}
+---@type number Metres a screen is drawn further out from its prop for every metre the camera is away.
+---The prop's own glass wins against a picture lying just in front of it more and more with distance
+---(measured: a picture has to be 0.075 mm further out per metre to show at all, and where it is not
+---quite far enough it is cut away in halves). Half a millimetre a metre is several times that, and
+---less than a pixel at any distance, so the picture never visibly leaves the glass.
+quads.LIFT_PER_METRE = 0.0005
+
+---@class ScreenSpec a screen as it is measured: with the screen facing you (x right, y away, z up)
+---@field x number the middle of the lit area, metres from the prop's origin
+---@field y number
+---@field z number
+---@field w number its width
+---@field h number its height
+---@field tilt? number degrees it leans back
+---@field heading? number degrees it is turned from the prop's front
+---@field custom? boolean drawn in the admin panel, rather than listed in the file
+
+---A screen's rectangle, from its measurements.
+---@param s ScreenSpec
+---@return ScreenQuad
+function quads.make(s)
+    local tilt, heading = math.rad(s.tilt or 0.0), math.rad(s.heading or 0.0)
+    local ch, sh = math.cos(heading), math.sin(heading)
+    -- Measured with the screen facing the viewer (x right, y away, z up), then turned to the way
+    -- the model really faces.
+    local function turn(x, y, z) return vec3(x * ch - y * sh, x * sh + y * ch, z) end
+    local normal = turn(0.0, -math.cos(tilt), math.sin(tilt))
+    local mid = turn(s.x, s.y, s.z) + normal * quads.LIFT
+    local right = turn(1.0, 0.0, 0.0)
+    local up = turn(0.0, math.sin(tilt), math.cos(tilt))
+    local hr, hu = right * (s.w / 2), up * (s.h / 2)
+    return {
+        tl = mid - hr + hu, tr = mid + hr + hu, bl = mid - hr - hu, br = mid + hr - hu,
+        c = mid, n = normal, right = right, up = up,
+        w = s.w, h = s.h, aspect = s.w / s.h,
+    }
+end
+
+---@type table<string, ScreenSpec> model name -> its screen as configs/shared/screens.lua has it.
+local fromFile = {}
 for name, q in pairs((config.Screens and config.Screens.Models) or {}) do
     local c, size = q.centre, q.size
     if c and size and size.x > 0 and size.y > 0 then
-        local tilt, heading = math.rad(q.tilt or 0.0), math.rad(q.heading or 0.0)
-        local ch, sh = math.cos(heading), math.sin(heading)
-        -- Measured with the screen facing the viewer (x right, y away, z up), then turned to the way
-        -- the model really faces.
-        local function turn(x, y, z) return vec3(x * ch - y * sh, x * sh + y * ch, z) end
-        local normal = turn(0.0, -math.cos(tilt), math.sin(tilt))
-        local mid = turn(c.x, c.y, c.z) + normal * LIFT
-        local right = turn(1.0, 0.0, 0.0)
-        local up = turn(0.0, math.sin(tilt), math.cos(tilt))
-        local hr, hu = right * (size.x / 2), up * (size.y / 2)
-        byModel[joaat(name)] = {
-            tl = mid - hr + hu, tr = mid + hr + hu, bl = mid - hr - hu, br = mid + hr - hu,
-            c = mid, n = normal, right = right, up = up,
-            w = size.x, h = size.y, aspect = size.x / size.y,
-        }
+        fromFile[name] = { x = c.x, y = c.y, z = c.z, w = size.x, h = size.y, tilt = q.tilt or 0.0, heading = q.heading or 0.0 }
     else
         log.warn('screens', 'screen for model %s needs a centre and a size - skipped', tostring(name))
     end
+end
+
+---@type table<string, ScreenSpec> model name -> its screen: the file's, and over them the panel's.
+local specs = {}
+---@type table<integer, ScreenQuad> model hash -> where its screen is.
+local byModel = {}
+
+---Work every rectangle out again: the file's, then the ones drawn in the panel over them.
+---@param drawn table<string, table>|nil the server's list: model name -> { x, y, z, w, h, tilt, heading }
+local function rebuild(drawn)
+    local all = {}
+    for name, s in pairs(fromFile) do all[name] = s end
+    for name, s in pairs(type(drawn) == 'table' and drawn or {}) do
+        local x, y, z, w, h = tonumber(s.x), tonumber(s.y), tonumber(s.z), tonumber(s.w), tonumber(s.h)
+        if type(name) == 'string' and x and y and z and w and h and w > 0 and h > 0 then
+            all[name] = { x = x, y = y, z = z, w = w, h = h, tilt = tonumber(s.tilt) or 0.0, heading = tonumber(s.heading) or 0.0, custom = true }
+        end
+    end
+    local map = {}
+    for name, s in pairs(all) do map[joaat(name)] = quads.make(s) end
+    specs, byModel = all, map
+end
+
+AddStateBagChangeHandler(STATE_KEY, 'global', function(_, _, value) rebuild(value) end)
+rebuild(GlobalState[STATE_KEY])
+
+---A model's screen as it is measured (nil for a model that has none), and the file's own for it
+---when the one in use was drawn in the panel.
+---@param name string model name
+---@return ScreenSpec|nil spec
+---@return ScreenSpec|nil file
+function quads.spec(name)
+    return specs[name], fromFile[name]
 end
 
 ---Where a model's screen is (nil for a model that has none).

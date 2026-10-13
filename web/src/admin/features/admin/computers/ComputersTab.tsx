@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Crosshair, KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { Briefcase, Crosshair, KeyRound, Lock, MonitorUp, Move, Navigation, Pencil, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { Badge, ConfirmDialog, Empty, Heading, SearchInput, Status } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
 import { useAdmin } from '@/admin/store/admin';
@@ -61,6 +61,17 @@ const Row = ({ c, style, prop, onEdit, onDelete }: { c: Computer; style?: OsStyl
             <span className="inline-flex items-center gap-1 text-[11.5px] min-w-0" style={{ color: 'var(--text-2)' }} title={t('computers.locked_to', jobs.join(', '))}>
               <Lock size={11} className="flex-shrink-0" />
               <span className="truncate">{jobs.join(', ')}</span>
+            </span>
+          )}
+          {/* (the job as the framework spells it, like the lock beside it; '*' = whoever signs in as a boss) */}
+          {c.boss && (
+            <span
+              className="inline-flex items-center gap-1 text-[11.5px] min-w-0"
+              style={{ color: 'var(--text-2)' }}
+              title={c.boss === '*' ? t('computers.manages_any') : t('computers.manages_job', snapshot.jobs.find(j => j.name === c.boss)?.label ?? c.boss)}
+            >
+              <Briefcase size={11} className="flex-shrink-0" />
+              <span className="truncate">{c.boss === '*' ? t('computers.boss_any') : c.boss}</span>
             </span>
           )}
           {c.pin && (
@@ -126,7 +137,7 @@ export function ComputersTab() {
   const shown = all.filter(
     c =>
       (filter === 'all' || (filter === 'placed') === made(c)) &&
-      `${c.label} ${c.key} ${c.hostname} ${c.prop ?? ''} ${(c.models ?? []).join(' ')} ${styles[c.style]?.name ?? c.style} ${Object.keys(c.groups ?? {}).join(' ')} ${c.users.join(' ')}`.toLowerCase().includes(query),
+      `${c.label} ${c.key} ${c.hostname} ${c.prop ?? ''} ${(c.models ?? []).join(' ')} ${styles[c.style]?.name ?? c.style} ${Object.keys(c.groups ?? {}).join(' ')} ${c.boss ?? ''} ${c.users.join(' ')}`.toLowerCase().includes(query),
   );
 
   return (

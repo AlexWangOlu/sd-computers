@@ -1,0 +1,39 @@
+{
+  "account": "Personal account",
+  "load_failed": "Couldn't open your account",
+  "refresh_failed": "Couldn't refresh",
+
+  "bank_balance": "Bank balance",
+  "bank_caption": "In your account",
+  "cash": "Cash",
+  "cash_caption": "On you right now",
+  "money_in": "Money in",
+  "money_out": "Money out",
+  "totals_caption": "Over the transactions listed below",
+
+  "no_statement_title": "No statement available",
+  "no_statement_body": "Your balances are up to date, but there is no record of your transactions for this computer to show.",
+
+  "chart_title": "Balance history",
+  "chart_caption": "Worked back from today's balance through the transactions listed below",
+  "chart_change": "Change over the transactions listed",
+  "chart_now": "Now",
+  "chart_opening": "Opening balance",
+
+  "tx_title": "Transactions",
+  "tx_from_phone": "From your phone's banking history",
+  "tx_from_banking": "From the bank's own records",
+  "tx_none_match": "No transactions match.",
+  "no_tx_title": "No transactions yet",
+  "no_tx_body": "Money that comes into or leaves your bank account will be listed here.",
+  "filter_all": "All",
+  "filter_in": "In",
+  "filter_out": "Out",
+  "search_placeholder": "Search transactions",
+  "search_clear": "Clear search",
+  "col_date": "Date",
+  "col_description": "Description",
+  "col_parties": "From → To",
+  "col_message": "Message",
+  "col_amount": "Amount"
+}

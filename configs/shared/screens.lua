@@ -27,7 +27,11 @@ return {
 
     -- Where the screen is on each prop: a flat rectangle, measured from the prop's origin with the
     -- screen facing you (x = right, y = away from you, z = up). A model that is not listed gets no
-    -- screen - add your own streamed props here. Put it ON the glass (in front of it, it floats when
+    -- screen. For a prop of your own there is no need to measure anything: /computeradmin > Props >
+    -- "Draw screen" opens a tool that draws the rectangle on the prop with the mouse. What is drawn
+    -- there is kept in the database and wins over this list; C in the tool copies it as a line for
+    -- this list, should it belong in the file instead.
+    -- By hand: put it ON the glass (in front of it, it floats when
     -- seen from the side) and, where the glass sits back in a bezel, make it a few millimetres too
     -- large: the bezel hides the overlap, and none of the prop's own screen shows around the edge.
     --   centre   vec3 - the middle of the lit area

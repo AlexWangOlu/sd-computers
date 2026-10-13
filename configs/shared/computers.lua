@@ -12,9 +12,12 @@
 --   rotation  number - box zone heading (default 0.0).
 --     - or -
 --   model     string | string[] - prop model name(s); every instance becomes this computer.
---             The /computeradmin panel (Automatic tab) can switch a model computer off, or single
---             models of it, and give it (or one model of it) a style: what it changes is kept in
---             the database and wins over this list and the `style` below.
+--             OFF OUT OF THE BOX: model computers only work once they are switched on, with the
+--             switch at the top of the /computeradmin panel's Automatic tab (or Automatic = true
+--             in configs/shared/admin.lua). Until then a computer is a location below, or one
+--             placed or picked in the panel. The same tab can switch one model computer off, or
+--             single models of it, and give it (or one model of it) a style: what it changes is
+--             kept in the database and wins over this list and the `style` below.
 --
 --   groups    optional job/gang lock, ox_target style: { police = 0, sheriff = 2 } (name = min
 --             grade). nil = anyone can use it. Checked server-side on open AND on every action.
@@ -24,7 +27,15 @@
 --   style     optional look: 'modern' | 'retro' | 'mac' (configs/shared/desktop.lua Styles).
 --             nil = Desktop.DefaultStyle. Scripts can override it per open (OpenComputer export).
 --   apps      optional app list (ids from configs/shared/desktop.lua Apps). nil = Desktop.DefaultApps.
---             'boss' is added automatically when `boss` is set - you don't need to list it.
+--             'boss' is added automatically when `boss` is set - you don't need to list it. Nor
+--             the apps that are for a player rather than a computer: the Company Board (anyone
+--             with a job), Security Cameras (anyone allowed to watch a camera here) and the
+--             phone apps (Messages, Notes, Photos, Contacts, while sd-phone is linked). Those
+--             appear on every computer; list one here only to choose where it sits.
+--   board     false = no Company Board on this computer (configs/shared/board.lua).
+--   cameras   false = no Security Cameras on this computer (configs/shared/cameras.lua).
+--   phone     false = none of the phone apps on this computer, and no Phone Link to link a phone
+--             to it with (configs/shared/phone.lua).
 --   pin       NOT here - PINs are sensitive and live server-side in configs/server/security.lua.
 return {
     -- Location computer: MRPD front desk. Locked to police, manages the police department.
@@ -38,7 +49,7 @@ return {
         groups = { police = 0 },
         boss = 'police',
         style = 'modern',
-        apps = { 'mail', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
+        apps = { 'mail', 'files', 'browser', 'bank', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
     },
 
     -- Location computer: Pillbox reception. Locked to EMS, manages the ambulance job.
@@ -54,8 +65,10 @@ return {
         style = 'modern',
     },
 
-    -- Model computer: every office monitor in the city is a public computer. No lock, no
-    -- Business Manager - just mail, notes and the command line (practice hacks).
+    -- Model computer: every office monitor in the city is a public computer (once model computers
+    -- are switched on - see `model` above). No lock, no Business Manager - just mail, notes and the
+    -- command line (practice hacks). Monitors only: a tower PC has no screen, so none is listed
+    -- (add 'prop_dyn_pc' and the like here if the towers should be computers too).
     {
         id = 'public_pc',
         label = 'Computer',
@@ -65,9 +78,8 @@ return {
             'prop_monitor_w_large', 'prop_monitor_01c', 'prop_monitor_01d', 'prop_monitor_li',
             'tr_prop_tr_monitor_01a', 'prop_monitor_04a', 'xm_prop_x17_computer_02', 'prop_ld_monitor_01',
             'v_serv_ct_monitor01', 'v_serv_ct_monitor02', 'ex_prop_monitor_01_ex', 'sm_prop_smug_monitor_01',
-            'prop_dyn_pc', 'prop_dyn_pc_02', 'prop_pc_01a', 'prop_pc_02a', 'hei_prop_heist_pc_01', 'v_res_pctower',
         },
-        apps = { 'mail', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
+        apps = { 'mail', 'files', 'browser', 'bank', 'logs', 'cmd', 'notepad', 'calculator', 'games', 'settings' },
     },
 
     -- Model computer: business laptops. `boss = true` = whoever signs in manages THEIR OWN job,

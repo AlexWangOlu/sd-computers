@@ -1,3 +1,5 @@
+---@type table sd-computers config root (configs/config.lua).
+local config = require 'configs.config'
 ---@type table The prop models known as a computer (shared.props).
 local props = require 'shared.props'
 
@@ -31,8 +33,9 @@ local function rebuild(value)
                     map[hash] = map[hash] or { def = def, style = type(style) == 'string' and style or nil }
                 end
             end
-        else
-            -- (nothing published yet: the file's own lists, which is what the server starts from)
+        elseif (config.Admin or {}).Automatic == true then
+            -- (nothing published yet: the file's own lists, which is what the server starts from
+            -- where the file has them on at all)
             for _, name in ipairs(props.models(def)) do
                 local hash = joaat(name)
                 map[hash] = map[hash] or { def = def }

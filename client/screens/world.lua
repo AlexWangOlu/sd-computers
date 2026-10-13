@@ -174,18 +174,6 @@ local function idleTexture(style)
     return i.browser.txn
 end
 
----The part of a lock face texture a screen of this shape shows: the middle, cut to fit.
----@param aspect number
----@return number u0, number v0, number u1, number v1
-local function cover(aspect)
-    if aspect < TEX_ASPECT then
-        local f = aspect / TEX_ASPECT
-        return (1 - f) / 2, 0.0, (1 + f) / 2, 1.0
-    end
-    local f = TEX_ASPECT / aspect
-    return 0.0, (1 - f) / 2, 1.0, (1 + f) / 2
-end
-
 ---The part of a texture a live copy draws in for a screen of this shape: as large as fits, from the top left.
 ---@param aspect number
 ---@return integer vw, integer vh
@@ -240,7 +228,7 @@ local function arrange()
             end
             if not txn and IDLE then
                 txn = idleTexture(s.style)
-                u0, v0, u1, v1 = cover(s.quad.aspect)
+                u0, v0, u1, v1 = dui.cover(s.quad.aspect)
             end
             if txn then
                 local tl, tr, bl, br, c, n = quads.place(s.entity, s.quad)
@@ -271,12 +259,9 @@ CreateThread(function()
     end
 end)
 
----@type number Metres a screen is drawn further out from its prop for every metre the camera is away.
----The prop's own glass wins against a picture lying just in front of it more and more with distance
----(measured: a picture has to be 0.075 mm further out per metre to show at all, and where it is not
----quite far enough it is cut away in halves). Half a millimetre a metre is several times that, and
----less than a pixel at any distance, so the picture never visibly leaves the glass.
-local LIFT_PER_METRE = 0.0005
+---@type number Metres a screen is drawn further out from its prop for every metre the camera is away
+---(client/screens/quads.lua says why).
+local LIFT_PER_METRE = quads.LIFT_PER_METRE
 
 -- Draw. A screen is two triangles, wound anticlockwise as seen from the front - the side the game
 -- draws - with the texture's corners pinned to the screen's. One seen from behind is skipped.

@@ -14,6 +14,8 @@ local placed = require 'server.computers.placed'
 local auto = require 'server.computers.auto'
 ---@type table Props added from the admin panel (server.computers.custom).
 local custom = require 'server.computers.custom'
+---@type table Screens drawn in the admin panel (server.computers.screens).
+local screens = require 'server.computers.screens'
 
 -- Boot order matters only for the schema: every table exists before the first callback can run.
 -- The feature modules register their callbacks/exports at require time.
@@ -22,8 +24,15 @@ mailstore.ensureSchema()
 placed.ensureSchema()
 auto.ensureSchema()
 custom.load() -- props added from the admin panel: before anything that names a prop
+screens.load() -- where the screen is on a prop, as an admin drew it in the panel
 placed.load() -- before the first open: a placed computer is a registry entry like any other
 auto.load() -- which props in the world are a computer, as the admin panel left them
+
+-- Files and the Company Board keep a table each. They are apps, so requiring them brings the
+-- session in with them: after everything above, which a session opening counts on.
+require('server.computers.files').ensureSchema() -- Files: the characters' documents
+require('server.computers.board').ensureSchema() -- Company Board: the jobs' announcements
+require('server.computers.phone').ensureSchema() -- Phone Link: which machines a character's phone is linked to
 
 require 'server.computers.session'
 require 'server.computers.mirror' -- the screen on a computer's prop: which are in use, and the relay to the players watching
@@ -31,7 +40,12 @@ require 'server.computers.shell'
 require 'server.computers.mail'
 require 'server.computers.boss'
 require 'server.computers.hacks'
+require 'server.computers.phonelink' -- Phone Link: the code that puts the phone's apps on a machine
 require 'server.computers.phoneapps' -- Messages + Notes over the optional sd-phone link (inert without it)
+require 'server.computers.photos' -- Photos: the phone's gallery, over the same link
+require 'server.computers.contacts' -- Contacts: the phone's address book, over the same link
+require 'server.computers.bank' -- Bank: the character's balance + statement (read-only)
+require 'server.computers.browser' -- Browser: the sites of configs/shared/browser.lua
 require 'server.admin.panel' -- the /computeradmin panel's verbs: list, place, change, move, remove
 
 ---Retention purge at boot, then every 6 hours.

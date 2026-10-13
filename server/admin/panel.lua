@@ -12,8 +12,12 @@ local auto = require 'server.computers.auto'
 local custom = require 'server.computers.custom'
 ---@type table The prop models known as a computer (shared.props): the config's and the added ones.
 local props = require 'shared.props'
+---@type table Screens drawn from this panel (server.computers.screens).
+local screens = require 'server.computers.screens'
 ---@type table Session module (server.computers.session): who sits where.
 local session = require 'server.computers.session'
+---@type table Job roster adapter (server.computers.employees): the jobs a Business Manager can manage.
+local employees = require 'server.computers.employees'
 ---@type table Player bridge (bridge.server.player): names, for who placed a computer.
 local player = require 'bridge.server.player'
 
@@ -50,7 +54,8 @@ local function canEdit(source)
 end
 
 ---Everything the panel shows, in one table: every computer (placed from here, or from
----configs/shared/computers.lua - those are listed read-only), the props and the styles on offer.
+---configs/shared/computers.lua - those are listed read-only), the props and the styles on offer,
+---and the jobs a computer's Business Manager can be for.
 ---@param source integer player server id
 ---@return table snapshot
 local function snapshot(source)
@@ -96,12 +101,18 @@ local function snapshot(source)
     end
     table.sort(styles, function(a, b) return a.default ~= b.default and a.default or (a.default == b.default and a.name < b.name) end)
 
+    -- Whether a computer can be given the Business Manager at all - and why not, when it cannot.
+    local bossOff = (not employees.supported() and 'framework') or (not (config.Boss and config.Boss.Enabled) and 'disabled') or nil
+
     return {
         canEdit = canEdit(source),
         computers = computers,
         props = props.list(),
+        screens = screens.states(),
         auto = auto.snapshot(),
         styles = styles,
+        jobs = employees.jobs(),
+        boss = { available = bossOff == nil, reason = bossOff },
         defaultStyle = registry.style({}),
         rules = { boot = D.Boot ~= false, reach = (config.Interact and config.Interact.MaxDistance) or 2.5, maxLabel = A.MaxLabel or 48 },
         refreshMs = A.RefreshMs or 5000,
@@ -132,7 +143,7 @@ verb('snapshot', false, function() return true end)
 
 -- ---- Computers ----------------------------------------------------------------------------
 
--- d = { x, y, z, heading (from the gizmo), label, prop, style?, jobs? }; with world = true the spot
+-- d = { x, y, z, heading (from the gizmo), label, prop, style?, jobs?, boss? }; with world = true the spot
 -- and the prop are a prop the game already has there, picked rather than placed.
 verb('createComputer', true, function(source, d)
     local id, why = placed.create(d, player.getName(source))
@@ -201,6 +212,21 @@ end)
 
 verb('removeProp', true, function(_, d)
     local ok, why = custom.remove(d.model)
+    return ok, why and locale(why)
+end)
+
+-- ---- Where the screen is on a prop --------------------------------------------------------
+
+-- d = { model, x, y, z, w, h, tilt, heading }: the rectangle drawn with the screen tool
+-- (client/admin/screener.lua), for every prop of that model.
+verb('setScreen', true, function(_, d)
+    local ok, why = screens.set(d.model, d)
+    return ok, why and locale(why)
+end)
+
+-- d.model: back to the screen configs/shared/screens.lua has for it (or to none).
+verb('resetScreen', true, function(_, d)
+    local ok, why = screens.reset(d.model)
     return ok, why and locale(why)
 end)
 

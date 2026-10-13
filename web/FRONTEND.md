@@ -98,19 +98,19 @@ than a 1080p one, which the shell already clamps windows to.
 - **Phone mail** (`payload.mail.phone === true`, optional sd-phone link - `server/computers/phonemail.lua`): same endpoints and shapes, but message ids are STRINGS (`MailId = number | string`), there is a `spam` folder (`foldersFor(phone)`), `Message.attachments?` / `hasAttachments?` can be set, and the domain/limits are sd-phone's.
 
 ### Business Manager (`boss.lua`) - app id `boss`
-- `boss:overview` {} -> `{ job: { name, label }, grades: [{ level, name, isboss }], myGrade, myCid, counts: { total, online, onDuty }, funds: { available, balance?: number|null, transactions?: Tx[], depositFrom?: string[], withdrawTo?: string, max?: number } }`
+- `boss:overview` {} -> `{ job: { name, label }, grades: [{ level, name, isboss }], myGrade, myCid, hireById, counts: { total, online, onDuty }, funds: { available, balance?: number|null, transactions?: Tx[], depositFrom?: string[], withdrawTo?: string, max?: number } }`
 - `Tx` = `{ id, title, amount, kind: 'deposit'|'withdraw'|string, issuer, receiver, message, time }` (newest first, time = unix seconds)
 - `boss:employees` -> `[{ cid, name, grade, gradeName, online, onDuty }]` (highest grade first)
 - `boss:setGrade` { cid, grade } / `boss:fire` { cid } -> ok. Rules (server-enforced, mirror them in UI): never yourself (`myCid`), only people with grade < myGrade, only to grades < myGrade.
 - `boss:nearby` -> `[{ id, name }]` players near the computer who can be hired
-- `boss:hire` { id } -> `{ name }` - the target gets an accept/decline prompt; the call can take up to ~20s (show a pending state); declined -> error
+- `boss:hire` { id, byId? } -> `{ name }` - the target gets an accept/decline prompt; the call can take up to ~20s (show a pending state); declined -> error. Without `byId` the target must be near the computer (one of `boss:nearby`); with `byId: true` (only when `overview.hireById`) `id` is any online player's server id, wherever they are - not online, already employed here, yourself, or an offer already on their screen -> error. Their name is only in the reply: nothing resolves an ID to a name before they accept.
 - `boss:deposit` { amount, from: one of depositFrom } -> `{ balance }` ; `boss:withdraw` { amount } -> `{ balance }`
 
 ### Event Viewer (`shell.lua` logs:*) - app id `logs`
 - `logs:page` { filter?: { level?, source?, search?, beforeId? } } -> `{ entries: Entry[], counts: { [level]: n }, sources: string[], pageSize, canClear, computer: { hostname, label } }`
 - `Entry` = `{ id, level: 'information'|'warning'|'error'|'success'|'failure', source, event_id, message, actor_name, data, ts }` (newest first; `success`/`failure` = Audit Success / Audit Failure; `data` = optional object of extra details)
 - `logs:clear` -> ok (only when canClear; afterwards the log holds a single 1102 "The audit log was cleared" entry)
-- Sources the server writes: Security (logon 4624/4625/4634/4740, breaches 7101/7102/7103), Shell (1000 app start), Mail (3001-3004), Business (6001-6005), Hack (7001/7002 practice runs), Eventlog (1102), plus any other resource name (9000, via the AddLog export).
+- Sources the server writes: Security (logon 4624/4625/4634/4740, breaches 7101/7102/7103), Shell (1000 app start), Mail (3001-3004), Business (6001-6005), Hack (7001/7002 practice runs), Cameras (8001, the first look at each camera in a session), Eventlog (1102), plus any other resource name (9000, via the AddLog export).
 
 ### Command Prompt (`shell.lua` cmd:sysinfo + `hacks.lua`) - app id `cmd`
 - `cmd:sysinfo` -> `{ hostname, ip, mac, label, user, domain, os, build, uptime }`
@@ -134,13 +134,61 @@ than a 1080p one, which the shell already clamps windows to.
 - Facts for About: `payload.computer` (label, hostname, ip, id), `payload.desktop` (osName, osBuild, clock24), `payload.user` (name, initials, job).
 - `win.props.page` may request an initial page: `'system' | 'personalization'`.
 
+### Bank (`bank.lua`) - app id `bank`
+- `bank:overview` {} -> `{ name, bank, cash, source: 'phone'|'banking'|'none', transactions: Tx[] }`
+- `Tx` = `{ id: string, title, amount (>= 0), kind: 'deposit'|'withdraw', issuer, receiver, message, time }` (newest first, unix seconds, at most `Bank.TransactionLimit`; issuer/receiver `''` when unknown; `message` is `''` from the phone)
+- Read-only, keyed off the player (`src` / `s.citizenid`), nothing in the System Logs. `source` says where the statement came from: sd-phone's banking history while it is linked, else the banking resource's personal statement, else none (balances only).
+
+### Company Board (`board.lua`) - app id `board`
+Installed per player: only for someone whose job has a board (`configs/shared/board.lua`).
+- `board:state` {} -> `{ job: { name, label }, canPost, posts: Post[], roster?: Member[], limits: { maxTitle, maxBody, maxPosts } }` (refused without a board; `roster` absent on ESX)
+- `Post` = `{ id, title, body, author, pinned, ts, edited? }` (pinned first, then newest; unix seconds)
+- `Member` = `{ name, grade, gradeName, online, onDuty, me }` (highest grade first, no citizenids)
+- `board:post` { job, title, body?, pinned? } -> `{ id, posts }` ; `board:edit` { job, id, title, body? } -> `{ posts }` ; `board:pin` { job, id, pinned } -> `{ posts }` ; `board:delete` { job, id } -> `{ posts }` (already gone = ok)
+- Writes are bosses only, re-checked on every call. `job` is the board the UI is showing: one that is no longer the player's job is refused.
+
+### Files (`files.lua`) - app id `files`
+- `files:list` {} -> `{ files: FileRow[], phone: boolean, limits: { maxFiles, maxName, maxBody } }` (no text, newest-changed first; `phone` = the phone's documents can be shown too)
+- `files:read` { id } -> `FileRow & { body }` ; `files:save` { id?, name, body } -> `FileRow` (no id, or an id that is gone = a new document) ; `files:rename` { id, name } -> `FileRow` ; `files:delete` { id } -> ok
+- `files:phoneList` {} -> `{ files: PhoneRow[] }` ; `files:phoneRead` { id } -> `PhoneRow & { body, url?, signatures: [{ signer, signedAt }] }` (`url` for pictures only)
+- `files:toPhone` { id } -> `{ id }` (copies one of mine to the phone) ; `files:fromPhone` { id } -> `FileRow` (saves a copy of a phone document)
+- `FileRow` = `{ id: number, name, size, createdAt, updatedAt }` ; `PhoneRow` = `{ id: string, name, kind: 'text'|'image'|'file', size, locked, createdAt, updatedAt }` (bytes, unix seconds)
+- Names are unique per character (ignoring case). Documents roam with the character; phone documents are read-only from the desk. Nothing in the System Logs.
+
+### Browser (`browser.lua`) - app id `browser`
+- `browser:sites` {} -> `{ home, sites: Site[] }` (read-only: `configs/shared/browser.lua`, sanitised - a bad entry is skipped and named in the server console)
+- `Site` = `{ address, title, bookmark, url? | blocks?: Block[] }` (`url` is https only and only ever one the server listed: nothing typed reaches the real internet)
+- `Block` = `{ type: 'heading'|'subheading'|'text', text }` | `{ type: 'list', items }` | `{ type: 'notice', kind, title?, text }` | `{ type: 'facts', rows: [{ label, value }] }` | `{ type: 'links', items: [{ to, label?, note? }] }` | `{ type: 'image', src, caption? }`
+- `win.props.address` opens that address (in a new tab when the window is already open).
+
+### Games - app id `games`, no server calls (best results live in `localStorage['sd_computers:games']`).
+
 ### Calculator - no server calls.
+
+### Security Cameras (`shell.lua` cameras:*, `cameras.lua`) - app id `cameras`
+Installed per player: only for someone who may watch at least one camera from this computer.
+- `cameras:list` -> `[{ id, label, area? }]` the cameras this player may watch here, in config order
+- `cameras:watch` { id } -> `{ id, label, area?, x, y, z, pitch, roll, yaw, fov, pan, tilt, zoom, effect }` (refused for a camera that is not on the list). The page does not call this itself in the game: it names a camera to client Lua, which asks.
+- Showing a picture is client Lua's (`client/computers/cameras.lua`), through three NUI callbacks wrapped by `src/apps/cameras/feed.ts`: `computers:camera:start` { id } -> `{ ok, error? }`, `computers:camera:control` { dx?, dy?, zoom?, reset? } -> `{ ok, zoom }` (dx/dy = how far the picture was dragged, as fractions of the display), `computers:camera:stop`.
+- Lua says what is on the display with the NUI event `computers:camera` `{ active, id?, label?, area?, zoom?, maxZoom? }`. While active, the page holding the OS gives it the whole display and `CameraView` hides the desktop and draws its frame over the picture.
 
 ### Phone apps (optional sd-phone link - `phoneapps.lua`)
 Installed by the server only while sd-phone is started with its link file (configs/shared/phone.lua);
 otherwise the apps simply aren't in `payload.computer.apps`. Every endpoint can fail with "The phone
 link is unavailable right now." if sd-phone stops mid-session - show the error, offer Retry. Phone
-data is the character's own: no System Logs.
+data is the character's own: no System Logs. With `Phone.RequireLink` they are also not installed
+until the character has linked their phone to the machine in Phone Link.
+
+#### Phone Link - app id `phonelink` (`phonelink.lua`; types: `src/apps/phonelink/types.ts`)
+Installed per player wherever sd-phone is linked and asks for the code (never listed in a computer's
+own apps). Every endpoint replies with `LinkState` = `{ linked, since? (unix seconds), carrying,
+requirePhone, unlocks: ('messages'|'notes'|'photos'|'contacts'|'files')[], digits, minutes,
+code?: { expiresIn, resendIn } (seconds, from when the reply was made), computer? }`.
+- `phonelink:state` {} -> `LinkState`
+- `phonelink:send` {} -> `LinkState` with `code`. The code goes to the phone as a notification; refused without a phone on the player, or within `resendIn` of the last one.
+- `phonelink:confirm` { code } -> `LinkState` with `linked = true` and `computer`. A wrong code is an error saying how many tries are left; the fifth uses the code up.
+- `phonelink:unlink` {} -> `LinkState` with `linked = false` and `computer`.
+- `computer` = `{ apps, pinned, desktopIcons }` as in the open payload: the desktop's lists after the phone's apps were installed or removed. Hand it to `useOS.getState().setApps(...)`: the icons redraw and the windows of apps that are gone close.
 
 #### Messages - app id `messages` (types: `src/apps/messages/types.ts`)
 - `messages:list` {} -> `{ conversations: ConversationRow[], contacts: Contact[], myNumber?, myName? }` (newest first)
@@ -158,3 +206,10 @@ data is the character's own: no System Logs.
 - `phonenotes:delete` { id } -> ok
 - Limits: body <= 20000 chars, 200 notes per character (the phone's rules; the server returns the error).
 - No push: notes edited on the phone appear on the next list refresh.
+
+#### Photos - app id `photos` (`photos.lua`; types: `src/apps/photos/types.ts`)
+- `photos:list` {} -> `{ photos: [{ id, url, ts (unix seconds), video, favorite }], capped }` (newest first, at most 200; `capped` = the phone holds more). Read-only: the gallery is looked at here, not changed.
+
+#### Contacts - app id `contacts` (`contacts.lua`; types: `src/apps/contacts/types.ts`)
+- `contacts:list` {} -> `{ contacts: Contact[] }` (by name); `Contact` = `{ id, name, number (digits), initials?, color?, avatar?, favorite, email?, address? }`
+- `contacts:add` { name, number } -> `Contact` ; `contacts:remove` { number } -> `{ removed }` (every card under that number goes). Both run the phone's own actions, so the phone's rules decide: a number not in service, your own, or one already saved comes back as its error.

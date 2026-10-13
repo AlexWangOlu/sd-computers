@@ -6,6 +6,7 @@ return {
     --              phone notifications) instead of sd-computers' own lsmail addresses
     --   Messages - a Messages app: the phone's text conversations, read and reply from the desk
     --   Notes    - a Notes app: the phone's notes, edited from the desk and synced back
+    --   Photos / Contacts - the phone's gallery and its address book
     -- Needs sd-phone's link file (server/compat/computers.lua, loaded by its fxmanifest). Checked
     -- live on every open, so starting or stopping sd-phone mid-session just works.
     Enabled = 'auto', -- 'auto' = link whenever sd-phone is started; false = never link
@@ -14,12 +15,28 @@ return {
     Mail = true, -- Mail app uses the phone's mail (false = keep sd-computers' own Mail even with sd-phone)
     Messages = true, -- add the Messages app (phone texts)
     Notes = true, -- add the Notes app (phone notes)
+    Photos = true, -- add the Photos app (the phone's gallery, to look at)
+    Contacts = true, -- add the Contacts app (the phone's address book)
 
-    -- Messages/Notes are the character's PHONE, so by default they only appear for a player who
-    -- is carrying one (sd-phone's hasPhone). false = show them to everyone.
+    -- Apps a computer has anyway, that show the phone's side as well while it is linked:
+    Files = true, -- Files also lists the phone's documents
+    Bank = true, -- Bank takes its statement from the phone's banking history
+
+    -- Phone Link. The phone's apps (Messages, Notes, Photos, Contacts, and the Phone place in Files)
+    -- stay off a computer until the character has linked their phone to THAT machine: the Phone
+    -- Link app sends a code to the phone as a notification, and typing it in links the two. It is
+    -- remembered per character and per machine until they unlink it there. The Phone Link app is
+    -- only on a computer while sd-phone is linked. false = no code and no app: the phone's apps
+    -- are simply there, as before.
+    RequireLink = true,
+    LinkCodeMinutes = 5, -- how long a code works for
+
+    -- Messages/Notes/Photos/Contacts are the character's PHONE, so by default they only appear for
+    -- a player who is carrying one (sd-phone's hasPhone). false = show them to everyone. With
+    -- RequireLink, this is whether a machine that is already linked still needs the phone nearby.
     RequirePhone = true,
 
-    -- Computers can opt out one by one with `phone = false` in configs/shared/computers.lua (no
-    -- Messages/Notes there - a police terminal, say). Mail follows the server-wide switch above so a
-    -- player never sees two different inboxes.
+    -- Computers can opt out one by one with `phone = false` in configs/shared/computers.lua (none
+    -- of the phone apps there - a police terminal, say). Mail follows the server-wide switch above
+    -- so a player never sees two different inboxes.
 }

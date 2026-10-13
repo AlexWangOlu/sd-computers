@@ -2,7 +2,7 @@
 local props = require 'shared.props'
 
 -- Picking a prop the game already has in the world, to make it a computer of its own: the admin
--- walks about and looks at a monitor, tower or laptop, the one under the crosshair is boxed, and
+-- walks about and looks at a monitor or laptop, the one under the crosshair is boxed, and
 -- Enter (or a click) takes it. Nothing is spawned or moved - what comes back is which model it is
 -- and where it stands, and the server keeps that (server/computers/placed.lua).
 

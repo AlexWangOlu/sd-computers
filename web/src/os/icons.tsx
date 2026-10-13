@@ -199,6 +199,206 @@ function SettingsIcon({ size = 24 }: IconProps) {
   );
 }
 
+/** Files: an amber folder with a sheet of paper standing in it. */
+function FilesIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffd972" />
+          <stop offset="1" stopColor="#f59f1c" />
+        </linearGradient>
+      </defs>
+      <path d="M4 14.5A3.5 3.5 0 0 1 7.5 11h9.6a3.5 3.5 0 0 1 2.5 1l2.9 3h18a3.5 3.5 0 0 1 3.5 3.5V30H4z" fill="#d9830b" />
+      <rect x="11" y="6" width="26" height="26" rx="2.5" fill="#fbfcfe" stroke="#cfd6e2" strokeWidth="1" />
+      <rect x="15.5" y="11" width="17" height="2.2" rx="1.1" fill="#a9b5c9" />
+      <rect x="15.5" y="15.6" width="11" height="2.2" rx="1.1" fill="#a9b5c9" />
+      <rect x="4" y="21" width="40" height="21" rx="3.5" fill={`url(#${id}a)`} />
+    </svg>
+  );
+}
+
+/** Security Cameras: a wall-bracket camera tipped down at the room, its recording light lit. */
+function CamerasIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f6f9fc" />
+          <stop offset="1" stopColor="#b3c0d4" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="25" width="5.5" height="18" rx="2" fill="#64718a" />
+      <path d="M9 36h8.5l5-9" fill="none" stroke="#64718a" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <g transform="rotate(14 24 19)">
+        <rect x="8" y="11" width="30" height="16" rx="4.5" fill={`url(#${id}a)`} />
+        <rect x="31" y="11" width="9" height="16" rx="3" fill="#2b3447" />
+        <rect x="36" y="14.5" width="2.4" height="9" rx="1.2" fill="#6fdcff" />
+        <rect x="6" y="8" width="36" height="5.5" rx="2.75" fill="#7c8aa1" />
+        <circle cx="14.5" cy="21" r="2.6" fill="#ff3d3d" />
+      </g>
+    </svg>
+  );
+}
+
+/** Company Board: a cork pinboard in a wooden frame with three pinned notes. */
+function BoardIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f3cd95" />
+          <stop offset="1" stopColor="#d59a55" />
+        </linearGradient>
+        <linearGradient id={`${id}b`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#b87a3c" />
+          <stop offset="1" stopColor="#85501f" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="7" width="40" height="34" rx="4.5" fill={`url(#${id}b)`} />
+      <rect x="7.5" y="10.5" width="33" height="27" rx="2" fill={`url(#${id}a)`} />
+      <rect x="11" y="15" width="12" height="14" rx="1.2" fill="#ffffff" />
+      <rect x="13.5" y="20.5" width="7" height="1.6" rx="0.8" fill="#aab4c6" />
+      <rect x="13.5" y="24" width="5" height="1.6" rx="0.8" fill="#aab4c6" />
+      <rect x="26" y="14" width="11" height="9.5" rx="1.2" fill="#ffe36b" />
+      <rect x="25" y="26.5" width="12" height="8" rx="1.2" fill="#9fe6c0" />
+      <circle cx="17" cy="15.5" r="2.3" fill="#e5383b" />
+      <circle cx="31.5" cy="14.5" r="2.3" fill="#2f7de1" />
+      <circle cx="31" cy="27" r="2.3" fill="#e5383b" />
+    </svg>
+  );
+}
+
+/** Bank: a classical front - a pediment with a gold coin, three columns, a stepped base. */
+function BankIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a3a0ff" />
+          <stop offset="1" stopColor="#4a40d4" />
+        </linearGradient>
+      </defs>
+      <rect x="7" y="19" width="34" height="19" fill="#372fa8" />
+      <rect x="9.5" y="21" width="6" height="15.5" rx="1.2" fill="#f1efff" />
+      <rect x="21" y="21" width="6" height="15.5" rx="1.2" fill="#f1efff" />
+      <rect x="32.5" y="21" width="6" height="15.5" rx="1.2" fill="#f1efff" />
+      <path d="M22.5 5.4a3 3 0 0 1 3 0L42.5 15a3 3 0 0 1 1.5 2.6V19a1.5 1.5 0 0 1-1.5 1.5h-37A1.5 1.5 0 0 1 4 19v-1.4A3 3 0 0 1 5.5 15z" fill={`url(#${id}a)`} />
+      <circle cx="24" cy="13.6" r="3.4" fill="#ffcf3f" />
+      <rect x="4" y="37" width="40" height="6.5" rx="2" fill={`url(#${id}a)`} />
+    </svg>
+  );
+}
+
+/** Photos: a white-bordered print of a sun over two green hills. */
+function PhotosIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#58c7ff" />
+          <stop offset="1" stopColor="#c9f0ff" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="8" width="40" height="32" rx="4.5" fill="#ffffff" stroke="#cfd6e2" strokeWidth="1" />
+      <rect x="7.5" y="11.5" width="33" height="25" rx="2" fill={`url(#${id}a)`} />
+      <circle cx="32.5" cy="18.5" r="4" fill="#ffd23f" />
+      <path d="M7.5 30.5c3-4.2 6-7.5 9.5-7.5 4.5 0 7 5 10.5 9 2 2.3 4.5 4.5 7 4.5h-25a2 2 0 0 1-2-2z" fill="#58c66e" />
+      <path d="M19 36.5c3.5-5 7.5-8.5 12-8.5 4 0 7 2.2 9.5 5v1.5a2 2 0 0 1-2 2z" fill="#2c9d55" />
+    </svg>
+  );
+}
+
+/** Contacts: a rose address book with index tabs and a person's silhouette on the cover. */
+function ContactsIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ff9aa0" />
+          <stop offset="1" stopColor="#df3f58" />
+        </linearGradient>
+      </defs>
+      <rect x="34" y="10" width="8.5" height="7.5" rx="2.2" fill="#ffd166" />
+      <rect x="34" y="20.2" width="8.5" height="7.5" rx="2.2" fill="#6fdcb0" />
+      <rect x="34" y="30.5" width="8.5" height="7.5" rx="2.2" fill="#7cc4ff" />
+      <rect x="7" y="5" width="31" height="38" rx="4.5" fill={`url(#${id}a)`} />
+      <path d="M11.5 5H13v38h-1.5A4.5 4.5 0 0 1 7 38.5v-29A4.5 4.5 0 0 1 11.5 5z" fill="rgba(0,0,0,0.2)" />
+      <circle cx="25.5" cy="18.5" r="5" fill="#ffffff" />
+      <path d="M16 35c0-5.5 4.2-9 9.5-9s9.5 3.5 9.5 9a1.5 1.5 0 0 1-1.5 1.5h-16A1.5 1.5 0 0 1 16 35z" fill="#ffffff" />
+    </svg>
+  );
+}
+
+/** Phone Link: a phone standing in front of a monitor, two chain links on its screen. */
+function PhoneLinkIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#74d6ff" />
+          <stop offset="1" stopColor="#2b6fe6" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="6" width="34" height="25" rx="3.5" fill={`url(#${id}a)`} />
+      <rect x="6" y="9" width="28" height="19" rx="1.5" fill="#e3f4ff" />
+      <rect x="15.5" y="31" width="9" height="4.5" fill="#8793a6" />
+      <rect x="10" y="35" width="20" height="3.5" rx="1.75" fill="#a8b2c2" />
+      <rect x="25.5" y="14.5" width="19.5" height="30.5" rx="4.5" fill="#182441" />
+      <rect x="28" y="17.5" width="14.5" height="22.5" rx="2" fill="#ffffff" />
+      <rect x="33" y="41.6" width="4.5" height="1.6" rx="0.8" fill="#ffffff" />
+      <rect x="30.2" y="26.4" width="6.6" height="4.8" rx="2.4" fill="none" stroke="#2b6fe6" strokeWidth="1.9" />
+      <rect x="33.7" y="26.4" width="6.6" height="4.8" rx="2.4" fill="none" stroke="#16a34a" strokeWidth="1.9" />
+    </svg>
+  );
+}
+
+/** Browser: a globe ruled with a meridian and parallels, a pointer resting on it. */
+function BrowserIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#74e4ff" />
+          <stop offset="1" stopColor="#1672dc" />
+        </linearGradient>
+      </defs>
+      <circle cx="22.5" cy="22.5" r="18" fill={`url(#${id}a)`} />
+      <ellipse cx="22.5" cy="22.5" rx="7.5" ry="17" fill="none" stroke="#ffffff" strokeWidth="2" />
+      <path d="M5.5 22.5h34M8 13c4 1.7 8.5 2.7 14.5 2.7S33 14.7 37 13M8 32c4-1.7 8.5-2.7 14.5-2.7S33 30.3 37 32" fill="none" stroke="#ffffff" strokeWidth="2" />
+      <path d="M27 26v17.5l4.7-4.3 3.1 6.8 3.5-1.6-3.1-6.7 6.3-.4z" fill="#ffffff" stroke="#0d3f8f" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Games: a plain two-grip gamepad - a cross pad on the left, two buttons on the right. */
+function GamesIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f59bff" />
+          <stop offset="1" stopColor="#9b34dc" />
+        </linearGradient>
+      </defs>
+      <path d="M14.5 11h19c5.7 0 9.7 4.3 10.5 10l1.2 8.5c.7 5-2 8.5-5.5 8.5-2.5 0-4.3-1.5-5.5-3.8l-1.5-2.9c-.5-1-1.5-1.8-2.7-1.8H18c-1.2 0-2.2.8-2.7 1.8l-1.5 2.9c-1.2 2.3-3 3.8-5.5 3.8-3.5 0-6.2-3.5-5.5-8.5L4 21c.8-5.7 4.8-10 10.5-10z" fill={`url(#${id}a)`} />
+      <rect x="10.5" y="18.8" width="9" height="3.4" rx="1.1" fill="#ffffff" />
+      <rect x="13.3" y="16" width="3.4" height="9" rx="1.1" fill="#ffffff" />
+      <circle cx="36.5" cy="18" r="2.5" fill="#ffe36b" />
+      <circle cx="31.5" cy="23" r="2.5" fill="#ffe36b" />
+    </svg>
+  );
+}
+
 function HackIcon({ size = 24 }: IconProps) {
   const id = useId();
   return (
@@ -237,6 +437,15 @@ const ICONS: Record<WinApp | 'system', (p: IconProps) => ReactElement> = {
   settings: SettingsIcon,
   messages: MessagesIcon,
   notes: NotesIcon,
+  files: FilesIcon,
+  cameras: CamerasIcon,
+  board: BoardIcon,
+  bank: BankIcon,
+  photos: PhotosIcon,
+  contacts: ContactsIcon,
+  phonelink: PhoneLinkIcon,
+  browser: BrowserIcon,
+  games: GamesIcon,
   hack: HackIcon,
   system: SystemIcon,
 };

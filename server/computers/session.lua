@@ -20,6 +20,8 @@ local gang = require 'bridge.server.gang'
 local phone = require 'server.computers.phone'
 ---@type table Mail on the phone's accounts (server.computers.phonemail): its domain + limits.
 local phonemail = require 'server.computers.phonemail'
+---@type table The security cameras (server.computers.cameras): which of them a player may watch here.
+local cameras = require 'server.computers.cameras'
 
 ---@type table Session module; the table returned at end of file.
 local session = {}
@@ -31,6 +33,7 @@ local session = {}
 ---@field ip string machine IPv4
 ---@field coords vector3 where the machine is (distance checks run against this)
 ---@field apps table<string, boolean> apps this player may use here (boss included only for bosses)
+---@field watched table<string, boolean>|nil the cameras looked at this session (each is logged once)
 ---@field bossJob string|nil job the Business Manager manages, when the player is its boss
 ---@field signedIn boolean past the lock screen?
 ---@field citizenid string
@@ -130,8 +133,25 @@ local function resolveBossJob(src, def)
     return jobName
 end
 
+---Whether the Company Board is for this player at this computer: it is switched on, the computer
+---has not opted out (`board = false`), and they have a job that is a company (configs/shared/board.lua).
+---@param src integer
+---@param def table computers.lua entry
+---@return boolean
+local function hasBoard(src, def)
+    local B = config.Board or {}
+    if B.Enabled == false or def.board == false then return false end
+    local name = job.getName(src)
+    if type(name) ~= 'string' or name == '' then return false end
+    for _, none in ipairs(B.NoBoard or { 'unemployed' }) do
+        if none == name then return false end
+    end
+    return true
+end
+
 ---Ordered app list for the NUI: the computer's configured order, the phone apps after Mail when
----linked, and the Business Manager slotted in second when this player gets it.
+---linked, the Company Board and Security Cameras after the rest when this player gets them, and
+---the Business Manager slotted in second when they do.
 ---@param def table computers.lua entry
 ---@param apps table<string, boolean>
 ---@return table[] list { id, label, w, h }
@@ -148,6 +168,11 @@ local function appList(def, apps)
     if at == 1 then at = #order + 1 end
     for _, id in ipairs(phone.APPS) do
         if apps[id] and not placed[id] then table.insert(order, at, id); at = at + 1; placed[id] = true end
+    end
+    -- (Phone Link sits with the apps it unlocks, linked or not)
+    if apps.phonelink and not placed.phonelink then table.insert(order, at, 'phonelink'); placed.phonelink = true end
+    for _, id in ipairs({ 'board', 'cameras' }) do
+        if apps[id] and not placed[id] then order[#order + 1] = id; placed[id] = true end
     end
     if apps.boss then table.insert(order, math.min(2, #order + 1), 'boss') end
     local out = {}
@@ -243,7 +268,10 @@ function session.open(src, id, coords, styleOverride)
     local apps = registry.apps(def)
     local bossJob = resolveBossJob(src, def)
     if bossJob then apps.boss = true end
-    for app in pairs(phone.apps(src, def)) do apps[app] = true end
+    if hasBoard(src, def) then apps.board = true end
+    if #cameras.visible(src, def) > 0 then apps.cameras = true end
+    if phone.linkApp(def) then apps.phonelink = true end
+    for app in pairs(phone.apps(src, def, citizenid, instance)) do apps[app] = true end
 
     local style = registry.style(def, styleOverride)
     local s = {
@@ -400,6 +428,20 @@ function session.guard(src, app)
         return nil, locale('err.not_boss')
     end
     return s, nil
+end
+
+---Work out again which of the phone's apps a session has - its player has just linked their phone
+---to the machine, or taken it off - and give back the desktop's lists as they now stand, for the
+---page to redraw its icons from.
+---@param src integer
+---@return { apps: table[], pinned: string[], desktopIcons: string[] }|nil lists nil when there is no session
+function session.refreshPhone(src)
+    local s = sessions[src]
+    if not s then return nil end
+    for _, id in ipairs(phone.APPS) do s.apps[id] = nil end
+    for app in pairs(phone.apps(src, s.def, s.citizenid, s.instance)) do s.apps[app] = true end
+    local D = config.Desktop
+    return { apps = appList(s.def, s.apps), pinned = filterIds(D.Pinned, s.apps), desktopIcons = filterIds(D.DesktopIcons, s.apps) }
 end
 
 ---Who is sitting at a computer right now (signed in or still at its lock screen), for the admin

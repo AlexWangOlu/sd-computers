@@ -19,6 +19,22 @@ local state = {}
 local current
 ---@type boolean An open is in flight (debounces double-clicking the target).
 local opening = false
+---@type fun()[] Run as a computer closes, before the camera leaves its screen (the Security
+---Cameras app hands the display back) - a hook list, so this file never depends on its users.
+local closeHooks = {}
+
+---Hear about the computer closing, however it does (shut down, walked away, the server, a restart).
+---@param fn fun()
+function state.onClose(fn)
+    closeHooks[#closeHooks + 1] = fn
+end
+
+local function runCloseHooks()
+    for _, fn in ipairs(closeHooks) do
+        local ok, err = pcall(fn)
+        if not ok then log.error('computer', 'close hook failed: %s', tostring(err)) end
+    end
+end
 
 ---@type table|false Typing animation config (config.Interact.Anim); false = no animation.
 local ANIM = config.Interact and config.Interact.Anim or false
@@ -62,6 +78,7 @@ end
 function state.close(reason, fromServer)
     if not current then return end
     current = nil
+    runCloseHooks()
     SendNUIMessage({ action = 'computers:close' })
     SetNuiFocus(false, false)
     view.leave()
@@ -135,6 +152,7 @@ end)
 
 ---Resource stopping: release focus, the camera and the animation (the NUI dies with the resource).
 function state.shutdown()
+    runCloseHooks()
     view.shutdown()
     if current then
         SetNuiFocus(false, false)

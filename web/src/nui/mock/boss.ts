@@ -58,6 +58,13 @@ let nearby: { id: number; name: string; declines: boolean }[] = [
   { id: 31, name: 'Ricky Alvarez', declines: true },
 ];
 
+/** Online, but nowhere near the computer: only an offer by player ID reaches them. Ana declines. */
+let elsewhere: { id: number; name: string; declines: boolean }[] = [
+  { id: 7, name: 'Devon Price', declines: false },
+  { id: 45, name: 'Ana Flores', declines: true },
+];
+const MY_ID = 1;
+
 /** The boss's own money (deposits come out of it, withdrawals land in bank). */
 const wallet: Record<string, number> = { bank: 185400, cash: 3420 };
 
@@ -139,6 +146,7 @@ const handlers: Record<string, MockHandler> = {
       grades: GRADES,
       myGrade: myGrade(),
       myCid: MY_CID,
+      hireById: true,
       counts: {
         total: employees.length,
         online: employees.filter(e => e.online).length,
@@ -186,14 +194,21 @@ const handlers: Record<string, MockHandler> = {
 
   'boss:nearby': () => ok([...nearby].sort((a, b) => a.name.localeCompare(b.name)).map(({ id, name }) => ({ id, name }))),
 
-  // The real call blocks on the target's accept/decline prompt (up to ~20s).
-  'boss:hire': async ({ id }) => {
-    const target = nearby.find(p => p.id === Number(id));
-    if (!target) return fail(t('boss.err_not_around'));
+  // The real call blocks on the target's accept/decline prompt (up to ~20s). With byId the offer
+  // reaches anyone online, near the computer or not.
+  'boss:hire': async ({ id, byId }) => {
+    const n = Number(id);
+    if (byId === true) {
+      if (!Number.isInteger(n) || n < 1) return fail(t('err.invalid'));
+      if (n === MY_ID) return fail(t('boss.err_self'));
+    }
+    const target = nearby.find(p => p.id === n) ?? (byId === true ? elsewhere.find(p => p.id === n) : undefined);
+    if (!target) return fail(byId === true ? t('boss.err_no_player', n) : t('boss.err_not_around'));
     await sleep(2500);
-    if (!nearby.includes(target)) return fail(t('boss.err_not_around'));
+    if (!nearby.includes(target) && !elsewhere.includes(target)) return fail(t('boss.err_not_around'));
     if (target.declines) return fail(t('boss.err_declined'));
     nearby = nearby.filter(p => p !== target);
+    elsewhere = elsewhere.filter(p => p !== target);
     employees.push({ cid: newCid(target.name), name: target.name, grade: 0, online: true, onDuty: false });
     return ok({ name: target.name });
   },

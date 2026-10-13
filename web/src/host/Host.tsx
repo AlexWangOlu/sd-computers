@@ -24,7 +24,7 @@ interface View {
 /** Height of the desktop in its own pixels while it sits on a prop's screen (its width follows the screen's shape). */
 const DESKTOP_H = 900;
 
-const ADMIN_ACTION = /^computers:(admin|placer|picker):/;
+const ADMIN_ACTION = /^computers:(admin|placer|picker|screener):/;
 
 const fraction = (v: unknown): v is number => typeof v === 'number' && v >= 0 && v <= 1;
 
@@ -59,10 +59,15 @@ export default function Host() {
     if (!os) return;
     let view: View | null = null;
     let active = false;
+    // A security camera's picture is on the whole display (client/computers/cameras.lua): the OS
+    // is given all of it for the frame it draws over the picture, and goes back over the prop's
+    // screen when the desktop returns.
+    let away = false;
 
+    const lay = () => place(os, away ? null : view);
     const show = (next: View | null) => {
       view = next;
-      place(os, view);
+      lay();
     };
     // Keys go to whichever document has focus: while the OS is up, that has to be the OS.
     const focus = () => {
@@ -75,7 +80,7 @@ export default function Host() {
     };
 
     const onMessage = (e: MessageEvent) => {
-      const data = e.data as { action?: unknown; source?: unknown; active?: unknown; data?: { view?: unknown } } | undefined;
+      const data = e.data as { action?: unknown; source?: unknown; active?: unknown; data?: { view?: unknown; active?: unknown } } | undefined;
       if (!data) return;
       // The OS says when it has something up (a computer, a StartHack window) and when it has not.
       if (e.source === os.contentWindow) {
@@ -84,11 +89,17 @@ export default function Host() {
       }
       // From Lua: everything that is not the admin panel's (AdminFrame takes those) is the OS's.
       if (typeof data.action !== 'string' || !data.action.startsWith('computers:') || ADMIN_ACTION.test(data.action)) return;
-      if (data.action === 'computers:open') show(toView(data.data?.view));
-      else if (data.action === 'computers:lib:open' && !active) show(null);
+      if (data.action === 'computers:open') {
+        away = false;
+        show(toView(data.data?.view));
+      } else if (data.action === 'computers:lib:open' && !active) show(null);
+      else if (data.action === 'computers:camera') {
+        away = data.data?.active === true;
+        lay();
+      } else if (data.action === 'computers:close') away = false;
       os.contentWindow?.postMessage(data, '*');
     };
-    const onResize = () => place(os, view);
+    const onResize = () => lay();
 
     window.addEventListener('message', onMessage);
     window.addEventListener('resize', onResize);

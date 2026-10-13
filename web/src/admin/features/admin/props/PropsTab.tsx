@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, RotateCcw, ScanLine, Trash2 } from 'lucide-react';
 import { Badge, Empty, Heading, Hint, SearchInput } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
 import { useAdmin } from '@/admin/store/admin';
-import { act } from '@/admin/nui/api';
+import { act, place } from '@/admin/nui/api';
 import { t } from '@/admin/i18n';
 import type { Prop } from '@/admin/types';
 import { PropImage } from '../computers/ComputerSetupModal';
@@ -15,7 +15,8 @@ const FILTERS: Filter[] = ['all', 'monitor', 'tower', 'laptop', 'custom'];
 // The catalogue of props: every model a computer can be - placed as, picked from the world as, or
 // ticked in the Automatic tab. The ones from configs/shared/admin.lua are shown as they are; the
 // ones added here (a model name, kept in the database) can be taken away again. Each says where it
-// is in use, so it is plain what removing or unticking one would touch.
+// is in use, so it is plain what removing or unticking one would touch - and whether it has a
+// screen: the button under it opens the screen tool, which draws one on it (or redraws the one it has).
 export const PropsTab = () => {
   const snapshot = useAdmin(s => s.snapshot)!;
   const busy = useAdmin(s => s.busy);
@@ -67,9 +68,17 @@ export const PropsTab = () => {
       <ScrollArea className="flex-1 min-h-0" viewClassName="grid grid-cols-6 gap-2 content-start" viewStyle={{ paddingRight: 'var(--sa-gutter, 0px)' }}>
         {shown.map(p => {
           const uses = [autoOf[p.model] ? t('props.auto', autoOf[p.model]) : null, placedAs[p.model] ? t('props.placed', placedAs[p.model]) : null].filter(Boolean);
+          const screen = snapshot.screens[p.model]; // 'config' | 'custom' | none
           return (
             <div key={p.model} className="relative flex flex-col p-1.5 rounded-[8px]" style={{ background: 'var(--surface-2)', border: '1px solid var(--hairline)' }}>
-              <PropImage prop={p} className="w-full rounded-[5px]" style={{ aspectRatio: '4 / 3' }} />
+              <div className="relative">
+                <PropImage prop={p} className="w-full rounded-[5px]" style={{ aspectRatio: '4 / 3' }} />
+                {!screen && (
+                  <span className="absolute bottom-1 left-1 pointer-events-none" title={t('props.screen_none_hint')}>
+                    <Badge tone="warn">{t('props.screen_none')}</Badge>
+                  </span>
+                )}
+              </div>
               <span className="block mt-1.5 px-0.5 text-[11.5px] font-medium truncate" title={p.label}>
                 {p.label}
               </span>
@@ -79,6 +88,35 @@ export const PropsTab = () => {
               <span className="block px-0.5 mt-1 text-[10.5px] truncate" style={{ color: uses.length ? 'var(--text-2)' : 'var(--text-4)' }} title={uses.join(' · ')}>
                 {uses.length ? uses.join(' · ') : t('props.unused')}
               </span>
+              {/* Its screen: draw one where it has none, redraw the one it has - and take a drawn one away again. */}
+              {edit && (
+                <div className="flex items-center gap-1 mt-1.5">
+                  <button
+                    type="button"
+                    className="sc-btn flex-1 min-w-0"
+                    style={{ height: 24, padding: '0 6px', fontSize: 11 }}
+                    title={t(screen ? 'props.screen_adjust_hint' : 'props.screen_none_hint')}
+                    disabled={busy}
+                    onClick={() => void place('setupscreen', { model: p.model })}
+                  >
+                    <ScanLine size={12} className="flex-shrink-0" />
+                    <span className="truncate">{t(screen ? 'props.screen_adjust' : 'props.screen_draw')}</span>
+                  </button>
+                  {screen === 'custom' && (
+                    <button
+                      type="button"
+                      className="sc-btn sc-btn--icon flex-shrink-0"
+                      style={{ width: 24, height: 24 }}
+                      title={t('props.screen_reset')}
+                      aria-label={t('props.screen_reset')}
+                      disabled={busy}
+                      onClick={() => void act('resetscreen', { model: p.model }, t('props.screen_reset_done', p.label))}
+                    >
+                      <RotateCcw size={12} />
+                    </button>
+                  )}
+                </div>
+              )}
               {p.custom && (
                 <span className="absolute top-2.5 left-2.5 pointer-events-none">
                   <Badge tone="accent">{t('props.custom')}</Badge>

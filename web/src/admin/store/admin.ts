@@ -53,6 +53,7 @@ const clean = (s: Snapshot): Snapshot => ({
   ...s,
   computers: list<Snapshot['computers'][number]>(s.computers).map(c => ({ ...c, users: list<string>(c.users), models: c.models ? list<string>(c.models) : undefined })),
   props: list<Snapshot['props'][number]>(s.props),
+  screens: s.screens && !Array.isArray(s.screens) ? s.screens : {}, // (a map: empty, it can arrive as a list)
   auto: {
     enabled: s.auto?.enabled !== false,
     computers: list<Snapshot['auto']['computers'][number]>(s.auto?.computers).map(a => ({ ...a, models: list<Snapshot['auto']['computers'][number]['models'][number]>(a.models) })),

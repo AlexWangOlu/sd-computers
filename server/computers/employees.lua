@@ -47,6 +47,34 @@ function employees.job(jobName)
     return { name = jobName, label = def.label or jobName, grades = grades }
 end
 
+---Every job the framework has, by label, for the admin panel's Business Manager picker. `boss` =
+---one of its grades is a boss: without one nobody would ever get the app. Empty where the
+---Business Manager is not supported.
+---@return { name: string, label: string, boss: boolean }[]
+function employees.jobs()
+    if not employees.supported() then return {} end
+    local all
+    if QBX then
+        all = exports.qbx_core:GetJobs()
+    else
+        all = framework.core.Shared.Jobs
+    end
+    local out = {}
+    for name, def in pairs(all or {}) do
+        local boss = false
+        for _, g in pairs(def.grades or {}) do
+            if g.isboss == true then boss = true break end
+        end
+        out[#out + 1] = { name = name, label = def.label or name, boss = boss }
+    end
+    table.sort(out, function(a, b)
+        local x, y = a.label:lower(), b.label:lower()
+        if x ~= y then return x < y end
+        return a.name < b.name
+    end)
+    return out
+end
+
 ---Is the player the boss of `jobName` right now (primary job + isboss grade)?
 ---@param src integer
 ---@param jobName string

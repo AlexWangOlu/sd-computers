@@ -67,6 +67,7 @@ interface OSState {
   bootWith: (p: OpenPayload) => void;
   setPhase: (p: Phase) => void;
   reset: () => void;
+  setApps: (lists: Pick<OpenPayload['computer'], 'apps' | 'pinned' | 'desktopIcons'>) => void;
   updateSettings: (patch: Partial<Settings>, persist?: boolean) => void;
 
   openApp: (app: AppId, props?: Record<string, unknown>) => void;
@@ -176,6 +177,22 @@ export const useOS = create<OSState>((set, get) => ({
     boundsProvider = null;
     set({ payload: null, phase: 'off', windows: [], start: false, flyout: null, toasts: [] });
   },
+
+  // The server has reworked which apps this session has (a phone was linked to the machine, or
+  // taken off it): the desktop redraws from the new lists, and the windows of apps that are gone
+  // close without asking.
+  setApps: lists =>
+    set(s => {
+      if (!s.payload) return s;
+      const has = new Set<string>(lists.apps.map(a => a.id));
+      const gone = s.windows.filter(w => w.app !== 'hack' && !has.has(w.app));
+      for (const w of gone) closeGuards.delete(w.id);
+      return {
+        payload: { ...s.payload, computer: { ...s.payload.computer, apps: lists.apps, pinned: lists.pinned, desktopIcons: lists.desktopIcons } },
+        windows: gone.length > 0 ? s.windows.filter(w => !gone.includes(w)) : s.windows,
+        recent: s.recent.filter(r => has.has(r.app)),
+      };
+    }),
 
   updateSettings: (patch, persist = true) => {
     const settings = { ...get().settings, ...patch };

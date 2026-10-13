@@ -1,0 +1,17 @@
+{
+  "title": "Security Cameras",
+  "count": "%s cameras you can watch from this computer",
+  "live": "Live",
+  "watch": "Watch",
+  "empty_title": "No cameras",
+  "empty_body": "There is no camera you may watch from this computer.",
+  "no_picture": "A camera's picture only shows in the game.",
+  "rec": "REC",
+  "position": "%s of %s",
+  "back": "Back to desktop",
+  "key_look": "Look around (or drag)",
+  "key_wheel": "Wheel",
+  "key_zoom": "Zoom",
+  "key_switch": "Previous / next camera",
+  "key_reset": "Reset"
+}

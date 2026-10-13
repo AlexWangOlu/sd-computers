@@ -87,6 +87,7 @@ rpc.register('boss:overview', 'boss', function(src, s)
         grades = grades,
         myGrade = employees.gradeOf(src),
         myCid = s.citizenid,
+        hireById = B.HireById ~= false,
         counts = { total = #list, online = online, onDuty = onDuty },
         funds = funds,
     })
@@ -173,24 +174,43 @@ rpc.register('boss:nearby', 'boss', function(src, s)
     return rpc.ok(out)
 end)
 
----Offer a nearby player the job. They get a confirm prompt; only an accept hires them.
----@param payload { id: integer }
+---@type table<integer, boolean> Players with a job offer on their screen. One at a time each,
+---whoever sent it: an offer can reach anyone online, and prompts must not pile up on them.
+local offered = {}
+
+---Offer a player the job: one standing at the computer, or - with `byId`, where config.Boss.HireById
+---allows it - anyone online, by their server id. They get a confirm prompt; only an accept hires them.
+---@param payload { id: integer, byId?: boolean }
 rpc.register('boss:hire', 'boss', function(src, s, payload)
     local target = math.tointeger(tonumber(payload.id))
-    if not target or target == src or not player.get(target) then return rpc.fail('boss.err_not_around') end
-    local ped = GetPlayerPed(target)
-    if ped == 0 or #(GetEntityCoords(ped) - s.coords) > (B.HireRadius or 10.0) then return rpc.fail('boss.err_not_around') end
+    if payload.byId == true then
+        if B.HireById == false or not target or target < 1 then return rpc.fail('err.invalid') end
+        if target == src then return rpc.fail('boss.err_self') end
+        if not player.get(target) then return rpc.fail('boss.err_no_player', target) end
+    else
+        if not target or target == src or not player.get(target) then return rpc.fail('boss.err_not_around') end
+        local ped = GetPlayerPed(target)
+        if ped == 0 or #(GetEntityCoords(ped) - s.coords) > (B.HireRadius or 10.0) then return rpc.fail('boss.err_not_around') end
+    end
+    local p = player.get(target)
+    local j = p and p.PlayerData and p.PlayerData.job
+    if j and j.name == s.bossJob then return rpc.fail('boss.err_already') end
+    if offered[target] then return rpc.fail('boss.err_offer_open') end
 
     local def = employees.job(s.bossJob)
     if not def then return rpc.fail('err.invalid') end
-    local accepted = lib.callback.await('sd-computers:client:confirmHire', target, s.name, def.label)
-    if accepted ~= true then return rpc.fail('boss.err_declined') end
+    -- (whatever becomes of the prompt - an answer, the 20 seconds running out, the player leaving -
+    -- they are free to be offered a job again)
+    offered[target] = true
+    local answered, accepted = pcall(lib.callback.await, 'sd-computers:client:confirmHire', target, s.name, def.label)
+    offered[target] = nil
+    if not answered or accepted ~= true then return rpc.fail('boss.err_declined') end
 
     local ok, err = employees.hire(target, s.bossJob)
     if not ok then return rpc.fail('boss.err_failed', err or '?') end
 
     local name = player.getName(target)
-    audit(s, logs.EVENT.BOSS_HIRE, locale('logs.boss_hire', s.name, name, def.label), { cid = player.getIdentifier(target) })
+    audit(s, logs.EVENT.BOSS_HIRE, locale('logs.boss_hire', s.name, name, def.label), { cid = player.getIdentifier(target), byId = payload.byId == true or nil })
     notify.to(target, { title = def.label, description = locale('boss.notify_hired', def.label), type = 'success' })
     return rpc.ok({ name = name })
 end)

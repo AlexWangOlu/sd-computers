@@ -19,10 +19,10 @@ local RES = P.Resource or 'sd-phone'
 local phone = {}
 
 ---@type string[] App ids that come from the phone, in the order they're appended to a computer.
-phone.APPS = { 'messages', 'notes' }
+phone.APPS = { 'messages', 'notes', 'photos', 'contacts' }
 
 ---@type table<string, string> App id -> the Phone config switch that enables it.
-local SWITCH = { messages = 'Messages', notes = 'Notes' }
+local SWITCH = { messages = 'Messages', notes = 'Notes', photos = 'Photos', contacts = 'Contacts' }
 
 ---@type boolean|nil Cached link state; nil = re-probe. Cleared whenever sd-phone starts or stops.
 local cached
@@ -87,19 +87,117 @@ function phone.carries(src)
     return res.success == true and res.data == true
 end
 
----The phone apps this player gets on this computer (none unless linked, the computer allows it,
----and - with RequirePhone - they carry a phone).
+-- ── Phone Link: which machines a character has linked their phone to ─────────────────────────
+-- One row per character per machine (the machine's instance key, as its System Logs use), written
+-- when the code from the Phone Link app is typed in and removed when they unlink it there.
+
+---@type table<string, integer|false> 'citizenid|instance' -> unix time it was linked (false = looked up, not linked)
+local paired = {}
+
+---Create the table if it doesn't exist, so the resource stays drop-in. Run once at boot.
+function phone.ensureSchema()
+    MySQL.query.await([[
+        CREATE TABLE IF NOT EXISTS computers_phone_links (
+            citizenid VARCHAR(64) NOT NULL,
+            computer  VARCHAR(96) NOT NULL,
+            linked_at TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (citizenid, computer)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    ]])
+end
+
+---Whether the phone's apps wait for the Phone Link code (configs/shared/phone.lua > RequireLink).
+---@return boolean
+function phone.requiresLink()
+    return P.RequireLink ~= false
+end
+
+---When a character linked their phone to a machine (nil = they have not).
+---@param citizenid string
+---@param instance string the machine's instance key
+---@return integer|nil unix seconds
+function phone.pairedAt(citizenid, instance)
+    local key = citizenid .. '|' .. instance
+    local at = paired[key]
+    if at == nil then
+        at = MySQL.scalar.await('SELECT UNIX_TIMESTAMP(linked_at) FROM computers_phone_links WHERE citizenid = ? AND computer = ?', { citizenid, instance }) or false
+        paired[key] = at
+    end
+    return at or nil
+end
+
+---Link a character's phone to a machine.
+---@param citizenid string
+---@param instance string the machine's instance key
+---@return integer at unix seconds
+function phone.pair(citizenid, instance)
+    MySQL.query.await('INSERT INTO computers_phone_links (citizenid, computer) VALUES (?, ?) ON DUPLICATE KEY UPDATE linked_at = CURRENT_TIMESTAMP', { citizenid, instance })
+    local at = os.time()
+    paired[citizenid .. '|' .. instance] = at
+    return at
+end
+
+---Take a character's phone off a machine again.
+---@param citizenid string
+---@param instance string the machine's instance key
+function phone.unpair(citizenid, instance)
+    MySQL.query.await('DELETE FROM computers_phone_links WHERE citizenid = ? AND computer = ?', { citizenid, instance })
+    paired[citizenid .. '|' .. instance] = false
+end
+
+---Whether anything on a computer comes from the phone at all (an app, or the Phone place in Files).
+---@return boolean
+local function anyPhoneSide()
+    if P.Files ~= false then return true end
+    for _, id in ipairs(phone.APPS) do
+        if P[SWITCH[id]] ~= false then return true end
+    end
+    return false
+end
+
+---Whether a computer has the Phone Link app: sd-phone is linked, the computer has not opted out,
+---the code is asked for, and there is something for it to unlock.
+---@param def table computers.lua entry
+---@return boolean
+function phone.linkApp(def)
+    return def.phone ~= false and phone.requiresLink() and phone.linked() and anyPhoneSide()
+end
+
+---Whether this character may see the phone's side on this machine: the phone is linked to it
+---(when RequireLink asks for that) and - with RequirePhone - they carry a phone.
+---@param src integer
+---@param citizenid string|nil
+---@param instance string|nil the machine's instance key
+---@return boolean
+function phone.unlocked(src, citizenid, instance)
+    if phone.requiresLink() and not (citizenid and instance and phone.pairedAt(citizenid, instance)) then return false end
+    return phone.carries(src)
+end
+
+---Put a notification on the player's phone (sd-phone's notify export). sd-phone drops it for a
+---player who is not carrying a phone.
+---@param src integer
+---@param data { title: string, body?: string, app?: string, appId?: string, id?: string, time?: string }
+---@return boolean sent
+function phone.notify(src, data)
+    return phone.export('notify', src, data) == true
+end
+
+---The phone apps this player gets on this computer (none unless sd-phone is linked, the computer
+---allows it, they have linked their phone to this machine and - with RequirePhone - carry it).
 ---@param src integer
 ---@param def table computers.lua entry
+---@param citizenid? string
+---@param instance? string the machine's instance key
 ---@return table<string, boolean> set of app ids
-function phone.apps(src, def)
+function phone.apps(src, def, citizenid, instance)
     local out = {}
     if def.phone == false or not phone.linked() then return out end
     local any = false
     for _, id in ipairs(phone.APPS) do
         if P[SWITCH[id]] ~= false then out[id] = true; any = true end
     end
-    if any and not phone.carries(src) then return {} end
+    if any and not phone.unlocked(src, citizenid, instance) then return {} end
     return out
 end
 

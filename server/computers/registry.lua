@@ -93,10 +93,16 @@ function registry.ip(coords)
     return ('10.%d.%d.%d'):format((h >> 16) & 0xFF, (h >> 8) & 0xFF, math.max(2, h & 0xFE))
 end
 
+---@type table<string, boolean> Apps no computer simply has: session.lua installs each for the
+---player it is for - the Business Manager for a boss, the Company Board for someone with a job,
+---Security Cameras for someone who may watch at least one camera there - and Phone Link wherever
+---sd-phone is linked and asks for its code (server/computers/phone.lua).
+local PER_PLAYER = { boss = true, board = true, cameras = true, phonelink = true }
+
 ---The apps installed on a computer: its own `apps` list or Desktop.DefaultApps, filtered to apps
----the Desktop registry actually knows. 'boss' and the phone apps are never returned here -
----session.lua adds them per player, because whether you SEE the Business Manager depends on who
----signed in, and the phone apps on whether sd-phone is linked (and the player carries a phone).
+---the Desktop registry actually knows. The per-player apps and the phone apps are never returned
+---here - session.lua adds them per player, because whether you SEE the Business Manager depends on
+---who signed in, and the phone apps on whether sd-phone is linked (and the player carries a phone).
 ---@param def table computers.lua entry
 ---@return table<string, boolean> set of app ids
 function registry.apps(def)
@@ -104,8 +110,9 @@ function registry.apps(def)
     local known = (config.Desktop and config.Desktop.Apps) or {}
     local out = {}
     for _, app in ipairs(list) do
-        if known[app] and app ~= 'boss' and not phone.isPhoneApp(app) then out[app] = true end
+        if known[app] and not PER_PLAYER[app] and not phone.isPhoneApp(app) then out[app] = true end
     end
+    if config.Bank and config.Bank.Enabled == false then out.bank = nil end
     return out
 end
 

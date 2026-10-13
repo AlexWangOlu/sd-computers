@@ -4,6 +4,10 @@ return {
     -- Hiring: nearby players within this many metres of the COMPUTER are listed to hire. They get
     -- a confirm prompt and, on accept, join at the job's lowest grade with it as primary job.
     HireRadius = 10.0,
+    -- Also let a boss send the offer to ANY player online by their server id, wherever they are.
+    -- The same confirm prompt: nobody joins without accepting, and the boss is not shown their
+    -- name until they do. false = only the people standing at the computer can be hired.
+    HireById = true,
 
     -- Society funds (sd-banking / Renewed-Banking society account, keyed by job name). Hidden
     -- automatically when no supported banking resource is running.

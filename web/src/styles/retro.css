@@ -1651,11 +1651,14 @@
   }
 }
 
-/* Business Manager: a grey dialog-like dashboard with raised panels; tables sit in white wells. */
-.os-root[data-style='retro'] .rt-skin[data-app='boss'] main.bg-layer {
+/* Business Manager: a grey dialog-like dashboard with raised panels; tables sit in white wells.
+   The Company Board is its sibling (same sidebar, same cards) and takes the same face. */
+.os-root[data-style='retro'] .rt-skin[data-app='boss'] main.bg-layer,
+.os-root[data-style='retro'] .rt-skin[data-app='board'] main.bg-layer {
   background: var(--face);
 }
 .os-root[data-style='retro'] .rt-skin[data-app='boss'] .bg-card,
+.os-root[data-style='retro'] .rt-skin[data-app='board'] .bg-card,
 .os-root[data-style='retro'] .rt-skin[data-app='settings'] .bg-card {
   background: var(--face);
   border: 1px solid;
@@ -1663,6 +1666,7 @@
   box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--face-lt);
 }
 .os-root[data-style='retro'] .rt-skin[data-app='boss'] .bg-card:hover,
+.os-root[data-style='retro'] .rt-skin[data-app='board'] .bg-card:hover,
 .os-root[data-style='retro'] .rt-skin[data-app='settings'] .bg-card:hover {
   background: var(--face);
 }

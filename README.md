@@ -225,8 +225,10 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 > [!TIP]
 > **Running [sd-phone](https://github.com/Samuels-Development/sd-phone)? The computers pick it up.**
 > A computer becomes another screen for the character's phone: Mail switches to the phone's own
-> mailboxes, and two more apps appear, Messages and Notes, showing the phone's text threads and
-> notes. Nothing to pair. sd-computers is complete without it. [More below](#sd-phone-link-optional).
+> mailboxes, four more apps appear (Messages, Notes, Photos and Contacts), and Files and Bank show
+> the phone's documents and banking history. Players link their phone to a machine with a code
+> from the Phone Link app. sd-computers is complete without it.
+> [More below](#sd-phone-link-optional).
 
 ## Apps
 
@@ -235,8 +237,15 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 | **Mail** | Shared, password-protected `@lsmail.com` accounts (sign up, sign in, multiple accounts), inbox, flagged, drafts, sent, bin, reply and forward, bounces for unknown addresses, live new-mail toasts |
 | **Event Viewer** | That computer's System Logs: sign-ins and failed PINs, lockouts, apps opened, mail sent, Business Manager actions, hack attempts and breaches, plus anything other resources write. Filterable; clearing it leaves a "log was cleared by X" entry (event 1102) |
 | **Command Prompt** | A real-feeling `cmd.exe` (`ipconfig`, `systeminfo`, `ping`, `tasklist` and more) that launches the hacking minigames: free practice (`hack maze hard`) and configured breach targets (`targets`, `breach fleeca-ledger`) that pay rewards server-side |
-| **Business Manager** | The boss menu: roster with online and on-duty status, promote, demote and fire, hire nearby players (they get an accept prompt), society balance chart, deposit and withdraw, statement. Only shown to that job's bosses |
-| **Messages / Notes** | Only with sd-phone: the phone's texts and notes on the desktop |
+| **Business Manager** | The boss menu: roster with online and on-duty status, promote, demote and fire, hire the players standing at the computer or anyone online by their player ID (they get an accept prompt either way), society balance chart, deposit and withdraw, statement. Only shown to that job's bosses |
+| **Files** | The character's documents: written on any computer, they follow the character to every other one. With sd-phone, the phone's documents show beside them |
+| **Browser** | A closed, in-game network: the pages you list in `configs/shared/browser.lua`, written right in the config or your own web page embedded. Any other address "can't be reached" |
+| **Bank** | The character's bank balance, cash and recent transactions, to look at. Nothing can be moved from it |
+| **Company Board** | A job's notice board: bosses post, pin and remove announcements, everyone in the job reads them from any computer, and it shows who is on duty. Only shown to players with a job |
+| **Security Cameras** | The cameras in `configs/shared/cameras.lua` a player is allowed to watch from that computer. Picking one puts its picture on the whole display, to look around and zoom with. Only shown to players with at least one camera to watch; every first look is written to the System Logs |
+| **Games** | Mines, Solitaire and Snake |
+| **Phone Link** | Only with sd-phone: links the character's phone to that machine. It sends a code to the phone as a notification; typing it in puts the phone's apps on the desktop there and then, until they unlink it |
+| **Messages / Notes / Photos / Contacts** | Only with sd-phone, once the phone is linked in Phone Link: the phone's texts, notes, gallery and address book on the desktop |
 | **Notepad / Calculator / Settings** | Notes that follow the character to every computer; a full standard calculator; wallpaper, accent colour and dark or light mode, saved per character |
 
 Around the apps: a lock screen with an optional per-computer PIN (checked server-side, with lockout), welcome and shutdown screens, draggable, resizable, snap-to-maximize windows, calendar and quick-settings flyouts, and toast notifications.
@@ -280,7 +289,7 @@ A computer's prop shows its screen to everyone around it (`configs/shared/screen
 Walk past a desk and you can see that someone is in Command Prompt, read the mail they have open, or watch a breach in progress. PIN and password fields are always masked, and the `/computeradmin` panel is never part of the picture.
 
 - **Which props:** the monitors and laptops in `Screens.Models`. Tower PCs have no screen and are left alone. A location computer (a box zone) shows on the screen prop standing inside its zone, when there is one.
-- **Your own props:** add an entry to `Screens.Models` with where the screen is on the model: its `centre`, its `size`, and for a lid or a stand its `tilt`. A model that is not listed gets no screen.
+- **Your own props:** draw the screen on the prop with the panel's screen tool ([Drawing a prop's screen](#drawing-a-props-screen)), or add an entry to `Screens.Models` by hand with where the screen is on the model: its `centre`, its `size`, and for a lid or a stand its `tilt`. A model with neither gets no screen.
 - **What it costs:** each screen is a small browser drawn on the prop. Every idle screen of a style shares one, so an office full of monitors is three at most. A computer in use gets one of its own, for the nearest `MaxLive` (3). The player at the computer only records while somebody is actually watching, and what travels is the page's changes, not video: a few KB when a window opens, next to nothing while they read.
 - **Switches:** `Enabled = false` turns screens off entirely. `Idle = 'off'` leaves unused props alone and lights only the ones in use. `Mirror.Enabled = false` keeps a computer in use on its lock face, so nothing of a session ever leaves the player's game.
 
@@ -316,21 +325,31 @@ The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof
 
 `/computeradmin` (admins) opens a panel listing every computer on the server, who is sitting at which, its style and its job lock, and places new ones without touching a config file:
 
-1. **Place computer**: pick the prop it stands as (`configs/shared/admin.lua` > `Props`), the style it opens in (`modern`, `retro`, `mac`, or the server default), a name, and optionally the jobs that may use it.
+1. **Place computer**: pick the prop it stands as (`configs/shared/admin.lua` > `Props`), the style it opens in (`modern`, `retro`, `mac`, or the server default), a name, and optionally the jobs that may use it and who gets the Business Manager on it.
 2. The placement gizmo takes over, the same one sd-bombs and sd-scooters use. The prop starts sitting on whatever you were looking at; move and turn it, **Enter** places it.
 3. It is live at once for everyone, with the same "Use Computer" option as any other computer.
 
-A placed computer can be changed (name, prop, style, jobs), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
+A placed computer can be changed (name, prop, style, jobs, Business Manager), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` are listed read-only. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
+
+### Business Manager on a placed computer
+
+The same dialog decides who gets the Business Manager on a computer made from the panel, which is what `boss` does for an entry of `computers.lua`:
+
+- **Off**: nobody manages a job from it.
+- **Any boss**: whoever signs in as the boss of a job manages that job (`boss = true`). Good for a shared laptop.
+- **One job**: only that job's boss gets it (`boss = 'police'`). Type the job as your framework spells it, or pick it from the list of the server's jobs under the field.
+
+The line under it says in plain words who gets the app, and warns when nobody would: the server has no job of that name, the job has no boss grade, or the job lock leaves that job out (one click adds it). A job that does not exist yet can still be saved; the app shows up once it does. Changing the setting signs out whoever is using that computer, so it applies at once. Every row of the list shows a briefcase with the job (or "Any boss") when a computer has the Business Manager, the ones from the config included.
 
 ### Props the game already has
 
-**Pick existing prop** makes a computer of a monitor, tower or laptop that is already in the world, instead of standing a new one: set its name, style and jobs, then aim at the prop (it is boxed while you look at it) and press **Enter** or click. Nothing is spawned. The prop becomes a computer of its own, like a placed one, and stops being the automatic computer its model would otherwise make it. It keeps its prop and its spot; delete it to give the prop back. Any model in `Props` or in a `model` list of `computers.lua` can be picked.
+**Pick existing prop** makes a computer of a monitor or laptop that is already in the world, instead of standing a new one: set its name, style and jobs, then aim at the prop (it is boxed while you look at it) and press **Enter** or click. Nothing is spawned. The prop becomes a computer of its own, like a placed one, and stops being the automatic computer its model would otherwise make it. It keeps its prop and its spot; delete it to give the prop back. Any model in `Props` or in a `model` list of `computers.lua` can be picked.
 
-The **Automatic** tab is the `model` computers of `computers.lua`, the ones that make every prop of a model a computer wherever the game has one:
+The **Automatic** tab is the `model` computers of `computers.lua`, the ones that make every prop of a model a computer wherever the game has one. They are **off out of the box**: a computer is one you placed or picked (or a location in `computers.lua`) until you switch them on here.
 
-- one switch for all of them: off, and no prop in the world is a computer unless you placed or picked it;
+- one switch for all of them: off, and no prop in the world is a computer unless you placed or picked it. It starts where `Automatic` in `configs/shared/admin.lua` has it (`false`);
 - one switch for each model computer;
-- a tick for every prop, so "monitors yes, towers no" is two clicks. A prop from `Props` that no `model` list names shows as an extra one any of them can take on;
+- a tick for every prop, so "flat monitors yes, the CRT no" is one click. A prop from `Props` that no `model` list names shows as an extra one any of them can take on;
 - a style for each model computer, and one of its own for any prop of it: the CRT can open in the retro desktop while every other monitor stays modern. The lock face on the prop follows.
 
 What the panel changes is kept in the database (`computers_settings`) and wins over the file; a prop nobody touched still follows the file, and a prop left on "Same as computer" follows its computer's style. The switches decide which props offer a computer and show a screen. They are not a lock: an entry that is switched off still opens for a script through `OpenComputer`, so use `groups` to keep people out of one.
@@ -344,9 +363,27 @@ add_ace group.mod sd_computers.edit allow
 
 ### Your own props
 
-The **Props** tab is the catalogue of every prop a computer can be, each with where it is in use. **Add prop** there (also the last tile of the prop grid when placing) adds a prop model to the list without editing a file: its model name, what to call it and whether it is a monitor, a tower or a laptop. The game is asked whether the model exists before it is kept, so a streamed prop works as long as it is running. From then on a computer can be placed as it, one can be picked from the world, and the Automatic tab offers it to every model computer as an extra. Props added this way are kept in the database and can be removed from their tile in the Props tab (not while a computer is placed as one).
+The **Props** tab is the catalogue of every prop a computer can be, each with where it is in use. **Add prop** there (also the last tile of the prop grid when placing) adds a prop model to the list without editing a file: its model name, what to call it and whether it is a monitor, a tower or a laptop. The game is asked whether the model exists before it is kept, so a streamed prop works as long as it is running. The list ships with monitors and laptops only: tower PCs have no screen, so they are left out by default (they are commented out in `configs/shared/admin.lua` > `Props`, and can be added here like any other prop). From then on a computer can be placed as it, one can be picked from the world, and the Automatic tab offers it to every model computer as an extra. Props added this way are kept in the database and can be removed from their tile in the Props tab (not while a computer is placed as one).
 
-A prop only has a screen drawn on it, and the camera going up to it, when `configs/shared/screens.lua` has a rectangle for its model. Without one it is still a computer; it opens fullscreen. The file has a rectangle for every prop on the list, and for a number of props that are the same shape as one of them with something else on screen (other DLC laptops, the seven control room monitors), so adding one of those from the panel gets its screen at once.
+A prop only has a screen drawn on it, and the camera going up to it, when the resource knows where its screen is. Without that it is still a computer; it opens fullscreen. `configs/shared/screens.lua` has a rectangle for every prop on the list, and for a number of props that are the same shape as one of them with something else on screen (other DLC laptops, the seven control room monitors), so adding one of those from the panel gets its screen at once. For any other prop, draw it.
+
+### Drawing a prop's screen
+
+Every tile in the **Props** tab has a screen button: **Draw screen** on a prop that has none (it is marked "No screen"), **Adjust screen** on one that has. It opens the screen tool: the prop is shown on its own in front of a plain backdrop, and you draw where its screen is with the mouse, with the lock screen shown in the box exactly as players will see it.
+
+| Do this | With |
+| --- | --- |
+| Draw the screen, corner to corner; then drag its middle to move it, an edge or corner to resize it | Left mouse button |
+| Push it into the prop or pull it out, until it sits on the glass | Mouse wheel (Shift: bigger steps) |
+| Lean it back for a laptop lid or a monitor on a stand | Q / E |
+| Nudge it a millimetre | Arrow keys |
+| Sit it on the prop's surface (a first guess: as good as the prop's collision) | G |
+| Look at it from any side; front view; side view | Hold right mouse button; F; V |
+| Zoom; hide the picture to see the prop's own glass; put the screen on another side of the prop | Ctrl + wheel; H; R |
+| Undo; start over; copy it as a line for `screens.lua` | Ctrl + Z; Del; C |
+| Save; cancel | Enter; Backspace |
+
+A screen is a flat rectangle, so curved glass gets the nearest flat one. What you draw is kept in the database (`computers_settings`) and applies to every prop of that model for everyone at once. It wins over the rectangle `screens.lua` has for the same model, so a built-in screen that sits a little off can be redrawn too; the arrow button beside **Adjust screen** takes a drawn screen away again.
 
 ## sd-phone link (optional)
 
@@ -357,11 +394,18 @@ sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-
 | **Mail** | The phone's mail: the same `@lifeinvader.com` accounts, inbox (plus Spam), attachments, phone notifications and badges | Built-in `@lsmail.com` Mail |
 | **Messages** | New app: the phone's text threads. Read, reply, start a thread to a number or contact; incoming texts toast on the desktop | Not installed |
 | **Notes** | New app: the phone's notes. Edit the text, view their photos and sketches | Not installed |
+| **Photos** | New app: the phone's gallery, to look at | Not installed |
+| **Contacts** | New app: the phone's address book. Add and remove contacts, and message one straight from it | Not installed |
+| **Files** | Also lists the phone's documents | The character's own documents only |
+| **Bank** | Takes its statement from the phone's banking history | The banking resource's statement, when it keeps one |
+| **Phone Link** | New app: links the phone to the machine with a code | Not installed |
+
+**Linking a phone.** Messages, Notes, Photos, Contacts and the phone's documents in Files are not on a computer until the character has linked their phone to that machine. They open **Phone Link**, send a code to their phone (it arrives as a notification, so they need the phone on them), and type the six digits in. The phone's apps appear on the desktop straight away and stay for that character on that machine until they press **Unlink**. Every machine is linked on its own: one public PC being linked says nothing about the next one. A code works for `LinkCodeMinutes` (5), five wrong tries use it up, and a new one can be sent every 30 seconds. `RequireLink = false` drops the code and the app, and the phone's apps are simply there. Mail and the Bank statement do not wait for the link.
 
 - Needs sd-phone's link file `server/compat/computers.lua` (shipped with sd-phone, one line in its fxmanifest). It runs the phone's own handlers, so a text sent from a desk validates, notifies and threads exactly like one typed on the phone.
 - Detected live: start or stop sd-phone at any time and the next computer you open follows. An sd-phone without the link file is treated as "not installed" (one console warning).
-- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), `Mail` / `Messages` / `Notes` switches, `RequirePhone` (Messages and Notes only for players carrying a phone, default on).
-- Per computer: `phone = false` in `computers.lua` keeps Messages and Notes off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
+- `configs/shared/phone.lua`: `Enabled` (`'auto'` / `false`), a switch for each of `Mail`, `Messages`, `Notes`, `Photos`, `Contacts`, `Files` and `Bank`, `RequireLink` and `LinkCodeMinutes` (above), and `RequirePhone` (the four phone apps only for players carrying a phone, default on - with `RequireLink`, whether a machine that is already linked still needs the phone nearby).
+- Per computer: `phone = false` in `computers.lua` keeps the four phone apps and Phone Link off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
 - `SendMail`, `MailAddressExists` and `GetMailAddresses` follow the switch too: while linked they work on the phone's mailboxes (the ones players actually read).
 - sd-phone side: `set sd_phone_computerlink "sd-computers"` lists the resources allowed to drive the link (default sd-computers only; `"off"` disables it).
 
@@ -447,6 +491,8 @@ Computers come from two places, and you can use both:
 - `configs/shared/computers.lua`: each entry is a location (`coords` / `size` / `rotation`) or a `model` (every prop of that model in the world).
 - `/computeradmin` in game: place one on any desk, or pick a monitor the game already has, and it is live at once. The same panel switches the `model` computers on and off, prop by prop.
 
+The `model` computers are off until you switch them on: out of the box the monitors and laptops around the map are not computers, only the locations in `computers.lua` and the ones you place or pick are. To make every prop of the listed models a computer, flip the switch at the top of the panel's **Automatic** tab, or set `Automatic = true` in `configs/shared/admin.lua`.
+
 The example coordinates (MRPD front desk, Pillbox reception) are from qbx_police and qbx_ambulancejob; check them in game. With `Debug = true`, aim at a keyboard and run `/computer_pos`: it copies a ready-made `coords = vec3(...)` line.
 
 ### 3. Set your PINs and breach targets
@@ -463,12 +509,17 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/shared/computers.lua` | **The computers.** Each is a location (`coords`/`size`/`rotation`) or a `model` (every prop of that model). Optional `groups` lock, `boss` (a job name, or `true` = the signed-in player's own job), `style`, `apps` list |
 | `configs/shared/desktop.lua` | Default style, app list and window sizes, default apps, pins, desktop icons, 12/24h clock, and per style (`Styles`): OS name and build, wallpapers, accent colours, default theme, retro's CRT monitor and sounds toggles |
 | `configs/shared/interact.lua` | Target label, icon and distance, walk-away distance, **how the desktop is shown** (the camera up at the prop's screen, or fullscreen) and that camera's framing, typing animation, debug `/computer_pos` |
-| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, and the props a computer can be placed as (or picked from the world as) |
+| `configs/shared/admin.lua` | **The admin panel**: its command, who may open it and who may change things, the placement gizmo, whether props in the world are computers on their own (`Automatic`, off by default), and the props a computer can be placed as (or picked from the world as) |
 | `configs/shared/screens.lua` | **The screens on the props**: on or off, draw distance, how many are drawn and mirrored at once, texture size, what an idle computer shows, the live copy (on or off, minigame frame rate, watchers per session), and where the screen is on each prop model |
 | `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
-| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, Messages and Notes apps, RequirePhone |
+| `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, the Messages, Notes, Photos and Contacts apps, the phone's side of Files and Bank, Phone Link's code (RequireLink), RequirePhone |
+| `configs/shared/files.lua` | Files: how many documents a character keeps, and how long each may be |
+| `configs/shared/browser.lua` | **The Browser's sites**: the start address and every page a computer can open |
+| `configs/shared/bank.lua` | Bank on or off, how many transactions it lists |
+| `configs/shared/board.lua` | Company Board on or off, jobs that have none, how many announcements a job keeps |
+| `configs/shared/cameras.lua` | **The security cameras**: where each is, the way it looks, who may watch it and from which computers; how far they turn and zoom |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
-| `configs/shared/boss.lua` | Business Manager on or off, hire radius, deposit sources, withdraw target |
+| `configs/shared/boss.lua` | Business Manager on or off, hire radius, hiring by player ID on or off, deposit sources, withdraw target |
 | `configs/server/security.lua` | **PINs per computer** and wrong-PIN lockout |
 | `configs/server/targets.lua` | **Breach targets**: which computers, the minigame steps, item requirement, cooldowns, police alert, rewards (items, money, mail or your own server event) |
 | `configs/server/hacks.lua` | Anti-cheat tuning, token and proof lifetimes |

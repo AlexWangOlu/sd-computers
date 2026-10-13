@@ -51,6 +51,13 @@ export interface OsStyle {
   default: boolean;
 }
 
+// A job the framework has, for the Business Manager picker (server/computers/employees.lua > jobs).
+export interface Job {
+  name: string; // as the framework spells it ('police')
+  label: string;
+  boss: boolean; // one of its grades is a boss: without one nobody would ever get the app
+}
+
 // One prop of a model computer (server/computers/auto.lua).
 export interface AutoModel {
   model: string;
@@ -80,15 +87,24 @@ export interface Snapshot {
   computers: Computer[];
   props: Prop[];
   auto: Auto;
+  // Which props have a screen, by model: 'config' = configs/shared/screens.lua has one for it,
+  // 'custom' = an admin drew it with the screen tool (that wins). A prop that is not here has none:
+  // it is still a computer, opening fullscreen.
+  screens: Record<string, 'config' | 'custom'>;
   styles: OsStyle[];
+  jobs: Job[]; // by label; empty where the Business Manager is not supported
+  // Whether a computer can be given the Business Manager at all: not on a framework it does not
+  // support, nor while configs/shared/boss.lua has it switched off.
+  boss: { available: boolean; reason?: 'framework' | 'disabled' | null };
   defaultStyle: string;
   rules: { boot: boolean; reach: number; maxLabel: number };
   refreshMs: number;
 }
 
+// What came of a tool that ran with the panel hidden: the gizmo, the picker or the screen tool.
 export interface Placed {
-  what: 'computer';
-  action: 'placed' | 'moved' | 'picked';
+  what: 'computer' | 'screen';
+  action: 'placed' | 'moved' | 'picked' | 'saved';
   success: boolean;
   cancelled?: boolean;
   message?: string | null;

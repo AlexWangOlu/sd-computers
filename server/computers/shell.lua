@@ -10,9 +10,12 @@ local logs = require 'server.computers.logs'
 local profile = require 'server.computers.profile'
 ---@type table Computer definitions + styles (server.computers.registry).
 local registry = require 'server.computers.registry'
+---@type table The security cameras and who may watch them (server.computers.cameras).
+local cameras = require 'server.computers.cameras'
 
 -- The small apps' endpoints: the shell itself (app launches, personalisation), Notepad, Event
--- Viewer and Command Prompt's system info. Mail, Business Manager and hacking have their own files.
+-- Viewer, Command Prompt's system info and Security Cameras. Mail, Business Manager, hacking and
+-- the bigger apps have their own files.
 
 ---Logging an app window opening (config.Logs.AppLaunch). Any signed-in session.
 ---@param payload { app: string }
@@ -93,6 +96,43 @@ rpc.register('cmd:sysinfo', 'cmd', function(_, s)
         user = s.name, domain = (s.def.groups and next(s.def.groups)) and tostring(next(s.def.groups)):upper() or 'WORKGROUP',
         os = registry.styleDef(s.style).OsName or s.style, build = registry.styleDef(s.style).OsBuild or '1.0', uptime = os.time() - s.openedAt,
     })
+end)
+
+-- ── Security Cameras ──────────────────────────────────────────────────────────────────────
+
+---The cameras this player may watch from this computer (configs/shared/cameras.lua).
+rpc.register('cameras:list', 'cameras', function(src, s)
+    local out = {}
+    for _, cam in ipairs(cameras.visible(src, s.def)) do
+        out[#out + 1] = { id = cam.id, label = cam.label, area = cam.area }
+    end
+    return rpc.ok(out)
+end)
+
+---Where one of those cameras is and how far it turns: what the client needs to show its picture.
+---Only ever one the player may watch here. The first look at each camera in a session goes into
+---this computer's System Logs.
+---@param payload { id: string }
+rpc.register('cameras:watch', 'cameras', function(src, s, payload)
+    for _, cam in ipairs(cameras.visible(src, s.def)) do
+        if cam.id == payload.id then
+            s.watched = s.watched or {}
+            if not s.watched[cam.id] then
+                s.watched[cam.id] = true
+                logs.write(s.instance, {
+                    level = 'information', source = 'Cameras', eventId = logs.EVENT.CAMERA_VIEW,
+                    message = locale('logs.camera_view', s.name, cam.label), data = { camera = cam.id },
+                }, session.actor(s))
+            end
+            local limits = cameras.limits()
+            return rpc.ok({
+                id = cam.id, label = cam.label, area = cam.area,
+                x = cam.x, y = cam.y, z = cam.z, pitch = cam.pitch, roll = cam.roll, yaw = cam.yaw, fov = cam.fov,
+                pan = limits.pan, tilt = limits.tilt, zoom = limits.zoom, effect = limits.effect,
+            })
+        end
+    end
+    return rpc.fail('cameras.err_unknown')
 end)
 
 return {}

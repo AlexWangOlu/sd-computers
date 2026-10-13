@@ -18,6 +18,13 @@ return {
     MaxLabel = 48, -- longest name a placed computer can be given
     MaxCustomProps = 64, -- most props that can be added from the panel (see Props below)
 
+    -- Whether the monitors and laptops the game already has are computers on their own: the
+    -- `model` entries of configs/shared/computers.lua. false = they are not, and a computer is one
+    -- you placed or picked in the panel (or a location in computers.lua). This is where the switch at
+    -- the top of the panel's Automatic tab starts: once an admin flips it there, that is kept in the
+    -- database and wins over this line.
+    Automatic = false,
+
     -- The props a computer can be placed as. `kind` only picks the icon the panel falls back to when a
     -- prop has no picture: 'monitor' | 'tower' | 'laptop'. The picture is web/public/props/<model>.jpg
     -- (the ones here are photographs taken in the game; rebuild the UI after adding one), or set
@@ -47,12 +54,14 @@ return {
         { model = 'v_serv_ct_monitor02', label = 'Control room monitor (terminal)', kind = 'monitor' },
         { model = 'ex_prop_monitor_01_ex', label = 'All-in-one', kind = 'monitor' },
         { model = 'sm_prop_smug_monitor_01', label = 'All-in-one (small)', kind = 'monitor' },
-        { model = 'prop_dyn_pc', label = 'Tower PC', kind = 'tower' },
-        { model = 'prop_dyn_pc_02', label = 'Tower PC (dark)', kind = 'tower' },
-        { model = 'prop_pc_01a', label = 'Tower PC (beige)', kind = 'tower' },
-        { model = 'prop_pc_02a', label = 'Tower PC (silver)', kind = 'tower' },
-        { model = 'hei_prop_heist_pc_01', label = 'Tower PC (black)', kind = 'tower' },
-        { model = 'v_res_pctower', label = 'Tower PC (rounded)', kind = 'tower' },
+        -- Tower PCs are left out: a computer is something with a screen. Take the dashes off to offer
+        -- them as well (or add one from the panel) - they have no screen, so they open fullscreen.
+        -- { model = 'prop_dyn_pc', label = 'Tower PC', kind = 'tower' },
+        -- { model = 'prop_dyn_pc_02', label = 'Tower PC (dark)', kind = 'tower' },
+        -- { model = 'prop_pc_01a', label = 'Tower PC (beige)', kind = 'tower' },
+        -- { model = 'prop_pc_02a', label = 'Tower PC (silver)', kind = 'tower' },
+        -- { model = 'hei_prop_heist_pc_01', label = 'Tower PC (black)', kind = 'tower' },
+        -- { model = 'v_res_pctower', label = 'Tower PC (rounded)', kind = 'tower' },
         { model = 'prop_laptop_01a', label = 'Laptop', kind = 'laptop' },
         { model = 'p_laptop_02_s', label = 'Laptop (white keys)', kind = 'laptop' },
         { model = 'prop_laptop_lester', label = 'Laptop (browsing)', kind = 'laptop' },

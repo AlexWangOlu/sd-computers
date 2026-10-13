@@ -24,6 +24,7 @@ export function normOverview(raw: unknown): Overview {
     // Unknown grade (should not happen) = manage nobody.
     myGrade: typeof o.myGrade === 'number' ? o.myGrade : -1,
     myCid: o.myCid ?? '',
+    hireById: o.hireById === true,
     counts: { total: num(o.counts?.total), online: num(o.counts?.online), onDuty: num(o.counts?.onDuty) },
     funds: {
       available: !!funds.available,

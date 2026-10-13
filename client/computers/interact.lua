@@ -136,3 +136,15 @@ if config.Debug and config.Interact and config.Interact.PosCommand then
         lib.notify({ description = line, type = 'success' })
     end, false)
 end
+
+-- Debug-only helper for configs/shared/cameras.lua: stand where a security camera goes, look the
+-- way it should look, and run the command - where the view is and the way it faces are copied as
+-- a ready-to-paste `coords = ..., rot = ..., fov = ...` line.
+if config.Debug and config.Interact and config.Interact.CamCommand then
+    RegisterCommand(config.Interact.CamCommand, function()
+        local at, rot = GetGameplayCamCoord(), GetGameplayCamRot(2)
+        local line = ('coords = vec3(%.2f, %.2f, %.2f), rot = vec3(%.1f, %.1f, %.1f), fov = %.1f,'):format(at.x, at.y, at.z, rot.x, rot.y, rot.z, GetGameplayCamFov())
+        lib.setClipboard(line)
+        lib.notify({ description = line, type = 'success' })
+    end, false)
+end

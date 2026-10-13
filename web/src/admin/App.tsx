@@ -9,12 +9,14 @@ import { PlacementHud, usePlacer } from '@/admin/features/admin/PlacementHud';
 import type { PlacerHud } from '@/admin/features/admin/PlacementHud';
 import { PickHud, usePicker } from '@/admin/features/admin/PickHud';
 import type { PickerHud } from '@/admin/features/admin/PickHud';
+import { ScreenHud, useScreener } from '@/admin/features/admin/ScreenHud';
+import type { ScreenerHud } from '@/admin/features/admin/ScreenHud';
 import type { Placed, Snapshot } from '@/admin/types';
 
 // Tell the page that holds us (web/src/AdminFrame.tsx) whether we want the mouse. The frame covers
 // the whole screen, so it must only take clicks while the panel is really up - never over the
-// computer's own screen, and never while the gizmo's or the picker's HUD (which are look-only) is
-// showing.
+// computer's own screen, and never while the gizmo's, the picker's or the screen tool's HUD (which
+// are look-only) is showing.
 const announce = (interactive: boolean) => {
   if (window.parent !== window) window.parent.postMessage({ source: 'sd-computers-admin', interactive }, '*');
 };
@@ -24,6 +26,7 @@ export default function App() {
   const hidden = useAdmin(s => s.hidden);
   const placing = usePlacer(s => s.hud.active);
   const picking = usePicker(s => s.hud.active);
+  const drawing = useScreener(s => s.hud.active);
   const refreshMs = useAdmin(s => s.snapshot?.refreshMs ?? 5000);
 
   useNuiEvent<{ snapshot: Snapshot }>('computers:admin:open', d => useAdmin.getState().openWith(d.snapshot));
@@ -33,6 +36,7 @@ export default function App() {
   useNuiEvent<{ strings?: Record<string, string> }>('computers:admin:locale', d => setLocale(d?.strings));
   useNuiEvent<PlacerHud>('computers:placer:hud', d => usePlacer.getState().set(d ?? { active: false }));
   useNuiEvent<PickerHud>('computers:picker:hud', d => usePicker.getState().set(d ?? { active: false }));
+  useNuiEvent<ScreenerHud>('computers:screener:hud', d => useScreener.getState().set(d ?? { active: false }));
 
   const visible = open && !hidden;
   useEffect(() => announce(visible), [visible]);
@@ -59,6 +63,7 @@ export default function App() {
 
   if (placing && !visible) return <PlacementHud />;
   if (picking && !visible) return <PickHud />;
+  if (drawing && !visible) return <ScreenHud />;
   if (!visible) return null;
   return <AdminPanel />;
 }

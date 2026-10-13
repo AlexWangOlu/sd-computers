@@ -197,6 +197,216 @@ const SettingsPx = ({ size = 32 }: IconProps) =>
     size,
   );
 
+/** Yellow folder with a sheet of paper standing in it - Files. */
+const FilesPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={1} y={2} w={4} h={1} c={P.k} />
+      <Px x={0} y={3} w={6} h={3} c={P.k} />
+      <Px x={12} y={4} w={3} h={1} c={P.k} />
+      <Px x={12} y={5} w={4} h={1} c={P.k} />
+      <Px x={1} y={3} w={4} h={3} c={P.Y} />
+      <Px x={13} y={5} w={2} h={1} c={P.Y} />
+      <Px x={5} y={0} w={8} h={6} c={P.k} />
+      <Px x={6} y={1} w={6} h={5} c={P.w} />
+      <Px x={7} y={2} w={4} h={1} c={P.d} />
+      <Px x={7} y={4} w={4} h={1} c={P.d} />
+      <Px x={0} y={6} w={16} h={10} c={P.k} />
+      <Px x={1} y={7} w={14} h={8} c={P.y} />
+      <Px x={14} y={7} w={1} h={8} c={P.Y} />
+      <Px x={1} y={14} w={14} h={1} c={P.Y} />
+    </>,
+    size,
+  );
+
+/** Hooded camera on a wall bracket, red light on - Security Cameras. */
+const CamerasPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={1} y={1} w={14} h={3} c={P.k} />
+      <Px x={2} y={2} w={12} h={1} c={P.d} />
+      <Px x={2} y={4} w={13} h={6} c={P.k} />
+      <Px x={3} y={4} w={8} h={5} c={P.w} />
+      <Px x={3} y={8} w={8} h={1} c={P.s} />
+      <Px x={12} y={4} w={2} h={2} c={P.c} />
+      <Px x={12} y={6} w={2} h={3} c={P.t} />
+      <Px x={4} y={6} w={2} h={2} c={P.R} />
+      <Px x={6} y={10} w={4} h={5} c={P.k} />
+      <Px x={7} y={10} w={2} h={4} c={P.d} />
+      <Px x={0} y={11} w={3} h={5} c={P.k} />
+      <Px x={1} y={12} w={1} h={3} c={P.d} />
+      <Px x={2} y={12} w={5} h={3} c={P.k} />
+      <Px x={2} y={13} w={7} h={1} c={P.d} />
+    </>,
+    size,
+  );
+
+/** Cork board in a wooden frame with three pinned notes - Company Board. */
+const BoardPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={0} y={1} w={16} h={14} c={P.k} />
+      <Px x={1} y={2} w={14} h={12} c={P.o} />
+      <Px x={2} y={3} w={12} h={10} c={P.O} />
+      <Px x={3} y={4} w={4} h={6} c={P.w} />
+      <Px x={4} y={6} w={2} h={1} c={P.d} />
+      <Px x={4} y={8} w={2} h={1} c={P.d} />
+      <Px x={8} y={4} w={5} h={4} c={P.y} />
+      <Px x={8} y={9} w={5} h={3} c={P.l} />
+      <Px x={4} y={4} w={2} h={1} c={P.r} />
+      <Px x={10} y={4} w={1} h={1} c={P.r} />
+      <Px x={10} y={9} w={1} h={1} c={P.r} />
+    </>,
+    size,
+  );
+
+/** Stone bank front: a pediment with a gold coin over four columns - Bank. */
+const BankPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={7} y={0} w={2} h={1} c={P.k} />
+      <Px x={5} y={1} w={6} h={1} c={P.k} />
+      <Px x={3} y={2} w={10} h={1} c={P.k} />
+      <Px x={1} y={3} w={14} h={1} c={P.k} />
+      <Px x={0} y={4} w={16} h={12} c={P.k} />
+      <Px x={7} y={1} w={2} h={1} c={P.s} />
+      <Px x={5} y={2} w={6} h={1} c={P.s} />
+      <Px x={3} y={3} w={10} h={1} c={P.s} />
+      <Px x={7} y={2} w={2} h={2} c={P.y} />
+      <Px x={1} y={5} w={14} h={1} c={P.w} />
+      <Px x={1} y={7} w={14} h={5} c={P.n} />
+      {[1, 5, 9, 13].map(x => (
+        <g key={x}>
+          <Px x={x} y={7} h={5} c={P.w} />
+          <Px x={x + 1} y={7} h={5} c={P.s} />
+        </g>
+      ))}
+      <Px x={1} y={13} w={14} h={1} c={P.w} />
+      <Px x={1} y={14} w={14} h={1} c={P.s} />
+    </>,
+    size,
+  );
+
+/** Framed snapshot: sun, sky and two hills - Photos. */
+const PhotosPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={0} y={1} w={16} h={14} c={P.k} />
+      <Px x={1} y={2} w={14} h={12} c={P.w} />
+      <Px x={2} y={3} w={12} h={10} c={P.c} />
+      <Px x={10} y={4} w={2} h={2} c={P.y} />
+      <Px x={5} y={6} w={2} h={1} c={P.g} />
+      <Px x={4} y={7} w={4} h={1} c={P.g} />
+      <Px x={3} y={8} w={6} h={1} c={P.g} />
+      <Px x={2} y={9} w={8} h={4} c={P.g} />
+      <Px x={12} y={8} w={1} h={1} c={P.G} />
+      <Px x={11} y={9} w={3} h={1} c={P.G} />
+      <Px x={10} y={10} w={4} h={1} c={P.G} />
+      <Px x={8} y={11} w={6} h={1} c={P.G} />
+      <Px x={6} y={12} w={8} h={1} c={P.G} />
+    </>,
+    size,
+  );
+
+/** Red address book with index tabs and a figure on the cover - Contacts. */
+const ContactsPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={12} y={2} w={3} h={10} c={P.k} />
+      <Px x={12} y={3} w={2} h={2} c={P.y} />
+      <Px x={12} y={6} w={2} h={2} c={P.c} />
+      <Px x={12} y={9} w={2} h={2} c={P.G} />
+      <Px x={0} y={0} w={12} h={16} c={P.k} />
+      <Px x={1} y={1} w={10} h={14} c={P.R} />
+      <Px x={1} y={1} w={2} h={14} c={P.r} />
+      <Px x={6} y={3} w={2} h={4} c={P.w} />
+      <Px x={5} y={4} w={4} h={2} c={P.w} />
+      <Px x={5} y={8} w={4} h={1} c={P.w} />
+      <Px x={4} y={9} w={6} h={3} c={P.w} />
+    </>,
+    size,
+  );
+
+/** A handset standing in front of a monitor, two joined links on its screen - Phone Link. */
+const PhoneLinkPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={0} y={1} w={12} h={9} c={P.k} />
+      <Px x={1} y={2} w={10} h={7} c={P.s} />
+      <Px x={2} y={3} w={8} h={5} c={P.t} />
+      <Px x={5} y={10} w={2} h={2} c={P.d} />
+      <Px x={2} y={12} w={7} h={2} c={P.k} />
+      <Px x={3} y={12} w={5} h={1} c={P.s} />
+      <Px x={9} y={4} w={7} h={12} c={P.k} />
+      <Px x={10} y={5} w={5} h={9} c={P.w} />
+      <Px x={12} y={14} w={1} h={1} c={P.s} />
+      <Px x={11} y={7} w={2} h={2} c={P.n} />
+      <Px x={12} y={9} w={2} h={2} c={P.g} />
+      <Px x={12} y={8} w={1} h={1} c={P.w} />
+    </>,
+    size,
+  );
+
+/** Wireframe globe: blue sphere ruled with meridians and parallels - Browser. */
+const BrowserPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={5} y={0} w={5} h={15} c={P.k} />
+      <Px x={3} y={1} w={9} h={13} c={P.k} />
+      <Px x={2} y={2} w={11} h={11} c={P.k} />
+      <Px x={1} y={3} w={13} h={9} c={P.k} />
+      <Px x={0} y={5} w={15} h={5} c={P.k} />
+      <Px x={5} y={1} w={5} h={13} c={P.b} />
+      <Px x={3} y={2} w={9} h={11} c={P.b} />
+      <Px x={2} y={3} w={11} h={9} c={P.b} />
+      <Px x={1} y={5} w={13} h={5} c={P.b} />
+      <Px x={1} y={7} w={13} h={1} c={P.c} />
+      <Px x={2} y={4} w={11} h={1} c={P.c} />
+      <Px x={2} y={10} w={11} h={1} c={P.c} />
+      <Px x={7} y={1} w={1} h={13} c={P.c} />
+      <Px x={5} y={2} w={1} h={1} c={P.c} />
+      <Px x={4} y={3} w={1} h={2} c={P.c} />
+      <Px x={3} y={5} w={1} h={5} c={P.c} />
+      <Px x={4} y={10} w={1} h={2} c={P.c} />
+      <Px x={5} y={12} w={1} h={1} c={P.c} />
+      <Px x={9} y={2} w={1} h={1} c={P.c} />
+      <Px x={10} y={3} w={1} h={2} c={P.c} />
+      <Px x={11} y={5} w={1} h={5} c={P.c} />
+      <Px x={10} y={10} w={1} h={2} c={P.c} />
+      <Px x={9} y={12} w={1} h={1} c={P.c} />
+    </>,
+    size,
+  );
+
+/** Navy two-grip gamepad: cross pad and two buttons - Games. */
+const GamesPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={2} y={3} w={12} h={1} c={P.k} />
+      <Px x={1} y={4} w={14} h={1} c={P.k} />
+      <Px x={0} y={5} w={16} h={5} c={P.k} />
+      <Px x={0} y={10} w={6} h={2} c={P.k} />
+      <Px x={10} y={10} w={6} h={2} c={P.k} />
+      <Px x={1} y={12} w={4} h={1} c={P.k} />
+      <Px x={11} y={12} w={4} h={1} c={P.k} />
+      <Px x={2} y={13} w={2} h={1} c={P.k} />
+      <Px x={12} y={13} w={2} h={1} c={P.k} />
+      <Px x={2} y={4} w={12} h={1} c={P.b} />
+      <Px x={1} y={5} w={14} h={4} c={P.n} />
+      <Px x={1} y={9} w={5} h={1} c={P.n} />
+      <Px x={10} y={9} w={5} h={1} c={P.n} />
+      <Px x={1} y={10} w={4} h={2} c={P.n} />
+      <Px x={11} y={10} w={4} h={2} c={P.n} />
+      <Px x={2} y={12} w={2} h={1} c={P.n} />
+      <Px x={12} y={12} w={2} h={1} c={P.n} />
+      <Px x={3} y={5} w={1} h={3} c={P.w} />
+      <Px x={2} y={6} w={3} h={1} c={P.w} />
+      <Px x={12} y={5} w={2} h={2} c={P.y} />
+      <Px x={10} y={7} w={2} h={2} c={P.R} />
+    </>,
+    size,
+  );
+
 /** Green shield with a keyhole - the hack runner. */
 const HackPx = ({ size = 32 }: IconProps) =>
   grid(
@@ -242,6 +452,15 @@ const APP_PX: Record<WinApp | 'system', (p: IconProps) => ReactElement> = {
   settings: SettingsPx,
   messages: MessagesPx,
   notes: NotesPx,
+  files: FilesPx,
+  cameras: CamerasPx,
+  board: BoardPx,
+  bank: BankPx,
+  photos: PhotosPx,
+  contacts: ContactsPx,
+  phonelink: PhoneLinkPx,
+  browser: BrowserPx,
+  games: GamesPx,
   hack: HackPx,
   system: SystemPx,
 };

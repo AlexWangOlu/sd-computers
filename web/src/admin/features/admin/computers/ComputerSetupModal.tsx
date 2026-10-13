@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { Check, Crosshair, Laptop, Monitor, PcCase, Plus, X } from 'lucide-react';
+import { Check, Crosshair, Laptop, Monitor, PcCase, Plus, TriangleAlert, X } from 'lucide-react';
 import { Hint, Modal, ModalActions } from '@/admin/components/shared';
 import { ScrollArea } from '@/admin/components/ScrollArea';
+import { Combobox, matches } from '@/admin/components/Combobox';
+import type { ComboOption } from '@/admin/components/Combobox';
 import { useAdmin } from '@/admin/store/admin';
 import { act, place } from '@/admin/nui/api';
 import { styleLike, t, tOr } from '@/admin/i18n';
@@ -29,9 +31,15 @@ export const PropImage = ({ prop, className = '', style, iconSize = 22 }: { prop
 const segment: CSSProperties = { flex: '1 1 45%', height: 36, padding: '0 8px', fontSize: 11.5, whiteSpace: 'nowrap', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: 1.2 };
 const segmentHint: CSSProperties = { fontSize: 10, fontWeight: 400, opacity: 0.7 };
 
+// The Business Manager on a computer: none, for whoever signs in as a boss (their own job), or for
+// the boss of one job.
+type BossMode = 'off' | 'any' | 'job';
+const BOSS_MODES: BossMode[] = ['off', 'any', 'job'];
+
 // Placing a computer, or changing one that is placed: the prop it stands as (every prop on offer,
-// pictured), the look it opens in, its name, and (optionally) the jobs that may use it. Placing
-// hands over to the gizmo; the server checks every field again either way.
+// pictured), the look it opens in, its name, (optionally) the jobs that may use it, and whether a
+// boss gets the Business Manager on it. Placing hands over to the gizmo; the server checks every
+// field again either way.
 // With `world` it makes a computer of a prop the game already has instead: there is no prop to
 // choose (the admin aims at it next), and one made that way keeps the prop it is.
 export function ComputerSetupModal({ computer, initialStyle, world = false, onClose }: { computer?: Computer; initialStyle?: string; world?: boolean; onClose(): void }) {
@@ -43,21 +51,64 @@ export function ComputerSetupModal({ computer, initialStyle, world = false, onCl
   const [style, setStyle] = useState(computer ? (computer.styleSet ? computer.style : '') : (initialStyle ?? ''));
   const [label, setLabel] = useState(computer?.label ?? t('computers.default_label'));
   const [jobs, setJobs] = useState(Object.entries(computer?.groups ?? {}).map(([name, grade]) => ({ name, grade })));
+  // ('*' is how the server says "whatever job the signed-in player has")
+  const [bossMode, setBossMode] = useState<BossMode>(!computer?.boss ? 'off' : computer.boss === '*' ? 'any' : 'job');
+  const [bossJob, setBossJob] = useState(computer?.boss && computer.boss !== '*' ? computer.boss : '');
   const [addingProp, setAddingProp] = useState(false);
 
   // (a picked prop need not be on the placing list: any model known as a computer can be picked)
   const picked = snapshot.props.find(p => p.model === prop) ?? (existing && computer?.prop ? { model: computer.prop, label: computer.prop } : undefined);
   const shown = snapshot.styles.find(s => s.key === (style || snapshot.defaultStyle)) ?? snapshot.styles[0];
   const name = label.trim();
+
+  const canBoss = snapshot.boss.available;
+  const bossDef = snapshot.jobs.find(j => j.name === bossJob);
+  const bossLabel = bossDef?.label ?? bossJob;
+  // The job is typed as the framework spells it, like a job of the lock - or picked from the server's own, listed under the field.
+  const jobOptions: ComboOption[] = snapshot.jobs.map(j => ({ value: j.name, label: j.label, hint: j.boss ? j.name : `${j.name} · ${t('computers.boss_no_rank')}` }));
+  // What would keep that job's boss from ever getting it here, the most basic first: the server has no
+  // such job, none of its grades is a boss, or the job lock leaves it out. Said, not refused: the job
+  // may be on its way.
+  const bossIssue =
+    !canBoss || bossMode !== 'job' || !bossJob ? null : !bossDef ? 'unknown' : !bossDef.boss ? 'no_rank' : jobs.length > 0 && !jobs.some(j => j.name === bossJob) ? 'locked' : null;
+  // (not a warning yet while what is typed could still become one of the server's jobs: that is just typing)
+  const bossTyping = bossIssue === 'unknown' && jobOptions.some(o => matches(o, bossJob));
+
   const valid =
     name.length > 0 &&
     (existing || !!picked) &&
     jobs.every(j => /^[\w-]{1,48}$/.test(j.name) && Number.isInteger(j.grade) && j.grade >= 0 && j.grade <= 100) &&
-    new Set(jobs.map(j => j.name)).size === jobs.length;
+    new Set(jobs.map(j => j.name)).size === jobs.length &&
+    (bossMode !== 'job' || bossJob !== '');
+
+  // "One job" starts on the job the computer is locked to, when that is one job a boss can manage.
+  function pickBossMode(mode: BossMode) {
+    setBossMode(mode);
+    if (mode !== 'job' || bossJob) return;
+    const locked = snapshot.jobs.filter(j => j.boss && jobs.some(l => l.name === j.name));
+    if (locked.length === 1) setBossJob(locked[0].name);
+  }
+
+  // One plain sentence for what the choice does - or, first, for what is in its way.
+  function bossHint(): string {
+    if (!canBoss) return t(`computers.boss_unavailable_${snapshot.boss.reason ?? 'disabled'}`);
+    if (bossMode === 'off') return t('computers.boss_off_hint');
+    if (bossMode === 'any') return t(jobs.length ? 'computers.boss_any_locked_hint' : 'computers.boss_any_hint');
+    if (!bossJob) return t('computers.boss_job_none');
+    if (bossIssue === 'unknown') return t(bossTyping ? 'computers.boss_typing' : 'computers.boss_unknown', bossJob);
+    if (bossIssue === 'no_rank') return t('computers.boss_no_rank_hint', bossLabel);
+    return t(bossIssue === 'locked' ? 'computers.boss_locked_out' : 'computers.boss_job_hint', bossLabel);
+  }
 
   async function save() {
     if (!valid || busy) return;
-    const payload = { label: name, prop, style: style || null, jobs: jobs.length ? Object.fromEntries(jobs.map(j => [j.name, j.grade])) : null };
+    const payload = {
+      label: name,
+      prop,
+      style: style || null,
+      jobs: jobs.length ? Object.fromEntries(jobs.map(j => [j.name, j.grade])) : null,
+      boss: bossMode === 'off' ? null : bossMode === 'any' ? '*' : bossJob,
+    };
     if (!computer) {
       onClose();
       await place(world ? 'pickcomputer' : 'placecomputer', payload);
@@ -213,6 +264,41 @@ export function ComputerSetupModal({ computer, initialStyle, world = false, onCl
               )}
             </ScrollArea>
           </div>
+        </div>
+
+        {/* The Business Manager: who gets it here, and a sentence saying what that means. One fixed height again. */}
+        <div className="mt-4" style={{ height: 112 }}>
+          <span className="sc-label block mb-1.5">{t('computers.boss')}</span>
+          <div className="flex items-center gap-2.5">
+            <div className="sc-segment" style={{ display: 'flex', flex: '0 0 420px', opacity: canBoss ? undefined : 0.5 }}>
+              {BOSS_MODES.map(mode => (
+                <button key={mode} type="button" style={{ ...segment, flex: '1 1 0' }} data-on={bossMode === mode} aria-pressed={bossMode === mode} disabled={!canBoss} onClick={() => pickBossMode(mode)}>
+                  {t(`computers.boss_${mode}`)}
+                  <span style={segmentHint}>{t(`computers.boss_${mode}_sub`)}</span>
+                </button>
+              ))}
+            </div>
+            {/* (there only while it is one job's: nothing to choose otherwise. A job name takes letters, digits, - and _) */}
+            <div style={{ width: 240, visibility: bossMode === 'job' ? 'visible' : 'hidden' }}>
+              <Combobox value={bossJob} options={jobOptions} onChange={v => setBossJob(v.replace(/[^\w-]/g, ''))} placeholder={t('computers.boss_pick')} maxLength={48} disabled={!canBoss} ariaLabel={t('computers.job_name')} />
+            </div>
+          </div>
+          <Hint className="mt-2.5">
+            {bossIssue && !bossTyping ? (
+              <span style={{ color: 'var(--warn)' }}>
+                <TriangleAlert size={12} className="inline-block mr-1" style={{ verticalAlign: -2 }} />
+                {bossHint()}
+                {/* (the way out, in one click: the lock wants the job as the framework spells it) */}
+                {bossIssue === 'locked' && jobs.length < 16 && (
+                  <button type="button" className="ml-1.5 p-0 bg-transparent border-0 text-[11.5px] font-medium" style={{ color: 'var(--text-1)' }} onClick={() => setJobs([...jobs, { name: bossJob, grade: 0 }])}>
+                    {t('computers.boss_locked_fix', bossJob)}
+                  </button>
+                )}
+              </span>
+            ) : (
+              bossHint()
+            )}
+          </Hint>
         </div>
       </ScrollArea>
       <ModalActions>

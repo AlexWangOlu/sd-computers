@@ -10,11 +10,13 @@ lib.locale(config.Locale)
 require 'client.computers.state'
 require 'client.admin.placer'       -- the placement gizmo (the same creator sd-bombs and sd-scooters use)
 require 'client.admin.picker'       -- aiming at a prop the game already has, to make it a computer
+require 'client.admin.screener'     -- drawing where the screen is on a prop (the admin panel's screen tool)
 require 'client.computers.auto'     -- which props in the world are a computer on their own right now (the admin panel's switches)
 require 'client.computers.placed'   -- computers placed or picked from the admin panel: their props + target option
 require 'client.computers.interact' -- target options on every configured location / prop model
 require 'client.computers.nui'      -- NUI <-> server passthroughs, mail push, hire prompt, alerts
 require 'client.computers.hacks'    -- StartHack export (standalone hack.exe window)
+require 'client.computers.cameras'  -- the Security Cameras app's picture: the game's view put where a camera is
 require 'client.admin.panel'        -- the /computeradmin panel: NUI glue + placing/moving through the gizmo
 require 'client.screens.world'      -- the screen drawn on every computer prop: lock face, or the session's live copy
 

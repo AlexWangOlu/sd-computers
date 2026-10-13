@@ -4,6 +4,8 @@ local log = require 'shared.log'
 local placer = require 'client.admin.placer'
 ---@type table Prop picker (client.admin.picker): aiming at a prop the game already has.
 local picker = require 'client.admin.picker'
+---@type table Screen tool (client.admin.screener): drawing where the screen is on a prop.
+local screener = require 'client.admin.screener'
 ---@type table Client computer state (client.computers.state): whether a computer is open.
 local state = require 'client.computers.state'
 ---@type table Computers made from this panel (client.computers.placed): which props are one already.
@@ -13,9 +15,9 @@ local placedProps = require 'client.computers.placed'
 local props = require 'shared.props'
 
 -- The /computeradmin panel's client side: opens the NUI page with a snapshot, relays its actions
--- to the server, and runs the placement gizmo (or the prop picker) with the panel hidden whenever
--- a computer is placed, moved or picked. Built the way sd-bombs builds its panel, so both behave
--- the same.
+-- to the server, and runs the placement gizmo (or the prop picker, or the screen tool) with the
+-- panel hidden whenever a computer is placed, moved or picked, or a prop's screen is drawn. Built
+-- the way sd-bombs builds its panel, so both behave the same.
 
 ---@type boolean Whether the panel is open. Hidden-for-placement still counts as open: focus comes
 ---back the moment the placer returns.
@@ -39,9 +41,10 @@ local function push(action, data)
     SendNUIMessage({ action = action, data = data })
 end
 
--- The gizmo and the picker draw their HUDs in the admin page.
+-- The gizmo, the picker and the screen tool draw their HUDs in the admin page.
 placer.setHud(function(action, data) push(action, data) end)
 picker.setHud(function(action, data) push(action, data) end)
+screener.setHud(function(action, data) push(action, data) end)
 
 ---Take focus and mount the panel with a fresh snapshot. Strings first: the panel reads them as
 ---it renders.
@@ -77,7 +80,7 @@ end
 ---Server push: open the admin panel (/computeradmin). Not while sitting at a computer: the two
 ---share the resource's one NUI page, and its focus.
 RegisterNetEvent('sd-computers:client:openAdmin', function()
-    if open or placer.isActive() or picker.isActive() then return end
+    if open or placer.isActive() or picker.isActive() or screener.isActive() then return end
     if state.isOpen() then
         lib.notify({ title = locale('admin.title'), description = locale('admin.close_computer_first'), type = 'error' })
         return
@@ -110,6 +113,7 @@ local PASS = {
     setautostyle = 'setAutoStyle',
     setautomodelstyle = 'setAutoModelStyle',
     removeprop = 'removeProp',
+    resetscreen = 'resetScreen',
 }
 
 for nuiVerb, serverVerb in pairs(PASS) do
@@ -167,20 +171,20 @@ local function placeAndCreate(model, action, build, from)
     if open then showAfterPlacement(placed) end
 end
 
----NUI callback: place a computer, set up in the panel: its prop, name, style and job lock. Replies
----immediately; the panel waits for computers:admin:show. The server checks all of it again.
+---NUI callback: place a computer, set up in the panel: its prop, name, style, job lock and Business
+---Manager. Replies immediately; the panel waits for computers:admin:show. The server checks all of it again.
 RegisterNUICallback('computers:admin:placecomputer', function(data, cb)
     cb({ ok = true })
     placeAndCreate(tostring(data.prop), 'placed', function(spot)
         return 'createComputer', {
             x = spot.x, y = spot.y, z = spot.z, heading = spot.heading,
-            label = data.label, prop = data.prop, style = data.style, jobs = data.jobs,
+            label = data.label, prop = data.prop, style = data.style, jobs = data.jobs, boss = data.boss,
         }
     end)
 end)
 
----NUI callback: make a prop the game already has a computer, set up in the panel: its name, style
----and job lock. The admin aims at the prop with the panel hidden; nothing is spawned. Replies
+---NUI callback: make a prop the game already has a computer, set up in the panel: its name, style,
+---job lock and Business Manager. The admin aims at the prop with the panel hidden; nothing is spawned. Replies
 ---immediately; the panel waits for computers:admin:show. The server checks all of it again.
 RegisterNUICallback('computers:admin:pickcomputer', function(data, cb)
     cb({ ok = true })
@@ -190,7 +194,7 @@ RegisterNUICallback('computers:admin:pickcomputer', function(data, cb)
     if spot then
         local reply = request('createComputer', {
             world = true, prop = spot.model, x = spot.x, y = spot.y, z = spot.z, heading = spot.heading,
-            label = data.label, style = data.style, jobs = data.jobs,
+            label = data.label, style = data.style, jobs = data.jobs, boss = data.boss,
         })
         picked = { what = 'computer', action = 'picked', success = reply.success, message = (not reply.success) and reply.message or nil }
     else
@@ -213,6 +217,25 @@ RegisterNUICallback('computers:admin:movecomputer', function(data, cb)
     end, { x = c.coords.x, y = c.coords.y, z = c.coords.z, heading = c.coords.w })
 end)
 
+---NUI callback: draw where the screen is on a prop, with the screen tool and the panel hidden. What
+---comes back is the rectangle; the server keeps it for every prop of that model. Replies
+---immediately; the panel waits for computers:admin:show.
+RegisterNUICallback('computers:admin:setupscreen', function(data, cb)
+    cb({ ok = true })
+    hideForPlacement()
+    local model = tostring(data.model)
+    local spec, err = screener.start(model, propLabel(model))
+    local drawn
+    if spec then
+        local reply = request('setScreen', { model = model, x = spec.x, y = spec.y, z = spec.z, w = spec.w, h = spec.h, tilt = spec.tilt, heading = spec.heading })
+        drawn = { what = 'screen', action = 'saved', success = reply.success, message = (not reply.success) and reply.message or nil }
+    else
+        drawn = { what = 'screen', action = 'saved', success = false, cancelled = err == nil, message = err and locale(err) or nil }
+    end
+    log.debug('admin', 'screen of %s: %s', model, drawn.success and 'saved' or tostring(drawn.message or 'cancelled'))
+    if open then showAfterPlacement(drawn) end
+end)
+
 ---Give focus back when this resource stops (the placer cancels itself).
 ---@param resource string stopping resource name
 AddEventHandler('onResourceStop', function(resource)
@@ -223,8 +246,8 @@ end)
 ---@type table Admin panel module; the table returned at end of file.
 local panel = {}
 
----Whether the admin panel is up (the gizmo or the picker running counts).
+---Whether the admin panel is up (the gizmo, the picker or the screen tool running counts).
 ---@return boolean
-function panel.isOpen() return open or placer.isActive() or picker.isActive() end
+function panel.isOpen() return open or placer.isActive() or picker.isActive() or screener.isActive() end
 
 return panel

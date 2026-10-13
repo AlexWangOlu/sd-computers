@@ -42,6 +42,7 @@ local INSET = 0.0035
 ---@field br vector3
 ---@field radar boolean the radar was showing and has been put away
 ---@field lit boolean the camera has arrived: the screen is the desktop's now
+---@field away boolean|nil the display is showing something else for now (a security camera's picture)
 
 ---@type ScreenView|nil The view in use (nil when the player is not at a screen).
 local current
@@ -54,13 +55,19 @@ local function hold(v)
     CreateThread(function()
         local hideAt = GetGameTimer() + math.floor(EASE * 0.6)
         while current == v do
-            if GetGameTimer() >= hideAt then SetEntityLocallyInvisible(cache.ped) end
-            if v.lit then
-                local tl, tr, bl, br = v.tl, v.tr, v.bl, v.br
-                DrawPoly(bl.x, bl.y, bl.z, br.x, br.y, br.z, tr.x, tr.y, tr.z, 0, 0, 0, 255)
-                DrawPoly(bl.x, bl.y, bl.z, tr.x, tr.y, tr.z, tl.x, tl.y, tl.z, 0, 0, 0, 255)
+            if v.away then
+                -- (the display shows a security camera's picture: the room is as anyone sees it -
+                -- that camera may well be looking at this very desk)
+                Wait(100)
+            else
+                if GetGameTimer() >= hideAt then SetEntityLocallyInvisible(cache.ped) end
+                if v.lit then
+                    local tl, tr, bl, br = v.tl, v.tr, v.bl, v.br
+                    DrawPoly(bl.x, bl.y, bl.z, br.x, br.y, br.z, tr.x, tr.y, tr.z, 0, 0, 0, 255)
+                    DrawPoly(bl.x, bl.y, bl.z, tr.x, tr.y, tr.z, tl.x, tl.y, tl.z, 0, 0, 0, 255)
+                end
+                Wait(0)
             end
-            Wait(0)
         end
     end)
 end
@@ -123,11 +130,34 @@ function view.leave()
     end)
 end
 
+---Let the display show something else for a while without leaving the screen: the Security
+---Cameras app putting a camera's picture up (client/computers/cameras.lua). The camera at the
+---screen is kept, switched off, for view.resume() to come back to.
+---@return boolean paused false when the player is not at a screen (their computer is fullscreen)
+function view.pause()
+    local v = current
+    if not v then return false end
+    v.away = true
+    SetCamActive(v.cam, false)
+    return true
+end
+
+---Come back to the screen after view.pause().
+---@return boolean resumed false when there is no screen to come back to
+function view.resume()
+    local v = current
+    if not v or not v.away then return false end
+    v.away = false
+    SetCamActive(v.cam, true)
+    RenderScriptCams(true, false, 0, true, true)
+    return true
+end
+
 ---The prop whose screen the player's desktop is on right now (nil when none) - its picture in the
 ---world is left out while it is (client/screens/world.lua).
 ---@return integer|nil entity
 function view.entity()
-    return current and current.lit and current.entity or nil
+    return current and current.lit and not current.away and current.entity or nil
 end
 
 ---Drop the camera at once (resource stop).

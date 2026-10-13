@@ -16,8 +16,9 @@ local KINDS = { monitor = true, tower = true, laptop = true }
 -- kind of thing it is. From then on it is a prop like the ones in configs/shared/admin.lua: a
 -- computer can be placed as it, a prop of it can be picked from the world, and the Automatic tab
 -- offers it to every model computer. Kept in the database (computers_settings) and published, so
--- every client knows them. A prop added this way has a screen drawn on it only when
--- configs/shared/screens.lua has a rectangle for its model; otherwise it opens fullscreen.
+-- every client knows them. A prop added this way has a screen drawn on it once an admin has drawn
+-- where it is (the panel's screen tool, server/computers/screens.lua) or configs/shared/screens.lua
+-- has a rectangle for its model; until then it opens fullscreen.
 
 ---@type table Custom-prop module; the table returned at end of file.
 local custom = {}

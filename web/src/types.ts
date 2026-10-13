@@ -1,8 +1,32 @@
 // Contracts with the Lua side. Every shape here mirrors a table built in server/computers/*.lua -
 // change one, change both.
 
-/** 'messages' and 'notes' are the phone apps: only installed while sd-phone is linked (server/computers/phone.lua). */
-export type AppId = 'mail' | 'logs' | 'cmd' | 'boss' | 'notepad' | 'calculator' | 'settings' | 'messages' | 'notes';
+/**
+ * 'messages', 'notes', 'photos' and 'contacts' are the phone apps: only installed while sd-phone is
+ * linked (server/computers/phone.lua) and, where it asks for the code, once the character has linked
+ * their phone to the machine in 'phonelink' - the app that is there whenever sd-phone is. 'boss',
+ * 'board' and 'cameras' are installed per player: for a boss, for someone with a job, and for
+ * someone allowed to watch at least one camera.
+ */
+export type AppId =
+  | 'mail'
+  | 'logs'
+  | 'cmd'
+  | 'boss'
+  | 'notepad'
+  | 'calculator'
+  | 'settings'
+  | 'messages'
+  | 'notes'
+  | 'files'
+  | 'cameras'
+  | 'board'
+  | 'bank'
+  | 'photos'
+  | 'contacts'
+  | 'phonelink'
+  | 'browser'
+  | 'games';
 
 export interface AppDef {
   id: AppId;

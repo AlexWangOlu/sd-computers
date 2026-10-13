@@ -37,4 +37,7 @@ return {
     -- Debug-only helper (config.Debug = true): `/computer_pos` copies the coords you're aiming at
     -- to the clipboard as a ready-to-paste `coords = vec3(...)` line for computers.lua.
     PosCommand = 'computer_pos',
+    -- The same for a security camera (configs/shared/cameras.lua): `/computer_cam` copies where
+    -- your view is and the way it faces as a ready-to-paste `coords = ..., rot = ..., fov = ...` line.
+    CamCommand = 'computer_cam',
 }

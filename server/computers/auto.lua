@@ -16,7 +16,8 @@ local SETTING = 'auto'
 -- as the admin panel has them: all of them on or off, each one on or off, prop by prop, and the
 -- style each opens in (one for the computer, and one of its own for any prop of it). What the
 -- panel changes is kept in the database and wins over the file; a prop nobody touched follows the
--- file, so adding a model there still works.
+-- file, so adding a model there still works. All of them start off (config.Admin.Automatic): out of
+-- the box a computer is one that was placed or picked, until the panel's switch says otherwise.
 --
 -- This decides which props OFFER a computer. The props are the game's own and not networked, so
 -- the server never knows which model a player is standing at: an entry that is switched off is
@@ -25,8 +26,10 @@ local SETTING = 'auto'
 ---@type table Automatic-computer module; the table returned at end of file.
 local auto = {}
 
+---@type boolean Where the switch for all of them starts: config.Admin.Automatic.
+local DEFAULT = (config.Admin or {}).Automatic == true
 ---@type boolean Whether any prop in the world is a computer on its own.
-local master = true
+local master = DEFAULT
 ---@class AutoChoice what the panel chose for one model computer
 ---@field enabled boolean|nil false = switched off
 ---@field models table<string, boolean> a prop ticked or unticked against what the file says
@@ -142,8 +145,12 @@ local function publish()
 end
 
 local function save()
+    -- (the switch for all of them is only kept where the panel moved it away from the file's: left
+    -- where the file has it, it goes on following the file)
+    local enabled
+    if master ~= DEFAULT then enabled = master end
     MySQL.prepare.await('INSERT INTO computers_settings (name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)',
-        { SETTING, json.encode({ enabled = master, computers = choices }) })
+        { SETTING, json.encode({ enabled = enabled, computers = choices }) })
 end
 
 ---@param id string
@@ -158,7 +165,7 @@ function auto.load()
     local raw = MySQL.scalar.await('SELECT value FROM computers_settings WHERE name = ?', { SETTING })
     local saved = type(raw) == 'string' and json.decode(raw) or nil
     if type(saved) == 'table' then
-        master = saved.enabled ~= false
+        if type(saved.enabled) == 'boolean' then master = saved.enabled end
         -- (only what still means something: a computer, a prop or a style the config no longer has is dropped)
         for id, c in pairs(type(saved.computers) == 'table' and saved.computers or {}) do
             local def = defOf(id)
@@ -178,7 +185,7 @@ function auto.load()
         end
     end
     publish()
-    if not master then log.info('auto', 'props in the world are not computers (switched off in the admin panel)') end
+    if not master then log.info('auto', 'props in the world are not computers on their own (the Automatic tab of the admin panel switches that on)') end
 end
 
 ---Publish again: the props a computer can be made of changed (one was added or removed in the panel).

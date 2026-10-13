@@ -22,20 +22,34 @@ return {
         notepad = { label = 'Notepad', size = { w = 820, h = 560 } },
         calculator = { label = 'Calculator', size = { w = 340, h = 520 } },
         settings = { label = 'Settings', size = { w = 900, h = 600 } },
+        files = { label = 'Files', size = { w = 980, h = 620 } }, -- the character's documents (configs/shared/files.lua)
+        browser = { label = 'Browser', size = { w = 1100, h = 700 } }, -- the pages in configs/shared/browser.lua
+        bank = { label = 'Bank', size = { w = 940, h = 640 } }, -- balance and statement (configs/shared/bank.lua)
+        games = { label = 'Games', size = { w = 860, h = 640 } },
+        -- For the player they are for, on every computer (list them in a computer's `apps` to place them):
+        --   board   - a job's announcements and who is on duty: anyone with a job (configs/shared/board.lua)
+        --   cameras - the cameras that player may watch from that computer (configs/shared/cameras.lua)
+        board = { label = 'Company Board', size = { w = 940, h = 620 } },
+        cameras = { label = 'Security Cameras', size = { w = 900, h = 600 } },
         -- Phone apps: only installed while sd-phone is linked (configs/shared/phone.lua), on every
         -- computer that doesn't set phone = false. List them in a computer's `apps` to place them.
+        -- With Phone.RequireLink they wait for Phone Link: the app that links a character's phone
+        -- to that machine with a code sent to the phone. It is there whenever sd-phone is.
         messages = { label = 'Messages', size = { w = 920, h = 620 } },
         notes = { label = 'Notes', size = { w = 860, h = 580 } },
+        photos = { label = 'Photos', size = { w = 980, h = 640 } },
+        contacts = { label = 'Contacts', size = { w = 860, h = 600 } },
+        phonelink = { label = 'Phone Link', size = { w = 620, h = 700 } },
     },
 
     -- Apps a computer gets when its configs/shared/computers.lua entry has no `apps` list.
-    DefaultApps = { 'mail', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
+    DefaultApps = { 'mail', 'files', 'browser', 'bank', 'logs', 'cmd', 'notepad', 'calculator', 'games', 'settings' },
 
     -- Taskbar (modern) / dock (mac) pins, in order - only the apps the computer actually has.
-    Pinned = { 'mail', 'messages', 'boss', 'cmd', 'logs', 'notepad' },
+    Pinned = { 'mail', 'messages', 'browser', 'files', 'boss', 'cmd', 'logs', 'notepad' },
 
     -- Desktop icons, in order (again filtered to the computer's apps).
-    DesktopIcons = { 'mail', 'messages', 'notes', 'boss', 'logs', 'cmd', 'notepad', 'calculator', 'settings' },
+    DesktopIcons = { 'mail', 'messages', 'notes', 'files', 'browser', 'bank', 'board', 'boss', 'cameras', 'photos', 'contacts', 'phonelink', 'logs', 'cmd', 'notepad', 'calculator', 'games', 'settings' },
 
     -- Per-style identity. Wallpaper ids are drawn by the NUI (no image files shipped); any other
     -- value is used as an image URL (https://...). Each character's wallpaper / accent / light-dark

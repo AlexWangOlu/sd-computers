@@ -34,6 +34,8 @@ export interface Overview {
   grades: Grade[];
   myGrade: number;
   myCid: string;
+  /** A job offer may also go to any player online, by their server id (configs/shared/boss.lua > HireById). */
+  hireById: boolean;
   counts: { total: number; online: number; onDuty: number };
   funds: Funds;
 }

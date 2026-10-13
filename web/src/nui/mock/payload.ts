@@ -1,4 +1,5 @@
 import type { OpenPayload, OsStyle } from '@/types';
+import { withPhoneLink } from './phonelink';
 
 /** What session.open returns for the MRPD front desk, as a police boss - the browser dev payload. */
 export const mockPayload: OpenPayload = {
@@ -20,10 +21,19 @@ export const mockPayload: OpenPayload = {
       { id: 'cmd', label: 'Command Prompt', w: 900, h: 540 },
       { id: 'notepad', label: 'Notepad', w: 820, h: 560 },
       { id: 'calculator', label: 'Calculator', w: 340, h: 520 },
+      { id: 'files', label: 'Files', w: 980, h: 620 },
+      { id: 'browser', label: 'Browser', w: 1100, h: 700 },
+      { id: 'bank', label: 'Bank', w: 940, h: 640 },
+      { id: 'board', label: 'Company Board', w: 940, h: 620 },
+      { id: 'cameras', label: 'Security Cameras', w: 900, h: 600 },
+      { id: 'photos', label: 'Photos', w: 980, h: 640 },
+      { id: 'contacts', label: 'Contacts', w: 860, h: 600 },
+      { id: 'phonelink', label: 'Phone Link', w: 620, h: 700 },
+      { id: 'games', label: 'Games', w: 860, h: 640 },
       { id: 'settings', label: 'Settings', w: 900, h: 600 },
     ],
-    pinned: ['mail', 'messages', 'boss', 'cmd', 'logs', 'notepad'],
-    desktopIcons: ['mail', 'messages', 'notes', 'boss', 'logs', 'cmd', 'notepad', 'calculator', 'settings'],
+    pinned: ['mail', 'messages', 'browser', 'files', 'boss', 'cmd', 'logs', 'notepad'],
+    desktopIcons: ['mail', 'messages', 'notes', 'files', 'browser', 'bank', 'board', 'boss', 'cameras', 'photos', 'contacts', 'phonelink', 'logs', 'cmd', 'notepad', 'calculator', 'games', 'settings'],
   },
   user: { name: 'Jessica Hale', initials: 'JH', job: 'LSPD' },
   desktop: {
@@ -100,13 +110,16 @@ const STYLE_DESKTOP: Record<OsStyle, Partial<OpenPayload['desktop']>> = {
   },
 };
 
-/** The dev payload in a given style (browser: ?style=retro / ?style=mac). */
+/**
+ * The dev payload in a given style (browser: ?style=retro / ?style=mac), with the phone's apps on
+ * it or not as the Phone Link mock has the machine (?phonelink=new: not linked yet).
+ */
 export function mockPayloadFor(style: OsStyle): OpenPayload {
-  return {
+  return withPhoneLink({
     ...mockPayload,
     computer: { ...mockPayload.computer, style },
     desktop: { ...mockPayload.desktop, ...STYLE_DESKTOP[style], style },
-  };
+  });
 }
 
 /** The mock PIN for the browser dev payload's requiresPin lock screen. */

@@ -23,6 +23,20 @@ dui.H = math.floor((S.Resolution and S.Resolution.h) or 576)
 
 ---@type integer Most browsers kept waiting for their next use.
 local MAX_SPARE = 2
+---@type number Width over height of every texture.
+local TEX_ASPECT = dui.W / dui.H
+
+---The part of a lock face texture a screen of this shape shows: the middle, cut to fit.
+---@param aspect number the screen's width over its height
+---@return number u0, number v0, number u1, number v1
+function dui.cover(aspect)
+    if aspect < TEX_ASPECT then
+        local f = aspect / TEX_ASPECT
+        return (1 - f) / 2, 0.0, (1 + f) / 2, 1.0
+    end
+    local f = TEX_ASPECT / aspect
+    return 0.0, (1 - f) / 2, 1.0, (1 + f) / 2
+end
 
 ---@type any Handle of the runtime texture dictionary (made with the first browser).
 local txd
