@@ -58,6 +58,10 @@ export default function Calculator({ win }: AppProps) {
   historyRef.current = historyOpen;
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
+  /** As C leaves it: nothing typed, nothing pending, no result and no error on the display. */
+  const clearedRef = useRef(true);
+  clearedRef.current =
+    s.entry === initialState.entry && s.value === initialState.value && s.term === null && s.acc === null && s.op === null && s.expr === null && s.last === null && !s.done && s.error === null;
 
   useEffect(() => {
     if (!active) return;
@@ -66,6 +70,9 @@ export default function Calculator({ win }: AppProps) {
       if (os.start || os.flyout) return;
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+      // Escape is C. With nothing on the display to clear and no History to shut it is nobody's
+      // here: it is left to the OS, which stands the player up.
+      if (e.key === 'Escape' && clearedRef.current && !historyRef.current) return;
       const hit = mapKey(e);
       if (!hit) return;
       e.preventDefault();

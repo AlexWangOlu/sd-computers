@@ -441,7 +441,8 @@ function Console({ win, payload }: { win: Win; payload: OpenPayload }) {
     } else if (k === 'Tab') {
       e.preventDefault();
       if (!ask) complete(e.shiftKey);
-    } else if (k === 'Escape') {
+    } else if (k === 'Escape' && input !== '') {
+      // (an empty line has nothing to clear: the key is left to the OS, which stands the player up)
       e.preventDefault();
       setLine('');
     }

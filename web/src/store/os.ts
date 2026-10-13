@@ -291,6 +291,23 @@ export const useOS = create<OSState>((set, get) => ({
   dismissToast: id => set(s => ({ toasts: s.toasts.filter(t => t.id !== id) })),
 }));
 
+/**
+ * Ask every window whether the computer may be left, the way closing the window would ask it. The
+ * first one that says no (it has unsaved changes, and is now showing its own prompt about them) is
+ * brought forward and its id returned. null = nothing is in the way.
+ */
+export const leaveBlockedBy = (): string | null => {
+  const os = useOS.getState();
+  for (const w of os.windows) {
+    const guard = closeGuards.get(w.id);
+    if (guard && !guard()) {
+      os.restore(w.id);
+      return w.id;
+    }
+  }
+  return null;
+};
+
 /** The id of the focused window: the visible one with the highest z (null = desktop focused). */
 export const selectActiveId = (s: { windows: Win[] }): string | null => {
   let best: Win | null = null;

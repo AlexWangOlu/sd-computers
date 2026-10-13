@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useOS, selectActiveId, type Phase } from '@/store/os';
+import { useOS, leaveBlockedBy, selectActiveId, type Phase } from '@/store/os';
 import { dissolveOver } from '@/hooks/useExitFx';
+import { t } from '@/i18n';
 import { accentVars } from './theme';
 import { SHELLS } from './shells';
 import { powerOff } from './session';
 
 const noop = () => {};
+
+/** How long a first Escape counts for, where leaving takes two. */
+const ESC_AGAIN_MS = 5000;
 
 /**
  * The machine: applies the theme (data-theme + data-style + accent variables) and walks the phases
@@ -13,7 +17,8 @@ const noop = () => {};
  * (os/shells.ts - modern, retro, mac). A kit with `crossfade` gets its screens dissolved into each
  * other: the outgoing one stays mounted (inert) beneath the incoming one until that has faded in.
  * Also owns the OS-level keys, the same in every style:
- *   Escape      closes menus/flyouts; on the lock screen or an empty desktop it stands you up
+ *   Escape      closes menus/flyouts; on the lock screen it stands you up, and on the desktop too
+ *               unless the focused app had a use for it (an app marks that with preventDefault)
  *   Ctrl+Escape toggles the launcher (Start / app menu)
  *   Alt+F4      closes the focused window
  */
@@ -60,6 +65,26 @@ export default function Computer() {
   const toDesktop = useCallback(() => setPhase('desktop'), [setPhase]);
 
   useEffect(() => {
+    // Standing up with something open could throw work away, so two things ask first. Typing in a
+    // field, or a hack in progress, wants the key twice: the first press only says so. And a window
+    // with unsaved changes puts up its own prompt, as it does when it is closed.
+    let againUntil = 0;
+    const standUp = () => {
+      const s = useOS.getState();
+      if (s.phase !== 'desktop') return;
+      const now = Date.now();
+      const el = document.activeElement as HTMLElement | null;
+      const typing = !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+      const hacking = s.windows.find(w => w.id === selectActiveId(s))?.app === 'hack';
+      if ((typing || hacking) && now > againUntil) {
+        againUntil = now + ESC_AGAIN_MS;
+        s.toast({ app: 'system', title: t('ui.desktop.esc_again') });
+        return;
+      }
+      againUntil = 0;
+      if (leaveBlockedBy() === null) powerOff();
+    };
+
     const onKey = (e: KeyboardEvent) => {
       const s = useOS.getState();
       if (e.key === 'Escape') {
@@ -72,7 +97,12 @@ export default function Computer() {
           s.setFlyout(null);
           return;
         }
-        if (s.phase === 'lock' || (s.phase === 'desktop' && selectActiveId(s) === null)) powerOff();
+        if (s.phase === 'lock') powerOff();
+        // On the desktop the key is the focused app's first. One that used it (closed a dialog,
+        // cleared a field) has said so with preventDefault by the time every listener has run -
+        // this one is among the first - so the key is looked at again after them. Unused, it
+        // stands the player up, whatever is open.
+        else if (s.phase === 'desktop') window.setTimeout(() => !e.defaultPrevented && standUp(), 0);
         return;
       }
       if (e.key === 'F4' && e.altKey && s.phase === 'desktop') {

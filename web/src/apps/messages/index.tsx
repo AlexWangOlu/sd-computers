@@ -157,7 +157,9 @@ function ConfirmDialog() {
   const c = useMessages(s => s.confirm);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeConfirm();
+      if (e.key !== 'Escape') return;
+      e.preventDefault(); // (used here: the OS must not take it for standing up)
+      closeConfirm();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

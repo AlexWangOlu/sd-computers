@@ -39,7 +39,9 @@ export function Flyout({ onClose, anchor, className, children }: { onClose: () =
       close.current();
     };
     const key = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close.current();
+      if (e.key !== 'Escape') return;
+      e.preventDefault(); // (used here: the OS must not take it for standing up)
+      close.current();
     };
     document.addEventListener('mousedown', down, true);
     window.addEventListener('keydown', key);

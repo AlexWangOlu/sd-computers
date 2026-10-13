@@ -49,6 +49,13 @@ than a 1080p one, which the shell already clamps windows to.
   the way out on a clone after React has removed the element. Don't put a transform animation on
   an element placed with a Tailwind translate (`-translate-x-1/2`) - the keyframes replace it.
   Retro switches all of this off in its stylesheet; mac overrides what it wants its own way.
+- **Escape:** unused, Escape stands the player up from the computer, whatever is open
+  (`src/os/Computer.tsx`). An app that has a use for it - closing its dialog or menu, clearing a
+  field, leaving a viewer - must say so with `e.preventDefault()` (or stop the event before it
+  reaches `window`), and only when it did something: a handler that swallows every Escape leaves
+  the player unable to get up while that app is focused. Typing in a field or a running hack makes
+  the first Escape a hint and the second the one that leaves, and a window with unsaved changes
+  (`setCloseGuard`) is asked first, as when it is closed.
 - **Props:** every app gets `{ win }` (`AppProps` from `src/apps/registry.tsx`); `win.props` may
   carry launch arguments (e.g. Mail opened from a toast gets `{ mailbox, messageId }`).
 - **Server calls:** `rpc<T>(endpoint, payload)` from `src/nui/rpc.ts` -> `Promise<{ ok, data?, error? }>`.

@@ -63,7 +63,11 @@ export default function StartMenu() {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => {
               if (e.key === 'Enter' && matches[0]) open(matches[0].id);
-              if (e.key === 'Escape') setStart(false);
+              if (e.key === 'Escape') {
+                // (used here: by the time the OS sees the key the menu is shut, and it would stand the player up)
+                e.preventDefault();
+                setStart(false);
+              }
             }}
             placeholder={t('ui.start.search')}
             className="w-full h-9 pl-10 pr-4 rounded-full bg-[var(--input)] border border-stroke-strong border-b-[var(--accent-fill)] border-b-2 text-body text-t1 placeholder:text-t3 outline-none"

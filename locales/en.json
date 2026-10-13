@@ -540,7 +540,8 @@
       "refresh": "Refresh",
       "display": "Display settings",
       "personalize": "Personalize",
-      "terminal": "Open in Terminal"
+      "terminal": "Open in Terminal",
+      "esc_again": "Press Esc again to leave the computer."
     },
     "quick": {
       "wifi": "Wi-Fi",
