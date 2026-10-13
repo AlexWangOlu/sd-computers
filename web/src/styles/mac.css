@@ -401,13 +401,18 @@
 }
 
 /* ── Desktop icons ─────────────────────────────────────────────────────────────────────────── */
+/* Every cell is as tall as one with a two-line name (tile 66 + gap 4 + two 16px lines + padding 4),
+   whatever its own name takes: the columns are a wrapped flex column, so a cell that grew with its
+   label would push the rest of its column out of step with the one beside it. */
 .os-root[data-style='mac'] .mac-desk-icon {
   width: 96px;
+  height: 106px;
   margin: 3px 2px;
   padding: 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 4px;
   outline: none;
 }

@@ -762,6 +762,13 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* A launcher is as tall as one with a two-line name (icon 32 + gap 4 + two lines + padding 6),
+   whatever its own name takes: the columns are a wrapped flex column, so a cell that grew with its
+   label would push the rest of its column out of step with the one beside it. */
+.os-root[data-style='retro'] .rt-icons > .rt-icon {
+  height: 72px;
+  justify-content: flex-start;
+}
 /* Selected (click) or keyboard-focused: the dotted marquee, white so it reads on any pattern. */
 .os-root[data-style='retro'] .rt-icon.is-sel,
 .os-root[data-style='retro'] .rt-icon:focus-visible {
