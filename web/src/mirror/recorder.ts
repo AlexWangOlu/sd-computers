@@ -132,9 +132,13 @@ function snapshot(): void {
   }, wait);
 }
 
-/** The minigames draw on a canvas, which a DOM recording does not see: send what they show as small images. */
+/**
+ * The minigames draw on a canvas, which a DOM recording does not see: send what they show as small
+ * images. Not a canvas marked data-mirror-skip - a security camera's picture is the watching
+ * player's own game view (src/apps/cameras/GameView.tsx), and far too much to send three times a second.
+ */
 function sampleCanvases(scratch: HTMLCanvasElement): void {
-  document.querySelectorAll<HTMLCanvasElement>('.os-root canvas').forEach(canvas => {
+  document.querySelectorAll<HTMLCanvasElement>('.os-root canvas:not([data-mirror-skip])').forEach(canvas => {
     if (!canvas.width || !canvas.height) return;
     const id = record.mirror.getId(canvas);
     if (id <= 0) return;

@@ -128,7 +128,7 @@ rpc.register('cameras:watch', 'cameras', function(src, s, payload)
             return rpc.ok({
                 id = cam.id, label = cam.label, area = cam.area,
                 x = cam.x, y = cam.y, z = cam.z, pitch = cam.pitch, roll = cam.roll, yaw = cam.yaw, fov = cam.fov,
-                pan = limits.pan, tilt = limits.tilt, zoom = limits.zoom, effect = limits.effect,
+                pan = limits.pan, tilt = limits.tilt, zoom = limits.zoom, filter = limits.filter,
             })
         end
     end

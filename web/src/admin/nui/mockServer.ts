@@ -1,4 +1,4 @@
-import type { Auto, Computer, Job, Placed, Prop, Reply, Snapshot } from '@/admin/types';
+import type { Auto, Camera, Computer, Job, Placed, Prop, Reply, Snapshot } from '@/admin/types';
 
 // The panel in a browser tab (npm run dev -> /admin.html): a stand-in for the game and the server,
 // so every tab, dialog and toast can be worked on without either. Placing "runs the gizmo" by
@@ -17,6 +17,16 @@ let computers: Computer[] = [
   { key: 'placed_1', order: 5, id: 1, source: 'placed', label: 'Mechanic office', hostname: 'MECHANIC-OFF-01', style: 'mac', styleSet: true, prop: 'prop_laptop_01a', x: -339.6, y: -156.9, z: 39.8, heading: 87, groups: { mechanic: 2 }, boss: 'mechanic', pin: false, users: [] },
   { key: 'placed_2', order: 6, id: 2, source: 'placed', label: 'Vanilla Unicorn back room', hostname: 'VANILLA-UNIC-02', style: 'modern', styleSet: false, prop: 'prop_monitor_01a', x: 95.4, y: -1294.1, z: 29.6, heading: 211.5, pin: false, users: ['Devon Price'] },
   { key: 'placed_3', order: 7, id: 3, source: 'world', label: 'Booking desk', hostname: 'BOOKING-DESK-03', style: 'retro', styleSet: true, prop: 'prop_monitor_03b', x: 461.0, y: -988.4, z: 24.8, heading: 300, groups: { police: 0 }, pin: false, users: [] },
+];
+
+// The security cameras: the config's, then the ones put up from the panel.
+let nextCamera = 3;
+let cameras: Camera[] = [
+  { key: 'mrpd_lobby', source: 'config', label: 'Lobby', area: 'Mission Row Police Station', x: 435.7, y: -987.5, z: 33.8, pitch: -20, yaw: -32, fov: 70, groups: { police: 0 } },
+  { key: 'mrpd_entrance', source: 'config', label: 'Front entrance', area: 'Mission Row Police Station', x: 433.4, y: -976.6, z: 34.3, pitch: -24, yaw: 150, fov: 75, groups: { police: 0 } },
+  { key: 'pillbox_reception', source: 'config', label: 'Reception', area: 'Pillbox Hill Medical Center', x: 303.9, y: -590.6, z: 46.0, pitch: -22, yaw: -145, fov: 70, groups: { ambulance: 0 }, computers: ['pillbox_reception'] },
+  { key: 'placed_cam_1', id: 1, source: 'placed', label: 'Workshop floor', area: "Benny's Original Motor Works", x: -211.4, y: -1324.8, z: 34.2, pitch: -28, yaw: 96, fov: 80, groups: { mechanic: 2 } },
+  { key: 'placed_cam_2', id: 2, source: 'placed', label: 'Legion Square', area: null, x: 190.2, y: -938.6, z: 38.9, pitch: -15, yaw: -60, fov: 60 },
 ];
 
 // The props that are a computer on their own, as the Automatic tab has them.
@@ -73,6 +83,7 @@ export const mockSnapshot = (): Snapshot => ({
     const models = a ? a.models.filter(m => m.on).map(m => m.model) : c.models;
     return { ...c, order: i + 1, models, off: a ? !auto.enabled || !a.enabled || models?.length === 0 : undefined, style: a?.style ?? c.style, styleSet: a ? !!a.style || c.styleSet : c.styleSet };
   }),
+  cameras: { enabled: true, max: 200, list: cameras },
   props,
   screens,
   auto,
@@ -93,7 +104,18 @@ const fail = (message: string): Reply<{ snapshot: Snapshot }> => ({ success: fal
 
 const hostname = (label: string, id: number) => `${label.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 12).replace(/-+$/, '') || 'PC'}-${String(id).padStart(2, '0')}`;
 
-type Fields = { id?: number; label?: string; prop?: string; style?: string | null; jobs?: Record<string, number> | null; boss?: string | null; key?: string; model?: string; enabled?: boolean; kind?: Prop['kind'] };
+type Fields = { id?: number; label?: string; prop?: string; style?: string | null; jobs?: Record<string, number> | null; boss?: string | null; key?: string; model?: string; enabled?: boolean; kind?: Prop['kind']; area?: string | null };
+
+// What the game does around the camera tool: hide the panel, show its HUD for a moment, then bring
+// the panel back with the outcome.
+const afterCamtool = (moving: boolean, placed: Placed) => {
+  window.postMessage({ action: 'computers:admin:hide' }, '*');
+  window.postMessage({ action: 'computers:camtool:hud', data: { active: true, moving, x: 190.2, y: -938.6, z: 38.9, pitch: -18, yaw: -60, fov: 62.5 } }, '*');
+  window.setTimeout(() => {
+    window.postMessage({ action: 'computers:camtool:hud', data: { active: false } }, '*');
+    window.postMessage({ action: 'computers:admin:show', data: { snapshot: mockSnapshot(), placed } }, '*');
+  }, 2500);
+};
 
 const applyFields = (c: Computer, d: Fields): Computer => ({
   ...c,
@@ -141,6 +163,37 @@ export async function mockNui(callback: string, data: unknown): Promise<unknown>
       if (!c) return fail('That no longer exists');
       const removed = callback.endsWith('removeconfigcomputer');
       computers = computers.map(x => (x === c ? { ...c, removed, users: removed ? [] : c.users } : x));
+      return ok();
+    }
+    case 'teleportcamera':
+      return ok();
+    case 'placecamera': {
+      const id = nextCamera++;
+      cameras = [...cameras, { key: `placed_cam_${id}`, id, source: 'placed', label: d.label || 'Camera', area: d.area || null, x: 120.5 + id * 3.1, y: -1040.2 - id * 2.4, z: 33.3, pitch: -18, yaw: (id * 47) % 360 - 180, fov: 62.5, groups: d.jobs ?? null }];
+      afterCamtool(false, { what: 'camera', action: 'placed', success: true });
+      return { ok: true };
+    }
+    case 'movecamera': {
+      cameras = cameras.map(c => (c.id === d.id ? { ...c, x: c.x + 1.5, pitch: -18, fov: 62.5 } : c));
+      afterCamtool(true, { what: 'camera', action: 'moved', success: true });
+      return { ok: true };
+    }
+    case 'updatecamera': {
+      const c = cameras.find(x => x.id === d.id && x.source === 'placed');
+      if (!c) return fail('That no longer exists');
+      cameras = cameras.map(x => (x === c ? { ...c, label: d.label ?? c.label, area: d.area || null, groups: d.jobs ?? null } : x));
+      return ok();
+    }
+    case 'deletecamera':
+      if (!cameras.some(x => x.id === d.id && x.source === 'placed')) return fail('That no longer exists');
+      cameras = cameras.filter(x => x.id !== d.id);
+      return ok();
+    case 'removeconfigcamera':
+    case 'restoreconfigcamera': {
+      // (one of the config's cameras: taken away, or put back - it stays in the list either way)
+      const c = cameras.find(x => x.key === d.key && x.source === 'config');
+      if (!c) return fail('That no longer exists');
+      cameras = cameras.map(x => (x === c ? { ...c, removed: callback.endsWith('removeconfigcamera') } : x));
       return ok();
     }
     case 'deleteallcomputers': {

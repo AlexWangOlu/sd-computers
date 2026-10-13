@@ -30,3 +30,30 @@ body {
 .host-os.is-active {
   pointer-events: auto;
 }
+/* Being moved between the prop's screen and the whole display (a security camera's picture
+   expanded): gone at once, and back gently once it is where it is going. */
+.host-os {
+  transition: opacity 160ms ease;
+}
+.host-os.is-moving {
+  opacity: 0;
+  transition: none;
+}
+
+/* The room, kept as a still under the OS while the game looks through a security camera for the
+   Security Cameras app (see Host.tsx). Out of the way while that picture has the whole display. */
+.host-still {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  visibility: hidden;
+  pointer-events: none;
+}
+.host-still.is-on {
+  visibility: visible;
+}
+.host-still.is-on.is-aside {
+  visibility: hidden;
+}

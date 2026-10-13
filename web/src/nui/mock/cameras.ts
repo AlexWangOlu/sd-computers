@@ -20,7 +20,7 @@ const handlers: Record<string, MockHandler> = {
   'cameras:watch': ({ id }) => {
     const cam = CAMERAS.find(c => c.id === id);
     if (!cam) return fail(t('cameras.err_unknown'));
-    return ok({ ...cam, x: 0, y: 0, z: 0, pitch: -20, roll: 0, yaw: 0, fov: 70, pan: 60, tilt: 25, zoom: 3, effect: true });
+    return ok({ ...cam, x: 0, y: 0, z: 0, pitch: -20, roll: 0, yaw: 0, fov: 70, pan: 60, tilt: 25, zoom: 3, filter: 'cctv' });
   },
 };
 

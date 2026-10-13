@@ -602,3 +602,102 @@ body {
 .caret {
   animation: caretBlink 1s steps(1) infinite;
 }
+
+/* ── Security Cameras: what is laid over a camera's picture (src/apps/cameras) ───────────────
+   Not under .os-root: the picture expanded over the whole display sits beside the desktop, not in
+   it. The colours are a monitor's own - white on the picture - whatever the theme. */
+.cam-picture {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.cam-picture:active {
+  cursor: grabbing;
+}
+.cam-lines,
+.cam-roll,
+.cam-vignette,
+.cam-static {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cam-lines {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.2) 3px, rgba(0, 0, 0, 0) 4px);
+}
+/* A soft band drifting down the picture, as on a tube that is not quite in step with its camera. */
+@keyframes camRoll {
+  from { transform: translateY(-20%); }
+  to { transform: translateY(120%); }
+}
+.cam-roll {
+  bottom: auto;
+  height: 16%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0));
+  animation: camRoll 7s linear infinite;
+}
+.cam-vignette {
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%);
+}
+/* Snow: one tile of noise, thrown about a few times a second. Up at once, away slowly - the
+   picture under it fades in. */
+@keyframes camSnow {
+  0% { background-position: 0 0; }
+  20% { background-position: -97px 53px; }
+  40% { background-position: 61px -119px; }
+  60% { background-position: -31px 101px; }
+  80% { background-position: 113px 29px; }
+  100% { background-position: 0 0; }
+}
+.cam-static {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0d0f12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  animation: camSnow 0.4s steps(1) infinite;
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+.cam-static.is-on {
+  opacity: 1;
+  transition: none;
+}
+.cam-static > .cam-osd {
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.55);
+}
+/* Lettering burnt into the picture. */
+.cam-osd {
+  font-family: 'JetBrains Mono Variable', ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.95), 0 1px 1px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  pointer-events: none;
+}
+@keyframes camRec {
+  0% { opacity: 1; }
+  100% { opacity: 0.15; }
+}
+.cam-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #ff6b6b;
+}
+.cam-rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  animation: camRec 1.2s steps(2, start) infinite;
+}

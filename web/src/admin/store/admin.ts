@@ -52,6 +52,11 @@ const list = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
 const clean = (s: Snapshot): Snapshot => ({
   ...s,
   computers: list<Snapshot['computers'][number]>(s.computers).map(c => ({ ...c, users: list<string>(c.users), models: c.models ? list<string>(c.models) : undefined })),
+  cameras: {
+    enabled: s.cameras?.enabled !== false,
+    max: Number(s.cameras?.max) || 200,
+    list: list<Snapshot['cameras']['list'][number]>(s.cameras?.list).map(c => ({ ...c, computers: c.computers ? list<string>(c.computers) : null })),
+  },
   props: list<Snapshot['props'][number]>(s.props),
   screens: s.screens && !Array.isArray(s.screens) ? s.screens : {}, // (a map: empty, it can arrive as a list)
   auto: {

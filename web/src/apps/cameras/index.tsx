@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Cctv, Eye, RefreshCw } from 'lucide-react';
 import type { AppProps } from '../registry';
 import { useNuiEvent } from '@/hooks/useNuiEvent';
@@ -6,21 +6,44 @@ import { rpc } from '@/nui/rpc';
 import { t } from '@/i18n';
 import { Button, Empty, InfoBar, Spinner } from '@/ui/controls';
 import CameraView from './CameraView';
-import { controlCamera, startCamera, stopCamera } from './feed';
-import type { Camera, Watching } from './types';
+import FeedWindow from './FeedWindow';
+import { controlCamera, setDisplay, startCamera, stopCamera } from './feed';
+import type { Camera, Stage, Watching } from './types';
 
 // Security Cameras - the cameras this player may watch from this computer (cameras:list), by the
-// place they are in. Picking one hands the whole display to its picture: the game's own view goes
-// to where the camera is (client/computers/cameras.lua), the desktop steps aside, and CameraView
-// draws a slim frame over the picture until the player comes back. Which cameras there are, and
-// where each is, is the server's to say; this app only ever names one by id.
+// place they are in. Picking one plays its picture in the window (FeedWindow): the game's own view
+// goes to where the camera is (client/computers/cameras.lua) and the page draws that view, while
+// the room round the computer is held as a still by the page holding the OS (src/host). Expanded,
+// the picture takes the whole display instead (CameraView). Which cameras there are, and where
+// each is, is the server's to say; this app only ever names one by id.
 
-export default function Cameras(_props: AppProps) {
+/** The least a camera is "connecting" for, ms: one that is ready at once still tunes in. */
+const CONNECT_MS = 450;
+/** How long the picture is snow before the camera is let go of, ms: leaving one is seen to happen. */
+const LEAVE_MS = 280;
+const wait =(ms: number) => new Promise<void>(resolve => window.setTimeout(resolve, ms));
+
+/** The camera asked for, and how far along its picture is. */
+interface Session {
+  camera: Camera;
+  stage: Stage;
+}
+
+export default function Cameras({ win }: AppProps) {
   const [cameras, setCameras] = useState<Camera[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [opening, setOpening] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [watching, setWatching] = useState<Watching | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  // false once the page has turned out not to be given the game's picture (GameView): a camera is
+  // then only ever watched expanded, where the picture is the game itself.
+  const [windowed, setWindowed] = useState(true);
+
+  // Counts every ask to watch and to stop: an answer to one that has been overtaken is not acted on.
+  const asked = useRef(0);
+  const now = useRef({ cameras, session, watching, expanded });
+  now.current = { cameras, session, watching, expanded };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -39,17 +62,88 @@ export default function Cameras(_props: AppProps) {
     void load();
   }, [load]);
 
-  // The game says what is on the display: a camera's picture (and whose), or the desktop again -
-  // also when it was not us who ended it (the computer closing under a camera).
-  useNuiEvent<Watching & { active: boolean }>('computers:camera', d => setWatching(d && d.active ? d : null));
+  /** The picture back in the window (or, there being no window for it, nowhere). */
+  const collapse = useCallback(async () => {
+    if (!now.current.expanded) return;
+    await setDisplay(false);
+    setExpanded(false);
+  }, []);
+
+  const expand = useCallback(async () => {
+    if (now.current.expanded) return;
+    await setDisplay(true);
+    setExpanded(true);
+  }, []);
+
+  // The game says what it is showing: a camera's picture (and whose), or the room again - also when
+  // it was not this app that ended it (the computer closing under a camera).
+  useNuiEvent<Watching & { active: boolean }>('computers:camera', d => {
+    if (d && d.active) {
+      setWatching(d);
+      return;
+    }
+    asked.current++;
+    setWatching(null);
+    setSession(null);
+    setExpanded(false); // (the page holding the OS has taken the display back by itself)
+  });
 
   const watch = useCallback(async (id: string) => {
-    setOpening(id);
-    const res = await startCamera(id);
-    setOpening(null);
-    if (!res.ok) setError(res.error || t('ui.common.error'));
-    else setError(null);
-  }, []);
+    const camera = now.current.cameras?.find(c => c.id === id);
+    if (!camera) return;
+    const mine = ++asked.current;
+    setError(null);
+    setSession({ camera, stage: 'connecting' });
+    const [res] = await Promise.all([startCamera(id), wait(CONNECT_MS)]);
+    if (mine !== asked.current) return;
+    if (res.ok) {
+      setSession({ camera, stage: 'live' });
+      return;
+    }
+    if (!res.overtaken) setError(res.error || t('ui.common.error'));
+    // (a switch that failed leaves the camera that was up, up)
+    const still = now.current.watching;
+    const before = still && now.current.cameras?.find(c => c.id === still.id);
+    if (before && !res.overtaken) setSession({ camera: before, stage: 'live' });
+    else {
+      setSession(null);
+      void collapse();
+    }
+  }, [collapse]);
+
+  /** Stop watching: back to the list. */
+  const back = useCallback(async () => {
+    const s = now.current.session;
+    if (!s || s.stage === 'leaving') return;
+    const mine = ++asked.current;
+    setSession({ camera: s.camera, stage: 'leaving' });
+    await wait(LEAVE_MS);
+    if (mine !== asked.current) return;
+    await stopCamera();
+    if (mine !== asked.current) return;
+    await collapse();
+    setWatching(null);
+    setSession(null);
+  }, [collapse]);
+
+  // No window for the picture: it goes over the whole display as soon as there is one.
+  useEffect(() => {
+    if (!windowed && session?.stage === 'live' && !expanded) void expand();
+  }, [windowed, session?.stage, expanded, expand]);
+
+  // A window put away is not watched: the game goes back to the room.
+  useEffect(() => {
+    if (win.min) void back();
+  }, [win.min, back]);
+
+  // The window closing (or the desktop going) under a camera gives the display back.
+  useEffect(
+    () => () => {
+      if (now.current.expanded) void setDisplay(false);
+      if (now.current.session) void stopCamera();
+    },
+    [],
+  );
 
   // By area, in the order the server lists them; cameras with no area share one unnamed group.
   const groups = useMemo(() => {
@@ -62,6 +156,38 @@ export default function Cameras(_props: AppProps) {
     });
     return out;
   }, [cameras]);
+
+  if (session) {
+    const list = cameras ?? [];
+    return (
+      <>
+        <FeedWindow
+          camera={session.camera}
+          stage={session.stage}
+          watching={watching}
+          cameras={list}
+          expanded={expanded}
+          onSwitch={id => void watch(id)}
+          onControl={controlCamera}
+          onExpand={() => void expand()}
+          onBack={() => void back()}
+          onUnavailable={() => setWindowed(false)}
+        />
+        {expanded && (
+          <CameraView
+            camera={session.camera}
+            stage={session.stage}
+            watching={watching}
+            cameras={list}
+            windowed={windowed}
+            onSwitch={id => void watch(id)}
+            onControl={controlCamera}
+            onBack={() => void (windowed ? collapse() : back())}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="relative h-full w-full flex flex-col bg-layer">
@@ -112,7 +238,7 @@ export default function Cameras(_props: AppProps) {
                         {t('ui.cameras.live')}
                       </div>
                     </div>
-                    <Button variant="accent" icon={opening === c.id ? <Spinner size={14} className="!text-accent-on" /> : <Eye size={14} />} disabled={opening !== null} onClick={() => void watch(c.id)}>
+                    <Button variant="accent" icon={<Eye size={14} />} onClick={() => void watch(c.id)}>
                       {t('ui.cameras.watch')}
                     </Button>
                   </div>
@@ -122,8 +248,6 @@ export default function Cameras(_props: AppProps) {
           ))
         )}
       </div>
-
-      {watching && <CameraView watching={watching} cameras={cameras ?? []} onSwitch={id => void watch(id)} onControl={controlCamera} onBack={() => void stopCamera()} />}
     </div>
   );
 }

@@ -4,6 +4,7 @@
   "tabs": {
     "overview": "Overview",
     "computers": "Computers",
+    "cameras": "Cameras",
     "automatic": "Automatic",
     "props": "Props",
     "styles": "Styles"
@@ -207,7 +208,75 @@
     "computer_placed": "Computer placed",
     "computer_moved": "Computer moved",
     "computer_picked": "Prop is now a computer",
-    "screen_saved": "Screen saved"
+    "screen_saved": "Screen saved",
+    "camera_placed": "Camera put up",
+    "camera_moved": "Camera aimed"
+  },
+  "cameras": {
+    "place": "Put up a camera",
+    "place_next": "Fly it into place",
+    "edit": "Change camera",
+    "default_label": "Camera",
+    "name": "Name",
+    "name_placeholder": "Lobby",
+    "area": "Listed under",
+    "area_placeholder": "Mission Row Police Station",
+    "area_hint": "The heading the Security Cameras app lists it under. Cameras with the same heading are listed together; leave it empty for none.",
+    "access": "Who can watch it",
+    "access_anyone": "Anyone the app is offered to",
+    "jobs_empty": "No jobs listed: anyone sitting at a computer can watch it.",
+    "jobs_hint": "Add a job (or gang) as your framework spells it, and the lowest grade allowed. Only they are offered the camera, and the server checks it.",
+    "fly_hint": "Next you fly the camera to where it hangs. What you see is what it will show, and Enter keeps it.",
+    "saved": "Camera updated",
+    "search": "Search by name, heading, id or job",
+    "filter_all": "All",
+    "filter_placed": "Put up here",
+    "filter_config": "From the config",
+    "empty": "No cameras yet.",
+    "none_placed": "No camera put up from the panel yet.",
+    "source_placed": "Placed",
+    "source_config": "Config",
+    "anyone": "Anyone",
+    "watched_by": "Only for: %s",
+    "watched_by_anyone": "Anyone at a computer can watch it",
+    "only_from": "Only from these computers: %s",
+    "go": "Go to it",
+    "aim": "Move or aim it again",
+    "delete": "Take the camera down",
+    "delete_confirm": "\"%s\" is taken down for good. Anyone watching it right now keeps its picture until they leave it.",
+    "deleted": "%s taken down",
+    "remove_config": "Remove camera",
+    "remove_config_confirm": "\"%s\" is no longer offered to anyone. It comes from the config, so it stays in this list and you can restore it at any time.",
+    "config_removed": "%s removed",
+    "restore": "Restore camera",
+    "config_restored": "%s restored",
+    "removed_tag": "Removed",
+    "removed_hint": "Removed in this panel: nobody is offered it until it is restored",
+    "full": "No more than %s cameras can be put up from the panel",
+    "disabled": "The Security Cameras app is switched off for the whole server (Enabled in configs/shared/cameras.lua), so nobody is offered any of these."
+  },
+  "camtool": {
+    "title": "Put up a camera",
+    "title_move": "Aim the camera",
+    "hint": "What you see is what the camera will show.",
+    "fov": "View",
+    "tilt": "Tilt",
+    "at": "At",
+    "groups": {
+      "fly": "Fly",
+      "aim": "Aim"
+    },
+    "keys": {
+      "move": "Move",
+      "height": "Up, down",
+      "fast": "Faster",
+      "slow": "Slower",
+      "look": "Look",
+      "zoom": "Zoom",
+      "cancel": "Cancel",
+      "confirm": "Put it here",
+      "confirm_move": "Keep it here"
+    }
   },
   "screener": {
     "title": "Screen of %s",
@@ -274,7 +343,7 @@
     "view_only_hint": "You can look around, but changes need the edit permission.",
     "ago": "%s ago",
     "just_now": "just now",
-    "shortcuts": "Keyboard: 1-5 tabs, / search, Esc close"
+    "shortcuts": "Keyboard: 1-6 tabs, / search, Esc close"
   },
   "toast": {
     "failed": "That did not work."

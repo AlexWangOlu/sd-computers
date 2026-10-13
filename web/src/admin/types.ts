@@ -1,4 +1,4 @@
-export const TABS = ['overview', 'computers', 'automatic', 'props', 'styles'] as const;
+export const TABS = ['overview', 'computers', 'cameras', 'automatic', 'props', 'styles'] as const;
 export type Tab = (typeof TABS)[number];
 
 // Where a computer comes from: placed from this panel (kept in the database, everything about it
@@ -29,6 +29,33 @@ export interface Computer {
   boss?: string | null; // Business Manager: a job name, or '*' = the signed-in player's own job
   pin: boolean; // has a PIN (configs/server/security.lua); the PIN itself never leaves the server
   users: string[]; // who is sitting at it right now
+}
+
+// A security camera as the server describes it (server/computers/cameras.lua > snapshot): one put up
+// from this panel (kept in the database, everything about it can be changed here), or one from
+// configs/shared/cameras.lua (which can only be taken away here, and put back).
+export interface Camera {
+  key: string; // its id everywhere: what the app asks for, what the System Logs name
+  id?: number; // placed: its row id
+  source: 'placed' | 'config';
+  label: string;
+  area?: string | null; // the heading the app lists it under
+  x: number;
+  y: number;
+  z: number;
+  pitch: number; // the way it looks, degrees: up and down
+  yaw: number; // and round (the game's heading: -180 to 180)
+  fov: number; // how wide it sees, degrees
+  groups?: Record<string, number> | null; // who may watch it: job or gang name -> minimum grade (none = anyone)
+  computers?: string[] | null; // config only: the computer ids it can be watched from (none = any)
+  removed?: boolean; // config: taken away in this panel (still in the file; it can be put back)
+}
+
+// The Cameras tab: every camera, and whether players get the Security Cameras app at all.
+export interface Cameras {
+  enabled: boolean; // Enabled in configs/shared/cameras.lua
+  max: number; // most that can be put up from the panel
+  list: Camera[];
 }
 
 // A prop a computer can be placed as (configs/shared/admin.lua > Props).
@@ -86,6 +113,7 @@ export interface Auto {
 export interface Snapshot {
   canEdit: boolean;
   computers: Computer[];
+  cameras: Cameras;
   props: Prop[];
   auto: Auto;
   // Which props have a screen, by model: 'config' = configs/shared/screens.lua has one for it,
@@ -102,9 +130,9 @@ export interface Snapshot {
   refreshMs: number;
 }
 
-// What came of a tool that ran with the panel hidden: the gizmo, the picker or the screen tool.
+// What came of a tool that ran with the panel hidden: the gizmo, the picker, the screen tool or the camera tool.
 export interface Placed {
-  what: 'computer' | 'screen';
+  what: 'computer' | 'screen' | 'camera';
   action: 'placed' | 'moved' | 'picked' | 'saved';
   success: boolean;
   cancelled?: boolean;

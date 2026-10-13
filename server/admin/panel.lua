@@ -16,6 +16,8 @@ local props = require 'shared.props'
 local screens = require 'server.computers.screens'
 ---@type table The config's computers taken away from this panel (server.computers.removed).
 local removed = require 'server.computers.removed'
+---@type table The security cameras (server.computers.cameras): the Cameras tab.
+local cameras = require 'server.computers.cameras'
 ---@type table Session module (server.computers.session): who sits where.
 local session = require 'server.computers.session'
 ---@type table Job roster adapter (server.computers.employees): the jobs a Business Manager can manage.
@@ -113,6 +115,7 @@ local function snapshot(source)
         computers = computers,
         props = props.list(),
         screens = screens.states(),
+        cameras = cameras.snapshot(),
         auto = auto.snapshot(),
         styles = styles,
         jobs = employees.jobs(),
@@ -244,6 +247,53 @@ end)
 verb('resetScreen', true, function(_, d)
     local ok, why = screens.reset(d.model)
     return ok, why and locale(why)
+end)
+
+-- ---- Security cameras ---------------------------------------------------------------------
+
+-- d = { x, y, z, pitch, yaw, fov (from the camera tool), label, area?, jobs? }
+verb('createCamera', true, function(source, d)
+    local id, why = cameras.create(d, player.getName(source))
+    return id ~= nil, why and locale(why), { cameraId = id }
+end)
+
+-- d = { id, label, area?, jobs? }: what it is called, the heading it is under, who may watch it.
+verb('updateCamera', true, function(_, d)
+    local ok, why = cameras.update(tonumber(d.id), d)
+    return ok, why and locale(why)
+end)
+
+-- d = { id, x, y, z, pitch, yaw, fov }: put somewhere else, or aimed again, with the camera tool.
+verb('moveCamera', true, function(_, d)
+    local ok, why = cameras.move(tonumber(d.id), d)
+    return ok, why and locale(why)
+end)
+
+verb('deleteCamera', true, function(_, d)
+    local ok, why = cameras.remove(tonumber(d.id))
+    return ok, why and locale(why)
+end)
+
+-- d.key = the id of a camera from configs/shared/cameras.lua. The file is not written to: the
+-- camera is only not offered to anyone any more, until it is put back.
+verb('removeConfigCamera', true, function(_, d)
+    local ok, why = cameras.setRemoved(d.key, true)
+    return ok, why and locale(why)
+end)
+
+verb('restoreConfigCamera', true, function(_, d)
+    local ok, why = cameras.setRemoved(d.key, false)
+    return ok, why and locale(why)
+end)
+
+-- d.key = a camera id: stand where it hangs, to see what it sees.
+verb('teleportCamera', true, function(source, d)
+    local cam = cameras.get(d.key)
+    local ped = GetPlayerPed(source)
+    if not cam or not ped or ped == 0 then return false, locale('admin.gone') end
+    SetEntityCoords(ped, cam.x, cam.y, cam.z, false, false, false, false)
+    SetEntityHeading(ped, cam.yaw % 360.0)
+    return true
 end)
 
 -- ---- Getting around -----------------------------------------------------------------------

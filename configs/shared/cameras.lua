@@ -1,7 +1,13 @@
 -- Security Cameras: the cameras a computer can watch. The app lists the ones the player is allowed
--- to see from the computer they are sitting at; picking one puts its picture on the whole display,
--- to look around with (the camera turns and zooms a little, like a real one on a bracket), until
--- they go back to the desktop. Nobody who may not watch any camera gets the app at all.
+-- to see from the computer they are sitting at; picking one plays its picture live in the app's
+-- window, to look around with (the camera turns and zooms a little, like a real one on a bracket),
+-- and it can be made to fill the whole display. Nobody who may not watch any camera gets the app
+-- at all.
+--
+-- Cameras do not have to be written here: /computeradmin > Cameras puts one up in game (you fly a
+-- camera to where it hangs and what you see is what it shows), names it and says which jobs may
+-- watch it. Those are kept in the database. The ones listed below show in that tab too, where one
+-- can be taken away and put back - this file is never written to.
 --
 -- Field reference:
 --   id        unique string.
@@ -22,7 +28,12 @@ return {
     Pan = 60.0, -- degrees a camera turns either way from how it was set up
     Tilt = 25.0, -- degrees it tips up or down
     Zoom = 3.0, -- times it zooms in at most
-    Effect = true, -- scan lines over the picture (false = a clean picture)
+
+    -- The look of a camera's picture:
+    --   'cctv'   - black and white, grainy and dark at the edges, with scan lines: a security monitor
+    --   'colour' - in colour, with the scan lines
+    --   'none'   - a clean picture
+    Filter = 'cctv',
 
     Cameras = {
         { id = 'mrpd_lobby', label = 'Lobby', area = 'Mission Row Police Station', coords = vec3(435.7, -987.5, 33.8), rot = vec3(-20.0, 0.0, -32.0), fov = 70.0, groups = { police = 0 } },

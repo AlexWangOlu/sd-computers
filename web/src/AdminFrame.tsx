@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 // beside the OS: every message Lua addresses to the panel is passed down, and the frame only takes
 // the mouse while the panel says it is up (it covers the whole screen).
 
-const ADMIN_ACTION = /^computers:(admin|placer|picker|screener):/;
+const ADMIN_ACTION = /^computers:(admin|placer|picker|screener|camtool):/;
 
 export function AdminFrame() {
   const frame = useRef<HTMLIFrameElement>(null);

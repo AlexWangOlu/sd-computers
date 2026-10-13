@@ -26,8 +26,9 @@ export async function act<T extends object = object>(verb: string, payload: Reco
 }
 
 // Placing and moving run the gizmo with the panel hidden, picking a prop the aiming tool, drawing a
-// prop's screen the screen tool; the panel comes back with computers:admin:show.
-export async function place(verb: 'placecomputer' | 'movecomputer' | 'pickcomputer' | 'setupscreen', payload: Record<string, unknown>): Promise<void> {
+// prop's screen the screen tool, putting a camera up the camera tool; the panel comes back with
+// computers:admin:show.
+export async function place(verb: 'placecomputer' | 'movecomputer' | 'pickcomputer' | 'setupscreen' | 'placecamera' | 'movecamera', payload: Record<string, unknown>): Promise<void> {
   useAdmin.getState().setBusy(true);
   await fetchNui(`computers:admin:${verb}`, payload);
 }

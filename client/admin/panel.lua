@@ -6,6 +6,8 @@ local placer = require 'client.admin.placer'
 local picker = require 'client.admin.picker'
 ---@type table Screen tool (client.admin.screener): drawing where the screen is on a prop.
 local screener = require 'client.admin.screener'
+---@type table Camera tool (client.admin.camtool): flying a security camera to where it hangs.
+local camtool = require 'client.admin.camtool'
 ---@type table Client computer state (client.computers.state): whether a computer is open.
 local state = require 'client.computers.state'
 ---@type table Computers made from this panel (client.computers.placed): which props are one already.
@@ -41,10 +43,11 @@ local function push(action, data)
     SendNUIMessage({ action = action, data = data })
 end
 
--- The gizmo, the picker and the screen tool draw their HUDs in the admin page.
+-- The gizmo, the picker, the screen tool and the camera tool draw their HUDs in the admin page.
 placer.setHud(function(action, data) push(action, data) end)
 picker.setHud(function(action, data) push(action, data) end)
 screener.setHud(function(action, data) push(action, data) end)
+camtool.setHud(function(action, data) push(action, data) end)
 
 ---Take focus and mount the panel with a fresh snapshot. Strings first: the panel reads them as
 ---it renders.
@@ -80,7 +83,7 @@ end
 ---Server push: open the admin panel (/computeradmin). Not while sitting at a computer: the two
 ---share the resource's one NUI page, and its focus.
 RegisterNetEvent('sd-computers:client:openAdmin', function()
-    if open or placer.isActive() or picker.isActive() or screener.isActive() then return end
+    if open or placer.isActive() or picker.isActive() or screener.isActive() or camtool.isActive() then return end
     if state.isOpen() then
         lib.notify({ title = locale('admin.title'), description = locale('admin.close_computer_first'), type = 'error' })
         return
@@ -109,6 +112,10 @@ local PASS = {
     deleteallcomputers = 'deleteAllComputers',
     removeconfigcomputer = 'removeConfigComputer',
     restoreconfigcomputer = 'restoreConfigComputer',
+    updatecamera = 'updateCamera',
+    deletecamera = 'deleteCamera',
+    removeconfigcamera = 'removeConfigCamera',
+    restoreconfigcamera = 'restoreConfigCamera',
     setauto = 'setAuto',
     setautocomputer = 'setAutoComputer',
     setautomodel = 'setAutoModel',
@@ -142,6 +149,53 @@ RegisterNUICallback('computers:admin:teleport', function(data, cb)
     local reply = request('teleport', data)
     cb(reply)
     if reply.success then close() end
+end)
+
+---NUI callback: go to where a security camera hangs, then close - seeing what it sees is the point.
+RegisterNUICallback('computers:admin:teleportcamera', function(data, cb)
+    local reply = request('teleportCamera', data)
+    cb(reply)
+    if reply.success then close() end
+end)
+
+---Run the camera tool with the panel hidden, hand what it kept to the server, and bring the panel
+---back with the outcome.
+---@param action 'placed'|'moved'
+---@param from table|nil the camera as it is now, when aiming it again
+---@param build fun(spec: table): string, table turns the kept view into server verb + payload
+local function flyCamera(action, from, build)
+    hideForPlacement()
+    local spec, err = camtool.start(from)
+    local result
+    if spec then
+        local reply = request(build(spec))
+        result = { what = 'camera', action = action, success = reply.success, message = (not reply.success) and reply.message or nil }
+    else
+        result = { what = 'camera', action = action, success = false, cancelled = err == nil, message = err and locale(err) or nil }
+    end
+    log.debug('admin', 'camera %s: %s', action, result.success and 'ok' or tostring(result.message or 'cancelled'))
+    if open then showAfterPlacement(result) end
+end
+
+---NUI callback: put a security camera up, set up in the panel: its name, the heading it is listed
+---under and the jobs that may watch it. The admin flies it into place with the panel hidden.
+---Replies immediately; the panel waits for computers:admin:show. The server checks all of it again.
+RegisterNUICallback('computers:admin:placecamera', function(data, cb)
+    cb({ ok = true })
+    flyCamera('placed', nil, function(spec)
+        return 'createCamera', {
+            x = spec.x, y = spec.y, z = spec.z, pitch = spec.pitch, yaw = spec.yaw, fov = spec.fov,
+            label = data.label, area = data.area, jobs = data.jobs,
+        }
+    end)
+end)
+
+---NUI callback: put a camera somewhere else, or aim it again. The tool starts where it hangs now.
+RegisterNUICallback('computers:admin:movecamera', function(data, cb)
+    cb({ ok = true })
+    flyCamera('moved', { x = data.x, y = data.y, z = data.z, pitch = data.pitch, yaw = data.yaw, fov = data.fov }, function(spec)
+        return 'moveCamera', { id = data.id, x = spec.x, y = spec.y, z = spec.z, pitch = spec.pitch, yaw = spec.yaw, fov = spec.fov }
+    end)
 end)
 
 ---What the HUD calls a prop: its label (the model name when it has none).
@@ -248,8 +302,8 @@ end)
 ---@type table Admin panel module; the table returned at end of file.
 local panel = {}
 
----Whether the admin panel is up (the gizmo, the picker or the screen tool running counts).
+---Whether the admin panel is up (the gizmo, the picker, the screen tool or the camera tool running counts).
 ---@return boolean
-function panel.isOpen() return open or placer.isActive() or picker.isActive() or screener.isActive() end
+function panel.isOpen() return open or placer.isActive() or picker.isActive() or screener.isActive() or camtool.isActive() end
 
 return panel

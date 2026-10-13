@@ -18,6 +18,8 @@ local custom = require 'server.computers.custom'
 local screens = require 'server.computers.screens'
 ---@type table The config's computers an admin took away in the panel (server.computers.removed).
 local removed = require 'server.computers.removed'
+---@type table The security cameras (server.computers.cameras): the file's, and the ones put up from the panel.
+local cameras = require 'server.computers.cameras'
 
 -- Boot order matters only for the schema: every table exists before the first callback can run.
 -- The feature modules register their callbacks/exports at require time.
@@ -25,9 +27,11 @@ store.ensureSchema()
 mailstore.ensureSchema()
 placed.ensureSchema()
 auto.ensureSchema()
+cameras.ensureSchema()
 custom.load() -- props added from the admin panel: before anything that names a prop
 screens.load() -- where the screen is on a prop, as an admin drew it in the panel
 removed.load() -- the config's computers the admin panel took away
+cameras.load() -- the security cameras put up from the panel, and the config's ones it took away
 placed.load() -- before the first open: a placed computer is a registry entry like any other
 auto.load() -- which props in the world are a computer, as the admin panel left them
 
