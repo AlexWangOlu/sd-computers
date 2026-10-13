@@ -132,7 +132,7 @@ export default function LockScreen({ onSignedIn }: { onSignedIn: () => void }) {
           {lockedLeft > 0 ? (
             <div className="text-body text-white/90 text-center page-in">{t('ui.lock.locked_out', lockedLeft)}</div>
           ) : (
-            error && <div key={shake} className="text-body text-white/90 text-center page-in">{error}</div>
+            error && <div key={`error-${shake}`} className="text-body text-white/90 text-center page-in">{error}</div>
           )}
           {payload.computer.requiresPin && <button type="button" className="text-caption text-white/70 hover:text-white hover:underline" title={t('ui.lock.forgot_hint')}>{t('ui.lock.forgot')}</button>}
         </div>
