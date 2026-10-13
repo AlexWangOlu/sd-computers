@@ -29,8 +29,8 @@ const GRIPS: { dir: GripDir; style: CSSProperties }[] = [
   { dir: 'sw', style: { bottom: -3, left: -3, width: 14, height: 14, cursor: 'nesw-resize' } },
 ];
 
-/** Apps that keep their own look inside the frame (the black console, the minigame canvases). */
-const UNSKINNED = new Set(['cmd', 'hack']);
+/** Apps that keep their own look inside the frame (the black console, the minigame canvases, the three games). */
+const UNSKINNED = new Set(['cmd', 'hack', 'mines', 'solitaire', 'snake']);
 
 export default function RetroWindow({ win, active, children }: { win: Win; active: boolean; children: ReactNode }) {
   const { focus, close, minimize, finalize, toggleMax, move, resize } = useOS.getState();

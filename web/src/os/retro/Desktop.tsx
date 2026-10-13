@@ -31,6 +31,9 @@ const EXE: Record<string, string> = {
   notes: 'NOTES.EXE',
   settings: 'SETTINGS.EXE',
   hack: 'HACK.EXE',
+  mines: 'MINES.EXE',
+  solitaire: 'SOL.EXE',
+  snake: 'SNAKE.EXE',
 };
 
 /** The program's 8.3 file name, as the status bar and Run... know it. */

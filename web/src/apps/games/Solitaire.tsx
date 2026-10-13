@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
-import { ArrowRightLeft, RotateCcw, Timer, Undo2 } from 'lucide-react';
+import { RotateCcw, Shuffle, Undo2, X } from 'lucide-react';
+import type { AppProps } from '../registry';
 import { t } from '@/i18n';
 import { fmtDuration } from '@/lib/format';
-import { Button } from '@/ui/controls';
-import { Banner } from './Banner';
-import { Counter, GameBar } from './GameBar';
 import { SuitGlyph } from './glyphs';
 import { useKeys, useSize, useStopwatch } from './hooks';
 import { PlayingCard } from './PlayingCard';
 import { allUp, autoStep, best, deal, draw, fits, isWon, lift, locate, move, moved, type Card, type Dest, type Table, type Zone } from './solitaireRules';
-import { cx, still, type GameProps } from './shared';
+import { cx, still, useGameWindow } from './shared';
+import { useBests } from './storage';
 
 interface Game {
   table: Table;
@@ -92,28 +91,27 @@ function place(t: Table, g: Geo, lifted: number[]): Placed[] {
   return out;
 }
 
-/** An empty place for a pile, drawn under the cards. */
+/** An empty place for a pile, stitched into the felt under the cards. */
 function Slot({ zone, n, g, x, y, lit, title, children }: { zone: Zone; n: number; g: Geo; x: number; y: number; lit?: boolean; title?: string; children?: ReactNode }) {
   return (
-    <div
-      data-slot={zone}
-      data-n={n}
-      title={title}
-      className={cx('absolute flex items-center justify-center rounded-md border border-stroke-strong bg-card text-t3', lit && 'outline-dashed outline-2 outline-accent')}
-      style={{ left: x, top: y, width: g.cw, height: g.ch }}
-    >
+    <div data-slot={zone} data-n={n} title={title} className={cx('sl-slot', lit && 'is-lit')} style={{ left: x, top: y, width: g.cw, height: g.ch }}>
       {children}
     </div>
   );
 }
 
 /**
- * Solitaire (Klondike, one card drawn at a time). A click sends a card, or the run that starts at
- * it, to the best place that takes it; a right click picks it up instead, and the next click says
- * where it goes. The rules are in solitaireRules.ts: this file lays the table out to fit the
- * window, reads the mouse, and keeps the clock, the undo list and the automatic finish.
+ * Solitaire (Klondike, one card drawn at a time), as a program of its own: a card table. A wooden
+ * rail along the top with the game's name on a brass plate, the count of moves and the clock, and
+ * under it the felt. A click sends a card, or the run that starts at it, to the best place that
+ * takes it; a right click picks it up instead, and the next click says where it goes. The rules
+ * are in solitaireRules.ts: this file lays the table out to fit the window, reads the mouse, and
+ * keeps the clock, the undo list and the automatic finish.
  */
-export default function Solitaire({ focused, bests, record, onBack }: GameProps) {
+export default function Solitaire({ win }: AppProps) {
+  const { root, focused } = useGameWindow(win);
+  const record0 = useBests(s => s.bests.solitaire);
+  const record = useBests(s => s.record);
   const [game, setGame] = useState<Game>(fresh);
   const [epoch, setEpoch] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
@@ -152,7 +150,7 @@ export default function Solitaire({ focused, bests, record, onBack }: GameProps)
     if (!done) return;
     const secs = Math.floor(clock.read() / 1000);
     const moves = game.moves;
-    const old = bests.solitaire;
+    const old = record0;
     const faster = old.time === undefined || secs < old.time;
     const fewer = old.moves === undefined || moves < old.moves;
     if (faster || fewer) record(b => ({ ...b, solitaire: { time: faster ? secs : b.solitaire.time, moves: fewer ? moves : b.solitaire.moves } }));
@@ -271,16 +269,30 @@ export default function Solitaire({ focused, bests, record, onBack }: GameProps)
   };
 
   return (
-    <div className="h-full w-full flex flex-col page-in">
-      <GameBar title={t('ui.games.solitaire_name')} narrow={w < 700} onBack={onBack} onNew={start}>
-        <Counter icon={<ArrowRightLeft size={14} />} label={t('ui.games.moves')} value={game.moves} />
-        <Counter icon={<Timer size={14} />} label={t('ui.games.time')} value={fmtDuration(result ? result.secs : clock.seconds)} />
-        <Button variant="subtle" compact icon={<Undo2 size={16} />} disabled={!canUndo} onClick={undo} {...still}>
+    <div ref={root} tabIndex={-1} className="game game-solitaire">
+      <div className="sl-rail">
+        <span className="sl-plate">{t('ui.games.solitaire_name')}</span>
+        <span className="flex-1" />
+        <span className="sl-stat" title={t('ui.games.moves')}>
+          <small>{t('ui.games.moves')}</small>
+          <b>{game.moves}</b>
+        </span>
+        <span className="sl-stat" title={t('ui.games.time')}>
+          <small>{t('ui.games.time')}</small>
+          <b>{fmtDuration(result ? result.secs : clock.seconds)}</b>
+        </span>
+        <span className="flex-1" />
+        <button type="button" className="sl-btn" disabled={!canUndo} onClick={undo} {...still}>
+          <Undo2 size={15} />
           {t('ui.games.solitaire_undo')}
-        </Button>
-      </GameBar>
+        </button>
+        <button type="button" className="sl-btn" onClick={start} {...still}>
+          <Shuffle size={15} />
+          {t('ui.games.solitaire_deal')}
+        </button>
+      </div>
 
-      <div ref={areaRef} className="relative isolate flex-1 min-h-0 overflow-hidden" onClick={onClick} onContextMenu={onPick}>
+      <div ref={areaRef} className="sl-felt" onClick={onClick} onContextMenu={onPick}>
         {w > 0 && (
           <>
             <Slot zone="stock" n={0} g={g} x={g.col(0)} y={PAD} title={!table.stock.length && table.waste.length ? t('ui.games.solitaire_turn_over') : undefined}>
@@ -288,7 +300,7 @@ export default function Solitaire({ focused, bests, record, onBack }: GameProps)
             </Slot>
             {table.found.map((_, n) => (
               <Slot key={`f${n}`} zone="found" n={n} g={g} x={g.col(3 + n)} y={PAD} lit={!table.found[n].length && takes('found', n)}>
-                <SuitGlyph suit={n} size={Math.round(g.cw * 0.4)} className="opacity-60" />
+                <SuitGlyph suit={n} size={Math.round(g.cw * 0.4)} />
               </Slot>
             ))}
             {table.piles.map((_, n) => (
@@ -309,17 +321,26 @@ export default function Solitaire({ focused, bests, record, onBack }: GameProps)
                 h={g.ch}
                 mark={inHand.has(p.card.id) ? 'picked' : p.top && takes(p.zone, p.n) ? 'target' : 'none'}
                 refused={refused === p.card.id}
+                flat={!p.top && p.zone !== 'pile'}
               />
             ))}
           </>
         )}
 
-        {foot > 0 && <div className="absolute inset-x-0 bottom-1.5 px-3 truncate text-center text-caption text-t3 pointer-events-none">{t('ui.games.solitaire_hint')}</div>}
+        {foot > 0 && <div className="sl-hint">{t('ui.games.solitaire_hint')}</div>}
 
         {done && result && note && (
-          <Banner tone="success" title={t('ui.games.solitaire_won')} onClose={() => setNote(false)}>
-            {t('ui.games.solitaire_won_body', fmtDuration(result.secs), result.moves) + (result.best ? ' ' + t('ui.games.new_best') : '')}
-          </Banner>
+          <div className="sl-ribbon fade-in">
+            <b>{t('ui.games.solitaire_won')}</b>
+            <span>{t('ui.games.solitaire_won_body', fmtDuration(result.secs), result.moves) + (result.best ? ' ' + t('ui.games.new_best') : '')}</span>
+            <button type="button" className="sl-btn" onClick={start} {...still}>
+              <Shuffle size={15} />
+              {t('ui.games.solitaire_deal')}
+            </button>
+            <button type="button" title={t('ui.games.solitaire_look')} aria-label={t('ui.games.solitaire_look')} onClick={() => setNote(false)} {...still}>
+              <X size={16} />
+            </button>
+          </div>
         )}
       </div>
     </div>

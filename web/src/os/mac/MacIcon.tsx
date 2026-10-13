@@ -24,6 +24,9 @@ const TILES: Record<WinApp | 'system', [string, string]> = {
   phonelink: ['#ffffff', '#cfe6ff'],
   browser: ['#ffffff', '#cdeefb'],
   games: ['#3b2a70', '#160e36'],
+  mines: ['#3a4149', '#15181c'],
+  solitaire: ['#1d7a4c', '#0c452a'],
+  snake: ['#241743', '#07040f'],
   hack: ['#1b3315', '#050b04'],
   system: ['#6cb6ff', '#1d63d8'],
 };

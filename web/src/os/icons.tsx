@@ -399,6 +399,58 @@ function GamesIcon({ size = 24 }: IconProps) {
   );
 }
 
+/** Mines: one raised steel plate of the field with a flag planted on it. */
+function MinesIcon({ size = 24 }: IconProps) {
+  const id = useId();
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <defs>
+        <linearGradient id={`${id}a`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#8c97a4" />
+          <stop offset="1" stopColor="#3c434b" />
+        </linearGradient>
+      </defs>
+      <rect x="5" y="5" width="38" height="38" rx="7" fill="#15181c" />
+      <rect x="7" y="7" width="34" height="34" rx="5" fill={`url(#${id}a)`} />
+      <path d="M8 13.5V40M40.5 8v32" stroke="#ffffff" strokeOpacity="0.22" strokeWidth="1" fill="none" />
+      <path d="M19 12v24M14 36h11" stroke="#f2f5f8" strokeWidth="2.6" strokeLinecap="round" fill="none" />
+      <path d="M20.5 12.5L36 19 20.5 25.5z" fill="#ff7a1a" />
+    </svg>
+  );
+}
+
+/** Solitaire: two cards on the felt, the ace of spades over a heart. */
+function SolitaireIcon({ size = 24 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <rect x="4" y="6" width="40" height="36" rx="8" fill="#16663f" />
+      <rect x="4" y="6" width="40" height="36" rx="8" fill="none" stroke="#e3c574" strokeOpacity="0.7" strokeWidth="1.5" />
+      <g transform="rotate(-12 18 24)">
+        <rect x="9" y="11" width="18" height="26" rx="2.6" fill="#fbf8ee" stroke="#1b1b1f" strokeOpacity="0.35" />
+        <path d="M18 31c-4.4-3.8-6.6-6.2-6.6-8.9 0-2 1.5-3.5 3.4-3.5 1.3 0 2.5.7 3.2 1.9.7-1.2 1.9-1.9 3.2-1.9 1.9 0 3.4 1.5 3.4 3.5 0 2.7-2.2 5.1-6.6 8.900z" fill="#c5221f" />
+      </g>
+      <g transform="rotate(10 30 24)">
+        <rect x="21" y="10" width="18" height="26" rx="2.6" fill="#fffdf7" stroke="#1b1b1f" strokeOpacity="0.35" />
+        <path d="M30 15c-2.6 3.3-6.5 5.6-6.5 8.8 0 1.9 1.4 3.2 3.2 3.2 1.1 0 2-.5 2.7-1.3-.1 1.4-.6 2.6-1.5 3.600h4.200c-.9-1-1.4-2.2-1.5-3.6.7.8 1.6 1.3 2.7 1.3 1.8 0 3.2-1.3 3.2-3.2 0-3.2-3.9-5.5-6.5-8.800z" fill="#1b1b1f" />
+      </g>
+    </svg>
+  );
+}
+
+/** Snake: the snake itself, lit, turning on its black screen towards what it eats. */
+function SnakeIcon({ size = 24 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48">
+      <rect x="4" y="4" width="40" height="40" rx="9" fill="#0a0612" />
+      <rect x="4" y="4" width="40" height="40" rx="9" fill="none" stroke="#3b2a66" strokeWidth="2" />
+      <path d="M12 34h12v-9h10v-9" fill="none" stroke="#39ff7a" strokeWidth="6" strokeLinejoin="round" strokeLinecap="square" />
+      <rect x="30.5" y="11.5" width="7" height="7" rx="1.5" fill="#b6ffd0" />
+      <rect x="33" y="14" width="2" height="2" fill="#0a0612" />
+      <rect x="12.5" y="12.5" width="5" height="5" fill="#ff3ea5" transform="rotate(45 15 15)" />
+    </svg>
+  );
+}
+
 function HackIcon({ size = 24 }: IconProps) {
   const id = useId();
   return (
@@ -446,6 +498,9 @@ const ICONS: Record<WinApp | 'system', (p: IconProps) => ReactElement> = {
   phonelink: PhoneLinkIcon,
   browser: BrowserIcon,
   games: GamesIcon,
+  mines: MinesIcon,
+  solitaire: SolitaireIcon,
+  snake: SnakeIcon,
   hack: HackIcon,
   system: SystemIcon,
 };

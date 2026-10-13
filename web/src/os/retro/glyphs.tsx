@@ -407,6 +407,58 @@ const GamesPx = ({ size = 32 }: IconProps) =>
     size,
   );
 
+/** A raised grey plate with a red flag on it - Mines. */
+const MinesPx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={1} y={1} w={14} h={14} c={P.k} />
+      <Px x={2} y={2} w={12} h={12} c={P.s} />
+      <Px x={2} y={2} w={12} h={1} c={P.w} />
+      <Px x={2} y={2} w={1} h={12} c={P.w} />
+      <Px x={2} y={13} w={12} h={1} c={P.d} />
+      <Px x={13} y={2} w={1} h={12} c={P.d} />
+      <Px x={7} y={4} w={1} h={8} c={P.k} />
+      <Px x={5} y={11} w={5} h={1} c={P.k} />
+      <Px x={8} y={4} w={4} h={1} c={P.R} />
+      <Px x={8} y={5} w={5} h={2} c={P.R} />
+      <Px x={8} y={7} w={3} h={1} c={P.R} />
+    </>,
+    size,
+  );
+
+/** A white card with a red heart on green baize - Solitaire. */
+const SolitairePx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={0} y={1} w={16} h={14} c={P.k} />
+      <Px x={1} y={2} w={14} h={12} c={P.g} />
+      <Px x={4} y={3} w={8} h={10} c={P.k} />
+      <Px x={5} y={4} w={6} h={8} c={P.w} />
+      <Px x={6} y={6} w={1} h={2} c={P.R} />
+      <Px x={9} y={6} w={1} h={2} c={P.R} />
+      <Px x={7} y={7} w={2} h={2} c={P.R} />
+      <Px x={6} y={8} w={4} h={1} c={P.R} />
+      <Px x={7} y={9} w={2} h={1} c={P.R} />
+    </>,
+    size,
+  );
+
+/** A green snake bending across a black screen towards a red dot - Snake. */
+const SnakePx = ({ size = 32 }: IconProps) =>
+  grid(
+    <>
+      <Px x={0} y={0} w={16} h={16} c={P.k} />
+      <Px x={2} y={11} w={7} h={2} c={P.G} />
+      <Px x={7} y={7} w={2} h={4} c={P.G} />
+      <Px x={7} y={7} w={6} h={2} c={P.G} />
+      <Px x={11} y={3} w={2} h={4} c={P.G} />
+      <Px x={11} y={3} w={2} h={2} c={P.l} />
+      <Px x={12} y={3} w={1} h={1} c={P.k} />
+      <Px x={3} y={3} w={2} h={2} c={P.R} />
+    </>,
+    size,
+  );
+
 /** Green shield with a keyhole - the hack runner. */
 const HackPx = ({ size = 32 }: IconProps) =>
   grid(
@@ -461,6 +513,9 @@ const APP_PX: Record<WinApp | 'system', (p: IconProps) => ReactElement> = {
   phonelink: PhoneLinkPx,
   browser: BrowserPx,
   games: GamesPx,
+  mines: MinesPx,
+  solitaire: SolitairePx,
+  snake: SnakePx,
   hack: HackPx,
   system: SystemPx,
 };

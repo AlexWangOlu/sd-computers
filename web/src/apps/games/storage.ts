@@ -1,3 +1,4 @@
+import { create } from 'zustand';
 import { LEVEL_ORDER, type Level } from './minesRules';
 
 /** Every game's best results live under this one key. */
@@ -43,3 +44,19 @@ export function saveBests(bests: Bests): void {
     // Storage is unavailable: the results last until the window closes.
   }
 }
+
+/**
+ * The best results, shared by everything that shows or beats them: each game is a window of its
+ * own now, and the shelf in the Games window lists what they have done. Read once from storage,
+ * written back whenever one of them changes - and not before: opening a game stores nothing.
+ */
+export const useBests = create<{ bests: Bests; record: (change: (b: Bests) => Bests) => void }>((set, get) => ({
+  bests: loadBests(),
+  /** Change the stored results. Return the same object to leave them alone. */
+  record: change => {
+    const next = change(get().bests);
+    if (next === get().bests) return;
+    set({ bests: next });
+    saveBests(next);
+  },
+}));

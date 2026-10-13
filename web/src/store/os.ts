@@ -10,7 +10,8 @@ import { rpc } from '@/nui/rpc';
  */
 
 export type Phase = 'off' | 'boot' | 'lock' | 'welcome' | 'desktop' | 'shutdown';
-export type WinApp = AppId | 'hack';
+/** What a window can be: an installed app, a hack run (Command Prompt opens those) or one of the games (the Games shelf opens those). */
+export type WinApp = AppId | 'hack' | 'mines' | 'solitaire' | 'snake';
 
 export interface Win {
   id: string;

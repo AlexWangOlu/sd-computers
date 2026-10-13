@@ -1,7 +1,7 @@
 import type { ReactNode, SVGProps } from 'react';
 
-// The games' own drawings. Each takes the current text colour, so the caller picks it with a
-// text-* class (or, for a playing card, the card's ink).
+// The games' own drawings. Each takes the current text colour, so the caller picks it with
+// `color` (or, for a playing card, the card's ink).
 
 /**
  * Playing-card colours. A card face is its own light surface in every theme, like a real card on
@@ -20,16 +20,16 @@ export function MineGlyph({ size, ...rest }: GlyphProps) {
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...rest}>
       <path d="M12 2.5V21.5M2.5 12H21.5M5.3 5.3L18.7 18.7M18.7 5.3L5.3 18.7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <circle cx="12" cy="12" r="6.2" fill="currentColor" />
-      <circle cx="9.9" cy="9.9" r="1.5" opacity="0.6" style={{ fill: 'var(--layer)' }} />
+      <circle cx="9.9" cy="9.9" r="1.6" fill="#fff" opacity="0.55" />
     </svg>
   );
 }
 
-/** A flag: the pennant takes the text colour, the pole and foot stay neutral. */
+/** A flag: the pennant takes the text colour, the pole and foot stay steel. */
 export function FlagGlyph({ size, ...rest }: GlyphProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...rest}>
-      <path d="M8 3.5V20.5M4.5 20.5H12.5" fill="none" strokeWidth="2" strokeLinecap="round" style={{ stroke: 'var(--text-2)' }} />
+      <path d="M8 3.5V20.5M4.5 20.5H12.5" fill="none" stroke="#e6ebf0" strokeWidth="2" strokeLinecap="round" />
       <path d="M9.2 4L19.5 8.4L9.2 12.8Z" fill="currentColor" />
     </svg>
   );

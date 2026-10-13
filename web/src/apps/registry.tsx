@@ -18,6 +18,9 @@ import Contacts from './contacts';
 import PhoneLink from './phonelink';
 import Browser from './browser';
 import Games from './games';
+import Mines from './games/Mines';
+import Solitaire from './games/Solitaire';
+import Snake from './games/Snake';
 import HackWindow from './hack/HackWindow';
 
 /** Props every app component receives: its own window (id, title, size, props...). */
@@ -27,7 +30,8 @@ export interface AppProps {
 
 /**
  * App id -> component. The ids are configs/shared/desktop.lua's Apps keys (plus 'hack', the
- * window Command Prompt spawns for a minigame). A new app needs an entry here AND in that config.
+ * window Command Prompt spawns for a minigame, and the three games the Games shelf opens as
+ * programs of their own). A new app needs an entry here AND in that config.
  * 'messages', 'notes', 'photos' and 'contacts' only ever appear while the sd-phone link is live (the
  * server installs them, after 'phonelink' has linked the phone where it asks for that); 'boss',
  * 'board' and 'cameras' only for a player they are for.
@@ -51,5 +55,8 @@ export const APPS: Record<WinApp, ComponentType<AppProps>> = {
   phonelink: PhoneLink,
   browser: Browser,
   games: Games,
+  mines: Mines,
+  solitaire: Solitaire,
+  snake: Snake,
   hack: HackWindow,
 };
