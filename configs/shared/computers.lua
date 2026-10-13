@@ -8,6 +8,10 @@
 --   hostname  the machine name in CMD/logs. Model computers append a short per-instance suffix.
 --
 --   coords    vec3 - location computer: the box zone centre (put it on the keyboard/monitor).
+--             The option only shows while the spot the player is looking at is INSIDE the box, so
+--             the box has to hold the monitor, the keyboard or the desk top - not the air in
+--             front of them. With Debug = true in configs/config.lua, aim at the monitor and run
+--             /computer_pos for a ready-made line; the box is drawn too.
 --   size      vec3 - box zone size (default vec3(0.8, 0.8, 0.8)).
 --   rotation  number - box zone heading (default 0.0).
 --     - or -
@@ -43,8 +47,8 @@ return {
         id = 'mrpd_frontdesk',
         label = 'MRPD Front Desk',
         hostname = 'LSPD-MRPD-FD01',
-        coords = vec3(441.2, -978.9, 30.9),
-        size = vec3(0.9, 0.7, 0.6),
+        coords = vec3(441.62, -979.52, 30.68), -- on the desk's left monitor, with its mouse, keyboard and phone
+        size = vec3(1.0, 0.6, 0.6),
         rotation = 0.0,
         groups = { police = 0 },
         boss = 'police',
