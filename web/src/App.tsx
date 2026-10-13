@@ -11,7 +11,6 @@ import { emit } from './lib/bus';
 import { t } from './i18n';
 import { messagePreview } from './apps/messages/format';
 import type { IncomingPush } from './apps/messages/types';
-import { sfx } from './os/sfx';
 import { devMirror, mirrorControl, mirrorStop, type MirrorControl } from './mirror';
 import Computer from './os/Computer';
 import LibHack from './os/LibHack';
@@ -36,8 +35,6 @@ function notifyMail(d: MailPush): void {
   emit('mail:received', d);
   const os = useOS.getState();
   if (os.phase !== 'desktop') return;
-  // The retro shell's toast box plays its own period chime.
-  if (os.payload?.computer.style !== 'retro') sfx.notify();
   os.toast({
     app: 'mail',
     title: d.message.senderName,
@@ -116,7 +113,6 @@ export default function App() {
     const msg = Array.isArray(c.messages) ? c.messages[0] : undefined;
     const sender = Array.isArray(c.participants) ? c.participants.find(p => p.phone === msg?.from) ?? c.participants[0] : undefined;
     const name = sender?.name || msg?.from || '';
-    if (os.payload.computer.style !== 'retro') sfx.notify();
     os.toast({
       app: 'messages',
       title: c.groupName || name || t('ui.messages.new_message'),

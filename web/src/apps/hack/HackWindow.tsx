@@ -7,7 +7,8 @@ import HackRunner, { desktopHackApi, type HackResult } from './HackRunner';
 /**
  * A "hack.exe" window on the desktop (opened by Command Prompt). Its run + the result callback
  * ride in win.props: { run: HackRun, onResult: (r: HackResult) => void }. Keys only reach the
- * game while this window is the focused one.
+ * game while this window is the focused one. The wrapper (no box of its own) keeps the system's
+ * click sound out of the game (os/sfx.ts).
  */
 export default function HackWindow({ win }: AppProps) {
   const run = win.props?.run as HackRun | undefined;
@@ -23,5 +24,9 @@ export default function HackWindow({ win }: AppProps) {
   );
 
   if (!run) return null;
-  return <HackRunner run={run} api={desktopHackApi} onDone={done} inputEnabled={active} />;
+  return (
+    <div data-sfx="off" className="contents">
+      <HackRunner run={run} api={desktopHackApi} onDone={done} inputEnabled={active} />
+    </div>
+  );
 }

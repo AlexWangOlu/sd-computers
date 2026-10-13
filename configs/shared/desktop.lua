@@ -69,6 +69,7 @@ return {
             DefaultWallpaper = 'petals-dark',
             Accents = { '#4cc2ff', '#60cdff', '#7a7dff', '#c239b3', '#e74856', '#ff8c00', '#16c60c', '#00b7c3' },
             DefaultTheme = 'dark', -- 'dark' | 'light'
+            Sounds = true, -- synthesized system sounds (startup, sign-in, windows, clicks, notifications)
         },
 
         retro = {
@@ -100,6 +101,7 @@ return {
             DefaultWallpaper = 'harbor-dunes',
             Accents = { '#0a84ff', '#bf5af2', '#ff375f', '#ff9f0a', '#ffd60a', '#30d158', '#8e8e93' },
             DefaultTheme = 'light',
+            Sounds = true, -- synthesized system sounds (startup chord, windows, clicks, notifications)
         },
     },
 }

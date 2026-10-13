@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { accentVars } from './theme';
 import { SHELLS } from './shells';
 import { powerOff } from './session';
+import { wireSounds } from './sfx';
 
 const noop = () => {};
 
@@ -21,6 +22,8 @@ const ESC_AGAIN_MS = 5000;
  *               unless the focused app had a use for it (an app marks that with preventDefault)
  *   Ctrl+Escape toggles the launcher (Start / app menu)
  *   Alt+F4      closes the focused window
+ * And the system sounds of the modern and mac looks (os/sfx.ts), which follow the store and the
+ * mouse from here so that no shell or app has to ask for them.
  */
 export default function Computer() {
   const phase = useOS(s => s.phase);
@@ -51,6 +54,8 @@ export default function Computer() {
       }),
     [],
   );
+
+  useEffect(() => (rootRef.current ? wireSounds(rootRef.current) : undefined), []);
 
   useEffect(() => {
     if (!leaving) return;

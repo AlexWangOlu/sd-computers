@@ -150,6 +150,7 @@ function ToastCard({ toast, label }: { toast: Toast; label: string }) {
   return (
     <div
       ref={ref}
+      data-sfx="press"
       onClick={() => {
         toast.onClick?.();
         dismissToast(toast.id);

@@ -28,6 +28,7 @@ function Banner({ toast }: { toast: Toast }) {
   return (
     <div
       ref={ref}
+      data-sfx="press"
       className={`mac-toast group ${toast.onClick ? 'cursor-pointer' : ''}`}
       onClick={() => {
         toast.onClick?.();

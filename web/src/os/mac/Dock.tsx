@@ -132,6 +132,7 @@ export default function Dock() {
           else nodes.current.delete(e.key);
         }}
         className="mac-dock-item"
+        data-sfx="press"
         onClick={() => activate(e)}
         onContextMenu={ev => {
           ev.preventDefault();

@@ -90,7 +90,7 @@ export interface OpenPayload {
     defaultTheme: Theme;
     /** retro: draw the desktop inside the CRT monitor chassis */
     monitor: boolean;
-    /** retro: synthesized period sounds */
+    /** the style's synthesized sounds (os/sfx.ts for modern and mac, os/retro/sounds.ts) */
     sounds: boolean;
   };
   settings: UserSettings;
