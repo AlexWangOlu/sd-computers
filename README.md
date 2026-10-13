@@ -239,10 +239,10 @@ Thirteen of the thirty-one props a computer can be placed as out of the box. Add
 | **Command Prompt** | A real-feeling `cmd.exe` (`ipconfig`, `systeminfo`, `ping`, `tasklist` and more) that launches the hacking minigames: free practice (`hack maze hard`) and configured breach targets (`targets`, `breach fleeca-ledger`) that pay rewards server-side |
 | **Business Manager** | The boss menu: roster with online and on-duty status, promote, demote and fire, hire the players standing at the computer or anyone online by their player ID (they get an accept prompt either way), society balance chart, deposit and withdraw, statement. Only shown to that job's bosses |
 | **Files** | The character's documents: written on any computer, they follow the character to every other one. With sd-phone, the phone's documents show beside them |
-| **Browser** | A closed, in-game network: the pages you list in `configs/shared/browser.lua`, written right in the config or your own web page embedded. Any other address "can't be reached" |
+| **Browser** | A closed, in-game network: the sites you list in `configs/shared/browser.lua`. With sd-phone those are the city's own, live: Weazel News, the Marketplace, the Yellow Pages, a business directory, Squawk, the penal code and the stock market. You can also write pages right in the config, or embed your own web page. Any other address "can't be reached" |
 | **Bank** | The character's bank balance, cash and recent transactions, to look at. Nothing can be moved from it |
 | **Company Board** | A job's notice board: bosses post, pin and remove announcements, everyone in the job reads them from any computer, and it shows who is on duty. Only shown to players with a job |
-| **Security Cameras** | The cameras in `configs/shared/cameras.lua` a player is allowed to watch from that computer. Picking one puts its picture on the whole display, to look around and zoom with. Only shown to players with at least one camera to watch; every first look is written to the System Logs |
+| **Security Cameras** | The cameras a player is allowed to watch from that computer: the ones put up from the admin panel, and the ones in `configs/shared/cameras.lua`. Picking one plays its picture live in the app's window, to look around and zoom with, and **Full screen** puts it over the whole display. Only shown to players with at least one camera to watch; every first look is written to the System Logs |
 | **Games** | Mines, Solitaire and Snake |
 | **Phone Link** | Only with sd-phone: links the character's phone to that machine. It sends a code to the phone as a notification; typing it in puts the phone's apps on the desktop there and then, until they unlink it |
 | **Messages / Notes / Photos / Contacts** | Only with sd-phone, once the phone is linked in Phone Link: the phone's texts, notes, gallery and address book on the desktop |
@@ -276,6 +276,7 @@ Using a computer does not cover the game with a desktop. The camera moves up to 
 - Retro leaves its drawn CRT off there: the prop is the monitor.
 - A computer with no screen to go to opens fullscreen, as before: a tower PC, a zone with no monitor standing in it, a laptop opened from a script with no prop (`OpenComputer` without coords).
 - `configs/shared/interact.lua`: `View = 'screen'` (default) or `'fullscreen'` for every computer, and `Camera` for the framing (`Fill`, how much of the window the screen takes), the field of view and how long the camera takes to travel.
+- Watching a security camera has the game look through that camera, so for as long as one is watched the room round the screen is a still picture of how it was. It moves again when the player goes back to the list of cameras.
 
 ## Screens in the world
 
@@ -330,6 +331,16 @@ The minigames come from sd-deaddrop, with the same server-side anti-cheat: proof
 3. It is live at once for everyone, with the same "Use Computer" option as any other computer.
 
 A placed computer can be changed (name, prop, style, jobs, Business Manager), moved with the gizmo, teleported to and deleted from its row. Computers from `configs/shared/computers.lua` cannot be changed there, but a location from that file can be removed from its row and restored again: the file is not touched, the computer just stops being one (nobody can open it, and its monitor goes back to its stock look) until it is restored. Placed ones are kept in the `computers_placed` table and get the ids `placed_<n>`, which is what keys their System Logs.
+
+### Security cameras from the panel
+
+The **Cameras** tab lists every security camera, with the jobs that may watch it, and puts new ones up in game:
+
+1. **Put up a camera**: give it a name, the heading the app lists it under, and optionally the jobs (or gangs) that may watch it, each with a minimum grade. No jobs listed means anyone sitting at a computer can watch it.
+2. A free camera takes over. Fly it to where the camera should hang (**W A S D**, **Space** and **Ctrl** for height, **Shift** faster, **Alt** slower), aim with the mouse and zoom with the wheel. What is on the display is what the camera will show; **Enter** keeps it, **Backspace** cancels.
+3. It is in the Security Cameras app at once, for the players it is for.
+
+A camera put up this way can be renamed, given to other jobs, moved or aimed again, gone to and taken down from its row. The ones `configs/shared/cameras.lua` lists show in the tab too and can be removed and restored there; the file is not touched. Cameras put up from the panel are kept in the `computers_cameras` table.
 
 ### Business Manager on a placed computer
 
@@ -399,6 +410,7 @@ sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-
 | **Files** | Also lists the phone's documents | The character's own documents only |
 | **Bank** | Takes its statement from the phone's banking history | The banking resource's statement, when it keeps one |
 | **Phone Link** | New app: links the phone to the machine with a code | Not installed |
+| **Browser** | The phone's public apps as sites, live (below) | Only the pages written in the config |
 
 **Linking a phone.** Messages, Notes, Photos, Contacts and the phone's documents in Files are not on a computer until the character has linked their phone to that machine. They open **Phone Link**, send a code to their phone (it arrives as a notification, so they need the phone on them), and type the six digits in. The phone's apps appear on the desktop straight away and stay for that character on that machine until they press **Unlink**. Every machine is linked on its own: one public PC being linked says nothing about the next one. A code works for `LinkCodeMinutes` (5), five wrong tries use it up, and a new one can be sent every 30 seconds. `RequireLink = false` drops the code and the app, and the phone's apps are simply there. Mail and the Bank statement do not wait for the link.
 
@@ -408,6 +420,24 @@ sd-computers is complete on its own. If **[sd-phone](https://github.com/Samuels-
 - Per computer: `phone = false` in `computers.lua` keeps the four phone apps and Phone Link off that machine (a police terminal, say). Mail follows the server-wide switch so nobody sees two different inboxes.
 - `SendMail`, `MailAddressExists` and `GetMailAddresses` follow the switch too: while linked they work on the phone's mailboxes (the ones players actually read).
 - sd-phone side: `set sd_phone_computerlink "sd-computers"` lists the resources allowed to drive the link (default sd-computers only; `"off"` disables it).
+
+**The city's sites in the Browser.** With sd-phone's link at v2 or newer, the Browser shows the phone's public apps as websites. Each is one line in `configs/shared/browser.lua` (`live = '...'`), so the address and the name are yours and a site you do not want is a line taken out:
+
+| `live` | Site (default address) | What a player can do |
+|---|---|---|
+| `news` | Weazel News (`weazel.news`) | Read the breaking line and every story. Players the phone counts as Weazel staff get a **Newsroom**: write, edit, feature, publish now or later, take down, and set the breaking line |
+| `market` | Marketplace (`marketplace.ls`) | Browse and search listings with photos, price and the seller's contact. Put up, edit and take down their own |
+| `pages` | Yellow Pages (`yellowpages.ls`) | The same for adverts |
+| `directory` | Business Directory (`directory.ls`) | See every company and whether anybody is on duty, and write to one (the answer comes to their phone) |
+| `squawk` | Squawk (`squawk.ls`) | Read the public feed, what is trending, a hashtag and anybody's page |
+| `laws` | Laws and Fines (`laws.gov`) | Look up any charge: its fine and its sentence, as the police terminal has them today |
+| `stocks` | Stock Market (`stocks.ls`) | Watch prices and charts. Only while the phone's Stocks app is switched on |
+
+- Reading needs no phone and no Phone Link: these are public pages, and they work at any computer that has the Browser. They refresh themselves while they are being looked at.
+- Posting is done as the player at the desk, through the phone's own action for it: its limits, its "is this yours" check and its staff rule are the ones that hold, and a refusal comes back as the phone's own sentence.
+- A photo on a post has to come out of the poster's phone gallery (the phone takes nothing else), so the photo picker is only there while their phone is linked to that computer. The **Message** and **Email** buttons on an ad open the computer's Messages and Mail, so Message needs the link too.
+- A site whose app is switched off in sd-phone, or an sd-phone with an older link, simply leaves that site off the network. Scheduling an ad for later stays on the phone.
+- The penal code is open to everyone here, though on the phone only police and DOJ terminals show it. Take the `laws` line out if you would rather it stayed that way.
 
 ## For developers
 
@@ -514,10 +544,10 @@ Scope-by-folder, like the other sd-* resources: `configs/shared` ships to client
 | `configs/shared/mail.lua` | Domain, account caps, compose limits, bounces, off-computer notifications |
 | `configs/shared/phone.lua` | Optional sd-phone link: phone Mail, the Messages, Notes, Photos and Contacts apps, the phone's side of Files and Bank, Phone Link's code (RequireLink), RequirePhone |
 | `configs/shared/files.lua` | Files: how many documents a character keeps, and how long each may be |
-| `configs/shared/browser.lua` | **The Browser's sites**: the start address and every page a computer can open |
+| `configs/shared/browser.lua` | **The Browser's sites**: the start address and every site a computer can open - sd-phone's public apps live (`live`), pages written in the file (`blocks`), or your own web page (`url`) |
 | `configs/shared/bank.lua` | Bank on or off, how many transactions it lists |
 | `configs/shared/board.lua` | Company Board on or off, jobs that have none, how many announcements a job keeps |
-| `configs/shared/cameras.lua` | **The security cameras**: where each is, the way it looks, who may watch it and from which computers; how far they turn and zoom |
+| `configs/shared/cameras.lua` | **The security cameras** written in the config (more are put up from the admin panel): where each is, the way it looks, who may watch it and from which computers; how far they all turn and zoom, and the look of the picture (`Filter`: black-and-white CCTV, colour, or clean) |
 | `configs/shared/hacks.lua` | Minigame catalogue and easy/medium/hard presets, practice on or off |
 | `configs/shared/boss.lua` | Business Manager on or off, hire radius, hiring by player ID on or off, deposit sources, withdraw target |
 | `configs/server/security.lua` | Optional **PINs per computer** (none set out of the box) and wrong-PIN lockout |

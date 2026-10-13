@@ -164,9 +164,26 @@ Installed per player: only for someone whose job has a board (`configs/shared/bo
 
 ### Browser (`browser.lua`) - app id `browser`
 - `browser:sites` {} -> `{ home, sites: Site[] }` (read-only: `configs/shared/browser.lua`, sanitised - a bad entry is skipped and named in the server console)
-- `Site` = `{ address, title, bookmark, url? | blocks?: Block[] }` (`url` is https only and only ever one the server listed: nothing typed reaches the real internet)
+- `Site` = `{ address, title, bookmark, url? | blocks?: Block[] | live?: LiveKind }` (`url` is https only and only ever one the server listed: nothing typed reaches the real internet)
+- `LiveKind` = `'news' | 'market' | 'pages' | 'directory' | 'squawk' | 'laws' | 'stocks'`: one of sd-phone's public apps as a site. A live site is only in the reply while the phone can serve it (linked, link v2+, that app on). Its pages are everything under its address (`weazel.news/story/12`): `resolve()` in `model.ts` gives `{ kind: 'live', site, live, path }` and `src/apps/browser/live/LivePage.tsx` picks the page.
 - `Block` = `{ type: 'heading'|'subheading'|'text', text }` | `{ type: 'list', items }` | `{ type: 'notice', kind, title?, text }` | `{ type: 'facts', rows: [{ label, value }] }` | `{ type: 'links', items: [{ to, label?, note? }] }` | `{ type: 'image', src, caption? }`
 - `win.props.address` opens that address (in a new tab when the window is already open).
+
+#### Live sites (`web.lua`, over the sd-phone link) - all need the `browser` app
+Each live site is a brand of its own: a website does not follow the desktop it is looked at on, so these pages keep their colours, type and layout in every theme and every look. They use none of the OS's tokens and none of the control kit (`ui/controls`, whose `ctl-*` markers the looks re-skin): `src/styles/sites.css` has a `.site` base with the sites' own few controls (`.s-btn`, `.s-input` ...) and one `.site-<brand>` block per site that sets its variables and its own pieces (Weazel's masthead, the Yellow Pages' call box, the exchange's ticker tape). `live/parts.tsx` wraps those as `Site`, `Btn`, `Input`, `Modal` and so on; each site file lays its own pages out. `sites.css` is imported by `main.tsx` and `screen/main.tsx`, so the copy on a prop looks the same.
+
+Read as the page is opened, through `useLive()` (`live/useLive.ts`): what an endpoint last answered is kept outside the page, so going back and forth shows it at once and asks again behind it; a page on screen asks again every 30 s (stocks 10 s, laws 5 min). Replies are read by `live/data.ts`. An endpoint whose site is not on the network answers `err.phone_unavailable`. Every picture address is https-checked on the server.
+- `web:ads` { board: 'market'|'pages' } -> `{ items: Ad[], limits, number? }`; `Ad` = `{ id, title, body, price?, images?, number?, email?, date, mine, publishAt? }` (`publishAt` only on the player's own ads queued on the phone)
+- `web:ads:save` { board, id?, title, body, price?, images?, number?, email? } -> `{ item }` (create, or a full replace of one of the player's own; `images` are addresses out of their phone gallery - anything else the phone drops)
+- `web:ads:delete` { board, id }
+- `web:news` {} -> `{ articles: Article[], ticker: string[], canManage }` plus, for staff, `{ scheduled, categories, limits }`; `Article` = `{ id, category, headline, dek, body: string[], author, time, views, image?, featured, publishAt? }`
+- `web:news:view` { id } -> `{ id, views }`
+- `web:news:save` { id?, category, headline, dek?, body, image?, featured?, publishAt? } -> `{ article }`, `web:news:publish` { id }, `web:news:delete` { id }, `web:news:ticker` { lines } - staff only, by the phone's own rule
+- `web:directory` {} -> `{ companies: [{ id, name, location?, color?, emoji?, callNumber?, onDuty }] }`; `web:directory:message` { job, body }
+- `web:squawk` { view: 'feed' } -> `{ posts, tags }`, { view: 'tag', tag } -> `{ posts }`, { view: 'profile', handle } -> `{ profile, posts }` (always read as a visitor)
+- `web:laws` {} -> `{ offences: [{ code, label, class, months, fine, description }] }`
+- `web:stocks` {} -> `{ assets: [{ symbol, name, kind, color?, price, change, history }] }`
+- The photo picker on a post is the Photos app's own `photos:list`, so it is only offered while the session has that app (the phone linked to this machine). The contact buttons open other apps by their launch props: `openApp('messages', { number })` and `openApp('mail', { to, subject })`.
 
 ### Games - app id `games`, no server calls (best results live in `localStorage['sd_computers:games']`).
 
@@ -175,9 +192,13 @@ Installed per player: only for someone whose job has a board (`configs/shared/bo
 ### Security Cameras (`shell.lua` cameras:*, `cameras.lua`) - app id `cameras`
 Installed per player: only for someone who may watch at least one camera from this computer.
 - `cameras:list` -> `[{ id, label, area? }]` the cameras this player may watch here, in config order
-- `cameras:watch` { id } -> `{ id, label, area?, x, y, z, pitch, roll, yaw, fov, pan, tilt, zoom, effect }` (refused for a camera that is not on the list). The page does not call this itself in the game: it names a camera to client Lua, which asks.
-- Showing a picture is client Lua's (`client/computers/cameras.lua`), through three NUI callbacks wrapped by `src/apps/cameras/feed.ts`: `computers:camera:start` { id } -> `{ ok, error? }`, `computers:camera:control` { dx?, dy?, zoom?, reset? } -> `{ ok, zoom }` (dx/dy = how far the picture was dragged, as fractions of the display), `computers:camera:stop`.
-- Lua says what is on the display with the NUI event `computers:camera` `{ active, id?, label?, area?, zoom?, maxZoom? }`. While active, the page holding the OS gives it the whole display and `CameraView` hides the desktop and draws its frame over the picture.
+- `cameras:watch` { id } -> `{ id, label, area?, x, y, z, pitch, roll, yaw, fov, pan, tilt, zoom, filter }` (`filter` = `'cctv' | 'colour' | 'none'`, the look of the picture; refused for a camera that is not on the list). The page does not call this itself in the game: it names a camera to client Lua, which asks.
+- The game draws one view, so watching a camera means the game looks through it (`client/computers/cameras.lua`). That is asked for through three NUI callbacks wrapped by `src/apps/cameras/feed.ts`: `computers:camera:start` { id } -> `{ ok, error?, overtaken? }` (answers once the world round the camera has loaded; `overtaken` = another start or a stop came in meanwhile, and its answer is the one that counts), `computers:camera:control` { dx?, dy?, zoom?, reset? } -> `{ ok, zoom }` (dx/dy = how far the picture was dragged, as fractions of the picture), `computers:camera:stop` (answers once the game is back in the room).
+- Lua says what the game is showing with the NUI event `computers:camera` `{ active, id?, label?, area?, zoom?, maxZoom?, filter? }`.
+- The picture is drawn by the page: `src/lib/gameView.ts` puts the game's own frame on a canvas (a WebGL texture the game's browser swaps for its picture). `FeedWindow` plays it in the app's window; `CameraView` is the picture expanded, where the page is see-through and the picture is the game itself. `Overlay.tsx` has what is laid over both (scan lines, snow while connecting), `useLook.ts` the mouse and keys.
+- The room round a prop's screen would turn into the camera's view too, so the page holding the OS (`src/host`) keeps it as a still: before the first camera goes up Lua sends `computers:camera:freeze`, the host draws the display as it is onto a canvas under the OS and answers with the NUI callback `computers:camera:frozen`; the still is dropped on `computers:camera` `{ active: false }`. Fullscreen computers have no room to keep. The game hands its picture to one canvas at a time, so the two take turns: the host lets go of it before it answers, and the app's canvas does not ask until the game says it is on a camera (the rules are at the top of `src/lib/gameView.ts`).
+- Expanding is between the OS and the host: the OS posts `{ source: 'sd-computers-os', expanded }` to its parent, the host hides the frame, gives it the whole display (or the prop's screen back) and answers `computers:host:display`; only then does the OS change what it shows (`setDisplay` in `feed.ts`).
+- Other players' copy of the screen (`src/mirror`) leaves the picture out: the canvas is marked `data-mirror-skip`.
 
 ### Phone apps (optional sd-phone link - `phoneapps.lua`)
 Installed by the server only while sd-phone is started with its link file (configs/shared/phone.lua);
