@@ -55,9 +55,50 @@ const clipChars = (s: string, max: number): string => {
   return c.length > max ? c.slice(0, max).join('') : s;
 };
 
-let nextId = 7;
+let nextId = 8;
+
+/** A picture that draws offline, for the formatted document: a car in the impound lot. */
+const LOT_PHOTO =
+  'data:image/svg+xml;charset=utf-8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 400 225"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fa9c4"/><stop offset="1" stop-color="#d9c9b0"/></linearGradient></defs><rect width="400" height="225" fill="url(#s)"/><rect y="118" width="400" height="107" fill="#4a4d55"/><rect y="112" width="400" height="8" fill="#6d7079"/><g stroke="#e9e3c8" stroke-width="2.5"><path d="M40 225 78 126M150 225 164 126M250 225 236 126M360 225 322 126"/></g><g stroke="#7f8591" stroke-width="2"><path d="M0 62H400M0 86H400"/><path d="M30 40V118M110 40V118M190 40V118M270 40V118M350 40V118"/></g><path d="M112 168c0-10 6-16 16-18l22-26c5-6 11-9 19-9h62c9 0 15 3 21 9l24 26c12 2 20 8 20 18v14c0 4-3 7-7 7H119c-4 0-7-3-7-7z" fill="#6f7f8f"/><path d="M158 149l16-20c2-3 5-4 9-4h18v24zm50 0v-24h22c4 0 7 1 9 4l17 20z" fill="#27313d"/><circle cx="150" cy="189" r="15" fill="#191b20"/><circle cx="150" cy="189" r="7" fill="#9aa1ad"/><circle cx="262" cy="189" r="15" fill="#191b20"/><circle cx="262" cy="189" r="7" fill="#9aa1ad"/><rect x="293" y="160" width="12" height="7" rx="2" fill="#f2d16b"/><rect x="113" y="160" width="9" height="7" rx="2" fill="#c0392b"/></svg>',
+  );
+
+/** A formatted document: what the editor makes of a heading, a part in its own typeface, a picture and lines to sign on. */
+const RELEASE_FORM = JSON.stringify({
+  v: 1,
+  font: 'classic',
+  blocks: [
+    { t: 'h1', a: 'center', r: [{ s: 'Vehicle Release Form' }] },
+    { t: 'p', a: 'center', r: [{ s: 'Mission Row Police Department · Impound', i: true, c: 'grey' }] },
+    { t: 'hr' },
+    {
+      t: 'p',
+      a: 'justify',
+      r: [
+        { s: 'The vehicle below was impounded on Strawberry Avenue and is released to its registered owner, ' },
+        { s: 'Mr. Daniel Okafor', b: true },
+        { s: ', on payment of the fee. The owner has shown a valid licence and proof of insurance at the front desk.' },
+      ],
+    },
+    { t: 'img', src: LOT_PHOTO, w: 50, cap: 'Bay 14, photographed on arrival' },
+    { t: 'h2', r: [{ s: 'Vehicle' }] },
+    {
+      t: 'ul',
+      items: [
+        [{ s: 'Dinka Blista, grey, plate ' }, { s: '46EEK572', f: 'mono', b: true }],
+        [{ s: 'Impounded for parking across a fire lane' }],
+        [{ s: 'Release fee: ' }, { s: '$450, paid in full', c: 'green', b: true }],
+      ],
+    },
+    { t: 'p', r: [{ s: 'Scratch on the rear bumper noted on arrival. Not to be released without a sergeant’s signature.', z: 's', c: 'red' }] },
+    { t: 'sign', label: 'Released by (sergeant)' },
+    { t: 'sign', label: 'Collected by (owner)' },
+  ],
+});
 
 const files: StoredFile[] = [
+  { id: 7, name: 'Vehicle release form - Blista', body: RELEASE_FORM, format: 'rich', createdAt: ago(3 * HOUR), updatedAt: ago(25 * MIN) },
   {
     id: 1,
     name: 'Shift handover - front desk',
