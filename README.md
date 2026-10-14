@@ -549,7 +549,7 @@ Using a computer does not cover the game with a desktop. The camera moves up to 
 
 ## Hacking
 
-Command Prompt launches ten minigames from sd-deaddrop, with the same server-side anti-cheat: proof-of-play floors, ordered milestones and server-seeded puzzles. `hack` runs a practice game; `breach` runs a target you set up in `configs/server/targets.lua`, with its minigame steps, item requirement, cooldowns, police alert and a reward the server pays (items, money, mail or your own event). Other resources can run the same minigames, with a verified result. [Hacking in the docs](https://docs.samueldev.shop/resources/computers/hacking).
+Command Prompt launches ten minigames from sd-deaddrop, with the same server-side anti-cheat: proof-of-play floors, ordered milestones and server-seeded puzzles. `hack` runs a practice game; `breach` runs a target you set up in `configs/server/targets.lua`, with its minigame steps, item requirement, cooldowns, police alert and a reward the server pays (items, money, mail or your own event). Your own robberies and heists can put the same minigames in front of a door or a vault, with a result the server has verified. [Hacking](https://docs.samueldev.shop/resources/computers/hacking) and [hacks in your scripts](https://docs.samueldev.shop/resources/computers/hacks-in-scripts) in the docs.
 
 ## Admin panel
 
@@ -571,6 +571,7 @@ Everything else is on the docs site, **[docs.samueldev.shop/resources/computers]
 | [Props & Screens](https://docs.samueldev.shop/resources/computers/props-screens) | Every prop, adding your own, the screen on the prop, drawing a prop's screen |
 | [Printers](https://docs.samueldev.shop/resources/computers/printers) | Printing, trays, the printed page, signing |
 | [Hacking & Breach Targets](https://docs.samueldev.shop/resources/computers/hacking) | Command Prompt, the minigames, breach targets and rewards, the anti-cheat |
+| [Hacks in Your Scripts](https://docs.samueldev.shop/resources/computers/hacks-in-scripts) | Putting the minigames into your own robberies: from the server, from the client with a proof, or at a computer |
 | [Browser Sites](https://docs.samueldev.shop/resources/computers/browser) | sd-phone's sites live, pages written in the config, your own web pages |
 | [sd-phone Link](https://docs.samueldev.shop/resources/computers/phone-link) | What changes with sd-phone, and linking a phone to a machine |
 | [Security](https://docs.samueldev.shop/resources/computers/security) | How the server keeps a modified client from doing what a player at the desk could not |
