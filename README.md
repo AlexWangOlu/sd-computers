@@ -14,6 +14,10 @@ The whole desktop runs here with sample data, in all three looks, and so does th
 
 <sub>[fivem.samueldev.shop/computer](https://fivem.samueldev.shop/computer)</sub>
 
+<a href="https://fivem.samueldev.shop/computer">
+  <img width="960" alt="sd-computers trailer: in game at a Mission Row desk, then the apps, the city's websites, security cameras, the three looks, signing a printed page, hacking minigames and the admin panel" src="docs/previews/sd-computers-trailer.webp">
+</a>
+
 ---
 
 sd-computers puts a working desktop on any computer in your city. Players walk up to a prop or a place, sign in and use real apps: Mail, a document editor that prints to paper, a browser for the city's own sites, banking, a job's notice board and boss menu, security cameras, that machine's own logs, and a Command Prompt that launches hacking minigames. It runs on QBOX and QBCORE, and on ESX without the Business Manager.
