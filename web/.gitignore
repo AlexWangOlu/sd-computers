@@ -1,3 +1,6 @@
 node_modules/
-package-lock.json
 *.tsbuildinfo
+
+# The built UI is not committed: the release workflow (.github/workflows/release.yml) builds it into
+# every release zip, and `npm run build` here makes it for a source checkout.
+build/

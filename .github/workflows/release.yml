@@ -1,0 +1,91 @@
+name: Release
+
+# Fires when a GitHub Release is published (Releases > Draft a new release > Publish).
+# Builds the NUI fresh and attaches a lean, drop-in resource zip to that release.
+on:
+  release:
+    types: [published]
+  # Re-package an already published release without unpublishing it, for when the
+  # packaging itself was wrong rather than the code.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to package (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: build + package
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build NUI
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      # Explicit allowlist of runtime files -> dist/sd-computers/ so the zip extracts
+      # to a correctly named resource folder. web/src, node_modules, dev configs and
+      # the README screenshots (docs/previews) are intentionally left out; docs/items
+      # is kept for the printout item's picture.
+      - name: Stage resource
+        run: |
+          mkdir -p dist/sd-computers/web dist/sd-computers/docs
+          cp fxmanifest.lua README.md dist/sd-computers/
+          cp -r bridge client server shared configs locales dist/sd-computers/
+          cp -r docs/items dist/sd-computers/docs/items
+          cp -r web/build dist/sd-computers/web/build
+
+      # The staging list above is an allowlist, so a new top-level directory is
+      # dropped from the zip in silence. Every path fxmanifest.lua declares has to be
+      # in the staged resource, or the build fails here instead of on a server.
+      - name: Verify staged resource
+        run: |
+          missing=0
+          paths=$(grep -oE "'[^']+\.(lua|json|html|js|css|png|jpg|webp|svg|woff2?|mp3)'" fxmanifest.lua \
+            | tr -d "'" | grep -v '^@' | sed 's|/\*\*.*||; s|/\*.*||' | sort -u)
+          for p in $paths; do
+            if [ ! -e "dist/sd-computers/$p" ]; then
+              echo "::error::fxmanifest.lua declares '$p' but it is not in the staged resource"
+              missing=1
+            fi
+          done
+          # configs/server is read with require() on the server only, so the manifest never names it.
+          if [ ! -d dist/sd-computers/configs/server ]; then
+            echo "::error::configs/server is not in the staged resource"
+            missing=1
+          fi
+          if [ "$missing" != 0 ]; then
+            echo "Staged resource is incomplete - add the missing path to the Stage resource step."
+            exit 1
+          fi
+          echo "All fxmanifest paths present:"
+          echo "$paths"
+
+      # Named without the tag so the download URL and the extracted folder read the
+      # same on every release, and a linked install guide never points at a stale
+      # filename. The release itself carries the version.
+      - name: Zip
+        run: |
+          cd dist
+          zip -qr ../sd-computers.zip sd-computers
+
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${TAG}" sd-computers.zip --clobber

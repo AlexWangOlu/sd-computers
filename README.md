@@ -588,7 +588,12 @@ Everything else is on the docs site, **[docs.samueldev.shop/resources/computers]
 
 ## Installation
 
-Needs [ox_lib](https://github.com/CommunityOx/ox_lib), [oxmysql](https://github.com/CommunityOx/oxmysql) and a target resource (`ox_target`, `qb-target` or `qtarget`). Drop `sd-computers` into your resources folder and start it after them, your framework and your banking:
+Download **`sd-computers.zip`** from the [latest release](https://github.com/Samuels-Development/sd-computers/releases/latest) and unzip it into your resources folder: it is the resource with its UI already built, ready to drop in.
+
+> [!IMPORTANT]
+> Download the `sd-computers.zip` asset, not **Source code (zip)** or the green **Code** button. Those are the source, without the built UI: the computer would open to a blank screen until you [build it yourself](#building-from-source).
+
+It needs [ox_lib](https://github.com/CommunityOx/ox_lib), [oxmysql](https://github.com/CommunityOx/oxmysql) and a target resource (`ox_target`, `qb-target` or `qtarget`). Start it after them, your framework and your banking:
 
 ```cfg
 ensure ox_lib
@@ -596,7 +601,7 @@ ensure oxmysql
 ensure sd-computers
 ```
 
-The UI ships pre-built in `web/build` and the database tables create themselves, so it runs as it is. Then add the `printed_document` item to your inventory (the picture is in `docs/items/`) and set up your computers: the full guide is **[Installation in the docs](https://docs.samueldev.shop/resources/computers/installation)**.
+The database tables create themselves on first start. Then add the `printed_document` item to your inventory (the picture is in `docs/items/`) and set up your computers: the full guide is **[Installation in the docs](https://docs.samueldev.shop/resources/computers/installation)**.
 
 ## Controls
 
@@ -610,12 +615,14 @@ Start > Power > Shut down stands you up too, with the shutdown screen. Walking a
 
 ## Building from source
 
-The UI is already built in `web/build`. To change it:
+The repository is the source: the built UI (`web/build`) is not committed, and each [release](https://github.com/Samuels-Development/sd-computers/releases) builds it into its zip. To run a clone, or to change the UI, build it with Node.js (LTS):
 
 ```bash
 cd web
 npm install
 npm run build
 ```
+
+A source ZIP unpacks to `sd-computers-main`: rename the folder to `sd-computers`, the name its exports are called by. After changing the UI, run `npm run build` again; the game loads `web/build`, not the source.
 
 `npm run dev` opens the whole OS in a browser with mock data (dev PIN `1031`). Hashes: `#desktop` skips the lock screen, `#mail` / `#boss` / `#logs` / `#cmd` and so on open an app, `#lib` shows a standalone StartHack window, and `?style=retro` or `?style=mac` switches the look. `?frame=0.2,0.1,0.6,0.78` (left, top, width, height as fractions of the window) lays the desktop out as it sits on a prop's screen. The admin panel is a page of its own: `http://localhost:<port>/admin.html` shows it with mock computers (placing "runs the gizmo" by hiding the panel for a moment). So is a prop's screen: `/screen.html?mode=idle&style=retro` is a lock face, and `/screen.html?mode=live` in a second tab shows a live copy of the OS running in the first. App contracts and UI conventions are in `web/FRONTEND.md`.
