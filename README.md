@@ -2,15 +2,27 @@
 
 # sd-computers
 
-<img width="960" alt="sd-computers banner showing the three desktop styles" src="docs/previews/sd-computers-banner.webp">
+<a href="https://fivem.samueldev.shop/computer">
+  <img width="960" alt="sd-computers banner: Computers for FiveM, with the three desktop looks" src="docs/previews/sd-computers-banner.webp">
+</a>
+
+### Browser demo
+
+[![Open the live demo](https://img.shields.io/badge/%E2%96%B6%20%20OPEN%20THE%20LIVE%20DEMO-fivem.samueldev.shop%2Fcomputer-F0E155?style=for-the-badge&labelColor=101114&logoColor=F0E155)](https://fivem.samueldev.shop/computer)
+
+The whole desktop runs here with sample data, in all three looks, and so does the admin panel. Sign in, open the apps, write a document, play a hacking minigame. Nothing to install.
+
+<sub>[fivem.samueldev.shop/computer](https://fivem.samueldev.shop/computer)</sub>
 
 ---
 
-sd-computers puts a working desktop on any computer in your city. Players walk up to a configured location or prop, sign in and use real apps: Mail, an Event Viewer with that machine's own logs, a Command Prompt that launches hacking minigames, and a Business Manager for bosses. It runs on QBOX and QBCORE, and on ESX without the Business Manager.
+sd-computers puts a working desktop on any computer in your city. Players walk up to a prop or a place, sign in and use real apps: Mail, a document editor that prints to paper, a browser for the city's own sites, banking, a job's notice board and boss menu, security cameras, that machine's own logs, and a Command Prompt that launches hacking minigames. It runs on QBOX and QBCORE, and on ESX without the Business Manager.
 
-Every computer opens in one of three original desktop styles, picked per computer. Admins place new computers in game with `/computeradmin`, without touching a config file.
+Every computer opens in one of three original looks, picked per computer: a current desktop, a 1991 one inside a CRT, and one with a dock and a menu bar. Admins place computers, security cameras and printers in game with `/computeradmin`, without touching a config file.
 
 The screen on the prop is real too. Sit down at a computer and the camera goes up to it: the desktop is inside the prop's own bezel, with the room still there around it. A computer nobody is using shows its lock screen, and one somebody is using shows what they are doing, live, to anyone standing nearby.
+
+So is the paper. A page waits in the printer's tray, is taken as an item, and opens as a sheet of A4 that can be handed to somebody else and signed.
 
 [![Stars](https://img.shields.io/github/stars/Samuels-Development/sd-computers?label=Stars&logo=github)](https://github.com/Samuels-Development/sd-computers)
 [![Discord](https://img.shields.io/discord/842045164951437383?label=Discord&logo=discord&logoColor=white)](https://discord.gg/FzPehMQaBQ)
@@ -20,7 +32,7 @@ The screen on the prop is real too. Sit down at a computer and the camera goes u
 ![Target](https://img.shields.io/badge/Target-ox__target%20%7C%20qb--target%20%7C%20qtarget-3b82f6)
 ![Pairs with](https://img.shields.io/badge/Pairs%20with-sd--phone-3b82f6)
 
-[**Documentation**](https://docs.samueldev.shop) · [**Store**](https://fivem.samueldev.shop) · [**Discord**](https://discord.gg/FzPehMQaBQ)
+[**Live demo**](https://fivem.samueldev.shop/computer) · [**Documentation**](https://docs.samueldev.shop) · [**Store**](https://fivem.samueldev.shop) · [**Discord**](https://discord.gg/FzPehMQaBQ)
 
 </div>
 
@@ -30,17 +42,62 @@ The screen on the prop is real too. Sit down at a computer and the camera goes u
 
 If you're enjoying sd-computers and want to support my work, consider picking up a script from [Samuel's Development](https://fivem.samueldev.shop). Every purchase helps me keep building and improving resources like sd-computers. Browse Petty Crimes, Advanced Crafting, Horde, Smash Down, and more to find something for your server.
 
+## See it move
+
+Recorded from the browser demo, with sample data.
+
+**Starting up, signing in and looking round**
+
+<p align="center"><img src="docs/previews/clips/tour.webp" alt="Signing in to SD OS Pro, reading a mail and opening Weazel News in the Browser" width="960" /></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center" width="50%"><img src="docs/previews/clips/editor.webp" alt="Formatting a document in Files and adding a line to sign on" width="410" /><br /><sub><b>Files:</b> a part in its own typeface and ink, and a line to sign on</sub></td>
+    <td align="center" width="50%"><img src="docs/previews/clips/sign.webp" alt="Signing a printed page that is held in the hand" width="410" /><br /><sub><b>On paper:</b> the printed page in the hand, and a line of it signed</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><img src="docs/previews/clips/retro.webp" alt="SD Desktop 3.11 starting up from its DOS boot" width="410" /><br /><sub><b>SD Desktop 3.11:</b> the CRT warming up, the DOS boot, the log on box</sub></td>
+    <td align="center" width="50%"><img src="docs/previews/clips/looks.webp" alt="The same Mail app in the three looks" width="410" /><br /><sub><b>Three looks:</b> the same Mail, on the same server</sub></td>
+  </tr>
+</table>
+</div>
+
 ## Screenshots
 
-Captured from the browser build using sample data. Click any image for the full 1920×1080 version.
+Captured from the browser demo using sample data. Click any image for the full-size version.
 
-**Jump to:** [SD OS Pro](#sd-os-pro-modern) · [SD OS Harbor](#sd-os-harbor-mac) · [SD Desktop 3.11](#sd-desktop-311-retro) · [Hacking minigames](#hacking-minigames) · [Admin panel](#admin-panel-computeradmin) · [Props](#props)
+**Jump to:** [SD OS Pro](#sd-os-pro-modern) · [SD OS Harbor](#sd-os-harbor-mac) · [SD Desktop 3.11](#sd-desktop-311-retro) · [Printed pages](#printed-pages) · [Hacking minigames](#hacking-minigames) · [Admin panel](#admin-panel-computeradmin) · [Props](#props)
 
 ### SD OS Pro (`modern`)
 
 A current desktop: centred taskbar, Start menu with search, rounded translucent windows, dark and light themes.
 
 <p align="center"><a href="docs/previews/modern/desktop.webp"><img src="docs/previews/modern/desktop.webp" alt="SD OS Pro desktop" width="960" /></a></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/mail.webp"><img src="docs/previews/thumbs/modern/mail.webp" alt="SD OS Pro: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+    <td align="center"><a href="docs/previews/modern/files.webp"><img src="docs/previews/thumbs/modern/files.webp" alt="SD OS Pro: Files" width="250" /></a><br /><sub>Files</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-weazel.webp"><img src="docs/previews/thumbs/modern/browser-weazel.webp" alt="SD OS Pro: Weazel News" width="250" /></a><br /><sub>Weazel News</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/messages.webp"><img src="docs/previews/thumbs/modern/messages.webp" alt="SD OS Pro: Messages" width="250" /></a><br /><sub>Messages</sub></td>
+    <td align="center"><a href="docs/previews/modern/bank.webp"><img src="docs/previews/thumbs/modern/bank.webp" alt="SD OS Pro: Bank" width="250" /></a><br /><sub>Bank</sub></td>
+    <td align="center"><a href="docs/previews/modern/boss.webp"><img src="docs/previews/thumbs/modern/boss.webp" alt="SD OS Pro: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/photos.webp"><img src="docs/previews/thumbs/modern/photos.webp" alt="SD OS Pro: Photos" width="250" /></a><br /><sub>Photos</sub></td>
+    <td align="center"><a href="docs/previews/modern/cmd.webp"><img src="docs/previews/thumbs/modern/cmd.webp" alt="SD OS Pro: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+    <td align="center"><a href="docs/previews/modern/games.webp"><img src="docs/previews/thumbs/modern/games.webp" alt="SD OS Pro: Games" width="250" /></a><br /><sub>Games</sub></td>
+  </tr>
+</table>
+</div>
+
+<details>
+<summary><b>Every screen of SD OS Pro (36)</b></summary>
+<br />
 
 <div align="center">
 <table>
@@ -56,58 +113,129 @@ A current desktop: centred taskbar, Start menu with search, rounded translucent 
   </tr>
   <tr>
     <td align="center"><a href="docs/previews/modern/notes.webp"><img src="docs/previews/thumbs/modern/notes.webp" alt="SD OS Pro: Notes" width="250" /></a><br /><sub>Notes</sub></td>
+    <td align="center"><a href="docs/previews/modern/contacts.webp"><img src="docs/previews/thumbs/modern/contacts.webp" alt="SD OS Pro: Contacts" width="250" /></a><br /><sub>Contacts</sub></td>
+    <td align="center"><a href="docs/previews/modern/photos.webp"><img src="docs/previews/thumbs/modern/photos.webp" alt="SD OS Pro: Photos" width="250" /></a><br /><sub>Photos</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/files.webp"><img src="docs/previews/thumbs/modern/files.webp" alt="SD OS Pro: Files" width="250" /></a><br /><sub>Files</sub></td>
+    <td align="center"><a href="docs/previews/modern/print.webp"><img src="docs/previews/thumbs/modern/print.webp" alt="SD OS Pro: Print" width="250" /></a><br /><sub>Print</sub></td>
     <td align="center"><a href="docs/previews/modern/notepad.webp"><img src="docs/previews/thumbs/modern/notepad.webp" alt="SD OS Pro: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/browser.webp"><img src="docs/previews/thumbs/modern/browser.webp" alt="SD OS Pro: Browser" width="250" /></a><br /><sub>Browser</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-weazel.webp"><img src="docs/previews/thumbs/modern/browser-weazel.webp" alt="SD OS Pro: Weazel News" width="250" /></a><br /><sub>Weazel News</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-market.webp"><img src="docs/previews/thumbs/modern/browser-market.webp" alt="SD OS Pro: Marketplace" width="250" /></a><br /><sub>Marketplace</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/browser-pages.webp"><img src="docs/previews/thumbs/modern/browser-pages.webp" alt="SD OS Pro: Yellow Pages" width="250" /></a><br /><sub>Yellow Pages</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-directory.webp"><img src="docs/previews/thumbs/modern/browser-directory.webp" alt="SD OS Pro: Business Directory" width="250" /></a><br /><sub>Business Directory</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-squawk.webp"><img src="docs/previews/thumbs/modern/browser-squawk.webp" alt="SD OS Pro: Squawk" width="250" /></a><br /><sub>Squawk</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/browser-laws.webp"><img src="docs/previews/thumbs/modern/browser-laws.webp" alt="SD OS Pro: Laws and Fines" width="250" /></a><br /><sub>Laws and Fines</sub></td>
+    <td align="center"><a href="docs/previews/modern/browser-stocks.webp"><img src="docs/previews/thumbs/modern/browser-stocks.webp" alt="SD OS Pro: Stock Market" width="250" /></a><br /><sub>Stock Market</sub></td>
+    <td align="center"><a href="docs/previews/modern/bank.webp"><img src="docs/previews/thumbs/modern/bank.webp" alt="SD OS Pro: Bank" width="250" /></a><br /><sub>Bank</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/board.webp"><img src="docs/previews/thumbs/modern/board.webp" alt="SD OS Pro: Company Board" width="250" /></a><br /><sub>Company Board</sub></td>
+    <td align="center"><a href="docs/previews/modern/cameras.webp"><img src="docs/previews/thumbs/modern/cameras.webp" alt="SD OS Pro: Security Cameras" width="250" /></a><br /><sub>Security Cameras</sub></td>
     <td align="center"><a href="docs/previews/modern/boss.webp"><img src="docs/previews/thumbs/modern/boss.webp" alt="SD OS Pro: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
   </tr>
   <tr>
     <td align="center"><a href="docs/previews/modern/boss-employees.webp"><img src="docs/previews/thumbs/modern/boss-employees.webp" alt="SD OS Pro: Employees" width="250" /></a><br /><sub>Employees</sub></td>
-    <td align="center"><a href="docs/previews/modern/boss-hiring.webp"><img src="docs/previews/thumbs/modern/boss-hiring.webp" alt="SD OS Pro: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
     <td align="center"><a href="docs/previews/modern/boss-finances.webp"><img src="docs/previews/thumbs/modern/boss-finances.webp" alt="SD OS Pro: Finances" width="250" /></a><br /><sub>Finances</sub></td>
-  </tr>
-  <tr>
     <td align="center"><a href="docs/previews/modern/logs.webp"><img src="docs/previews/thumbs/modern/logs.webp" alt="SD OS Pro: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
-    <td align="center"><a href="docs/previews/modern/logs-security.webp"><img src="docs/previews/thumbs/modern/logs-security.webp" alt="SD OS Pro: Security log" width="250" /></a><br /><sub>Security log</sub></td>
-    <td align="center"><a href="docs/previews/modern/cmd.webp"><img src="docs/previews/thumbs/modern/cmd.webp" alt="SD OS Pro: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
   </tr>
   <tr>
+    <td align="center"><a href="docs/previews/modern/cmd.webp"><img src="docs/previews/thumbs/modern/cmd.webp" alt="SD OS Pro: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
     <td align="center"><a href="docs/previews/modern/calculator.webp"><img src="docs/previews/thumbs/modern/calculator.webp" alt="SD OS Pro: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
     <td align="center"><a href="docs/previews/modern/settings.webp"><img src="docs/previews/thumbs/modern/settings.webp" alt="SD OS Pro: Settings" width="250" /></a><br /><sub>Settings</sub></td>
+  </tr>
+  <tr>
     <td align="center"><a href="docs/previews/modern/settings-personalization.webp"><img src="docs/previews/thumbs/modern/settings-personalization.webp" alt="SD OS Pro: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+    <td align="center"><a href="docs/previews/modern/phonelink.webp"><img src="docs/previews/thumbs/modern/phonelink.webp" alt="SD OS Pro: Phone Link" width="250" /></a><br /><sub>Phone Link</sub></td>
+    <td align="center"><a href="docs/previews/modern/games.webp"><img src="docs/previews/thumbs/modern/games.webp" alt="SD OS Pro: Games" width="250" /></a><br /><sub>Games</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/modern/game-mines.webp"><img src="docs/previews/thumbs/modern/game-mines.webp" alt="SD OS Pro: Mines" width="250" /></a><br /><sub>Mines</sub></td>
+    <td align="center"><a href="docs/previews/modern/game-solitaire.webp"><img src="docs/previews/thumbs/modern/game-solitaire.webp" alt="SD OS Pro: Solitaire" width="250" /></a><br /><sub>Solitaire</sub></td>
+    <td align="center"><a href="docs/previews/modern/game-snake.webp"><img src="docs/previews/thumbs/modern/game-snake.webp" alt="SD OS Pro: Snake" width="250" /></a><br /><sub>Snake</sub></td>
   </tr>
 </table>
 </div>
 
+</details>
+
 ### SD OS Harbor (`mac`)
 
-Top menu bar, a magnifying dock, traffic-light window buttons and a search overlay.
+A top menu bar, a dock that magnifies, traffic-light window buttons and a search overlay.
 
 <p align="center"><a href="docs/previews/mac/desktop.webp"><img src="docs/previews/mac/desktop.webp" alt="SD OS Harbor desktop" width="960" /></a></p>
 
 <div align="center">
 <table>
   <tr>
-    <td align="center"><a href="docs/previews/mac/boot.webp"><img src="docs/previews/thumbs/mac/boot.webp" alt="SD OS Harbor: Boot" width="250" /></a><br /><sub>Boot</sub></td>
     <td align="center"><a href="docs/previews/mac/lock.webp"><img src="docs/previews/thumbs/mac/lock.webp" alt="SD OS Harbor: Lock screen" width="250" /></a><br /><sub>Lock screen</sub></td>
-    <td align="center"><a href="docs/previews/mac/start.webp"><img src="docs/previews/thumbs/mac/start.webp" alt="SD OS Harbor: Search" width="250" /></a><br /><sub>Search</sub></td>
+    <td align="center"><a href="docs/previews/mac/mail.webp"><img src="docs/previews/thumbs/mac/mail.webp" alt="SD OS Harbor: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+    <td align="center"><a href="docs/previews/mac/files.webp"><img src="docs/previews/thumbs/mac/files.webp" alt="SD OS Harbor: Files" width="250" /></a><br /><sub>Files</sub></td>
   </tr>
   <tr>
+    <td align="center"><a href="docs/previews/mac/browser-market.webp"><img src="docs/previews/thumbs/mac/browser-market.webp" alt="SD OS Harbor: Marketplace" width="250" /></a><br /><sub>Marketplace</sub></td>
+    <td align="center"><a href="docs/previews/mac/messages.webp"><img src="docs/previews/thumbs/mac/messages.webp" alt="SD OS Harbor: Messages" width="250" /></a><br /><sub>Messages</sub></td>
+    <td align="center"><a href="docs/previews/mac/settings-personalization.webp"><img src="docs/previews/thumbs/mac/settings-personalization.webp" alt="SD OS Harbor: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+  </tr>
+</table>
+</div>
+
+<details>
+<summary><b>Every screen of SD OS Harbor (35)</b></summary>
+<br />
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/lock.webp"><img src="docs/previews/thumbs/mac/lock.webp" alt="SD OS Harbor: Lock screen" width="250" /></a><br /><sub>Lock screen</sub></td>
+    <td align="center"><a href="docs/previews/mac/signin.webp"><img src="docs/previews/thumbs/mac/signin.webp" alt="SD OS Harbor: Sign in" width="250" /></a><br /><sub>Sign in</sub></td>
     <td align="center"><a href="docs/previews/mac/mail.webp"><img src="docs/previews/thumbs/mac/mail.webp" alt="SD OS Harbor: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+  </tr>
+  <tr>
     <td align="center"><a href="docs/previews/mac/mail-compose.webp"><img src="docs/previews/thumbs/mac/mail-compose.webp" alt="SD OS Harbor: New mail" width="250" /></a><br /><sub>New mail</sub></td>
     <td align="center"><a href="docs/previews/mac/messages.webp"><img src="docs/previews/thumbs/mac/messages.webp" alt="SD OS Harbor: Messages" width="250" /></a><br /><sub>Messages</sub></td>
-  </tr>
-  <tr>
     <td align="center"><a href="docs/previews/mac/notes.webp"><img src="docs/previews/thumbs/mac/notes.webp" alt="SD OS Harbor: Notes" width="250" /></a><br /><sub>Notes</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/contacts.webp"><img src="docs/previews/thumbs/mac/contacts.webp" alt="SD OS Harbor: Contacts" width="250" /></a><br /><sub>Contacts</sub></td>
+    <td align="center"><a href="docs/previews/mac/photos.webp"><img src="docs/previews/thumbs/mac/photos.webp" alt="SD OS Harbor: Photos" width="250" /></a><br /><sub>Photos</sub></td>
+    <td align="center"><a href="docs/previews/mac/files.webp"><img src="docs/previews/thumbs/mac/files.webp" alt="SD OS Harbor: Files" width="250" /></a><br /><sub>Files</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/print.webp"><img src="docs/previews/thumbs/mac/print.webp" alt="SD OS Harbor: Print" width="250" /></a><br /><sub>Print</sub></td>
     <td align="center"><a href="docs/previews/mac/notepad.webp"><img src="docs/previews/thumbs/mac/notepad.webp" alt="SD OS Harbor: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+    <td align="center"><a href="docs/previews/mac/browser.webp"><img src="docs/previews/thumbs/mac/browser.webp" alt="SD OS Harbor: Browser" width="250" /></a><br /><sub>Browser</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/browser-weazel.webp"><img src="docs/previews/thumbs/mac/browser-weazel.webp" alt="SD OS Harbor: Weazel News" width="250" /></a><br /><sub>Weazel News</sub></td>
+    <td align="center"><a href="docs/previews/mac/browser-market.webp"><img src="docs/previews/thumbs/mac/browser-market.webp" alt="SD OS Harbor: Marketplace" width="250" /></a><br /><sub>Marketplace</sub></td>
+    <td align="center"><a href="docs/previews/mac/browser-pages.webp"><img src="docs/previews/thumbs/mac/browser-pages.webp" alt="SD OS Harbor: Yellow Pages" width="250" /></a><br /><sub>Yellow Pages</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/browser-directory.webp"><img src="docs/previews/thumbs/mac/browser-directory.webp" alt="SD OS Harbor: Business Directory" width="250" /></a><br /><sub>Business Directory</sub></td>
+    <td align="center"><a href="docs/previews/mac/browser-squawk.webp"><img src="docs/previews/thumbs/mac/browser-squawk.webp" alt="SD OS Harbor: Squawk" width="250" /></a><br /><sub>Squawk</sub></td>
+    <td align="center"><a href="docs/previews/mac/browser-laws.webp"><img src="docs/previews/thumbs/mac/browser-laws.webp" alt="SD OS Harbor: Laws and Fines" width="250" /></a><br /><sub>Laws and Fines</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/browser-stocks.webp"><img src="docs/previews/thumbs/mac/browser-stocks.webp" alt="SD OS Harbor: Stock Market" width="250" /></a><br /><sub>Stock Market</sub></td>
+    <td align="center"><a href="docs/previews/mac/bank.webp"><img src="docs/previews/thumbs/mac/bank.webp" alt="SD OS Harbor: Bank" width="250" /></a><br /><sub>Bank</sub></td>
+    <td align="center"><a href="docs/previews/mac/board.webp"><img src="docs/previews/thumbs/mac/board.webp" alt="SD OS Harbor: Company Board" width="250" /></a><br /><sub>Company Board</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/cameras.webp"><img src="docs/previews/thumbs/mac/cameras.webp" alt="SD OS Harbor: Security Cameras" width="250" /></a><br /><sub>Security Cameras</sub></td>
     <td align="center"><a href="docs/previews/mac/boss.webp"><img src="docs/previews/thumbs/mac/boss.webp" alt="SD OS Harbor: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
-  </tr>
-  <tr>
     <td align="center"><a href="docs/previews/mac/boss-employees.webp"><img src="docs/previews/thumbs/mac/boss-employees.webp" alt="SD OS Harbor: Employees" width="250" /></a><br /><sub>Employees</sub></td>
-    <td align="center"><a href="docs/previews/mac/boss-hiring.webp"><img src="docs/previews/thumbs/mac/boss-hiring.webp" alt="SD OS Harbor: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
-    <td align="center"><a href="docs/previews/mac/boss-finances.webp"><img src="docs/previews/thumbs/mac/boss-finances.webp" alt="SD OS Harbor: Finances" width="250" /></a><br /><sub>Finances</sub></td>
   </tr>
   <tr>
+    <td align="center"><a href="docs/previews/mac/boss-finances.webp"><img src="docs/previews/thumbs/mac/boss-finances.webp" alt="SD OS Harbor: Finances" width="250" /></a><br /><sub>Finances</sub></td>
     <td align="center"><a href="docs/previews/mac/logs.webp"><img src="docs/previews/thumbs/mac/logs.webp" alt="SD OS Harbor: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
-    <td align="center"><a href="docs/previews/mac/logs-security.webp"><img src="docs/previews/thumbs/mac/logs-security.webp" alt="SD OS Harbor: Security log" width="250" /></a><br /><sub>Security log</sub></td>
     <td align="center"><a href="docs/previews/mac/cmd.webp"><img src="docs/previews/thumbs/mac/cmd.webp" alt="SD OS Harbor: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
   </tr>
   <tr>
@@ -115,53 +243,128 @@ Top menu bar, a magnifying dock, traffic-light window buttons and a search overl
     <td align="center"><a href="docs/previews/mac/settings.webp"><img src="docs/previews/thumbs/mac/settings.webp" alt="SD OS Harbor: Settings" width="250" /></a><br /><sub>Settings</sub></td>
     <td align="center"><a href="docs/previews/mac/settings-personalization.webp"><img src="docs/previews/thumbs/mac/settings-personalization.webp" alt="SD OS Harbor: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
   </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/phonelink.webp"><img src="docs/previews/thumbs/mac/phonelink.webp" alt="SD OS Harbor: Phone Link" width="250" /></a><br /><sub>Phone Link</sub></td>
+    <td align="center"><a href="docs/previews/mac/games.webp"><img src="docs/previews/thumbs/mac/games.webp" alt="SD OS Harbor: Games" width="250" /></a><br /><sub>Games</sub></td>
+    <td align="center"><a href="docs/previews/mac/game-mines.webp"><img src="docs/previews/thumbs/mac/game-mines.webp" alt="SD OS Harbor: Mines" width="250" /></a><br /><sub>Mines</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/mac/game-solitaire.webp"><img src="docs/previews/thumbs/mac/game-solitaire.webp" alt="SD OS Harbor: Solitaire" width="250" /></a><br /><sub>Solitaire</sub></td>
+    <td align="center"><a href="docs/previews/mac/game-snake.webp"><img src="docs/previews/thumbs/mac/game-snake.webp" alt="SD OS Harbor: Snake" width="250" /></a><br /><sub>Snake</sub></td>
+  </tr>
 </table>
 </div>
 
+</details>
+
 ### SD Desktop 3.11 (`retro`)
 
-A 1991 shell inside a beige CRT: DOS boot, teal desktop, bevelled grey windows that snap open in chunky steps, and synthesized period sounds.
+A 1991 shell inside a beige CRT: a DOS boot, a teal desktop and bevelled grey windows that snap open in chunky steps.
 
 <p align="center"><a href="docs/previews/retro/desktop.webp"><img src="docs/previews/retro/desktop.webp" alt="SD Desktop 3.11 desktop" width="960" /></a></p>
 
 <div align="center">
 <table>
   <tr>
-    <td align="center"><a href="docs/previews/retro/boot.webp"><img src="docs/previews/thumbs/retro/boot.webp" alt="SD Desktop 3.11: DOS boot" width="250" /></a><br /><sub>DOS boot</sub></td>
-    <td align="center"><a href="docs/previews/retro/splash.webp"><img src="docs/previews/thumbs/retro/splash.webp" alt="SD Desktop 3.11: Splash" width="250" /></a><br /><sub>Splash</sub></td>
-    <td align="center"><a href="docs/previews/retro/lock.webp"><img src="docs/previews/thumbs/retro/lock.webp" alt="SD Desktop 3.11: Log on" width="250" /></a><br /><sub>Log on</sub></td>
-  </tr>
-  <tr>
+    <td align="center"><a href="docs/previews/retro/signin.webp"><img src="docs/previews/thumbs/retro/signin.webp" alt="SD Desktop 3.11: Sign in" width="250" /></a><br /><sub>Sign in</sub></td>
     <td align="center"><a href="docs/previews/retro/mail.webp"><img src="docs/previews/thumbs/retro/mail.webp" alt="SD Desktop 3.11: Mail" width="250" /></a><br /><sub>Mail</sub></td>
-    <td align="center"><a href="docs/previews/retro/mail-compose.webp"><img src="docs/previews/thumbs/retro/mail-compose.webp" alt="SD Desktop 3.11: New mail" width="250" /></a><br /><sub>New mail</sub></td>
+    <td align="center"><a href="docs/previews/retro/files.webp"><img src="docs/previews/thumbs/retro/files.webp" alt="SD Desktop 3.11: Files" width="250" /></a><br /><sub>Files</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/browser-weazel.webp"><img src="docs/previews/thumbs/retro/browser-weazel.webp" alt="SD Desktop 3.11: Weazel News" width="250" /></a><br /><sub>Weazel News</sub></td>
+    <td align="center"><a href="docs/previews/retro/cmd.webp"><img src="docs/previews/thumbs/retro/cmd.webp" alt="SD Desktop 3.11: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+    <td align="center"><a href="docs/previews/retro/game-solitaire.webp"><img src="docs/previews/thumbs/retro/game-solitaire.webp" alt="SD Desktop 3.11: Solitaire" width="250" /></a><br /><sub>Solitaire</sub></td>
+  </tr>
+</table>
+</div>
+
+<details>
+<summary><b>Every screen of SD Desktop 3.11 (34)</b></summary>
+<br />
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/lock.webp"><img src="docs/previews/thumbs/retro/lock.webp" alt="SD Desktop 3.11: Lock screen" width="250" /></a><br /><sub>Lock screen</sub></td>
+    <td align="center"><a href="docs/previews/retro/signin.webp"><img src="docs/previews/thumbs/retro/signin.webp" alt="SD Desktop 3.11: Sign in" width="250" /></a><br /><sub>Sign in</sub></td>
+    <td align="center"><a href="docs/previews/retro/mail.webp"><img src="docs/previews/thumbs/retro/mail.webp" alt="SD Desktop 3.11: Mail" width="250" /></a><br /><sub>Mail</sub></td>
+  </tr>
+  <tr>
     <td align="center"><a href="docs/previews/retro/messages.webp"><img src="docs/previews/thumbs/retro/messages.webp" alt="SD Desktop 3.11: Messages" width="250" /></a><br /><sub>Messages</sub></td>
-  </tr>
-  <tr>
     <td align="center"><a href="docs/previews/retro/notes.webp"><img src="docs/previews/thumbs/retro/notes.webp" alt="SD Desktop 3.11: Notes" width="250" /></a><br /><sub>Notes</sub></td>
-    <td align="center"><a href="docs/previews/retro/notepad.webp"><img src="docs/previews/thumbs/retro/notepad.webp" alt="SD Desktop 3.11: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
-    <td align="center"><a href="docs/previews/retro/boss.webp"><img src="docs/previews/thumbs/retro/boss.webp" alt="SD Desktop 3.11: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
+    <td align="center"><a href="docs/previews/retro/contacts.webp"><img src="docs/previews/thumbs/retro/contacts.webp" alt="SD Desktop 3.11: Contacts" width="250" /></a><br /><sub>Contacts</sub></td>
   </tr>
   <tr>
+    <td align="center"><a href="docs/previews/retro/photos.webp"><img src="docs/previews/thumbs/retro/photos.webp" alt="SD Desktop 3.11: Photos" width="250" /></a><br /><sub>Photos</sub></td>
+    <td align="center"><a href="docs/previews/retro/files.webp"><img src="docs/previews/thumbs/retro/files.webp" alt="SD Desktop 3.11: Files" width="250" /></a><br /><sub>Files</sub></td>
+    <td align="center"><a href="docs/previews/retro/print.webp"><img src="docs/previews/thumbs/retro/print.webp" alt="SD Desktop 3.11: Print" width="250" /></a><br /><sub>Print</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/notepad.webp"><img src="docs/previews/thumbs/retro/notepad.webp" alt="SD Desktop 3.11: Notepad" width="250" /></a><br /><sub>Notepad</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser.webp"><img src="docs/previews/thumbs/retro/browser.webp" alt="SD Desktop 3.11: Browser" width="250" /></a><br /><sub>Browser</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser-weazel.webp"><img src="docs/previews/thumbs/retro/browser-weazel.webp" alt="SD Desktop 3.11: Weazel News" width="250" /></a><br /><sub>Weazel News</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/browser-market.webp"><img src="docs/previews/thumbs/retro/browser-market.webp" alt="SD Desktop 3.11: Marketplace" width="250" /></a><br /><sub>Marketplace</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser-pages.webp"><img src="docs/previews/thumbs/retro/browser-pages.webp" alt="SD Desktop 3.11: Yellow Pages" width="250" /></a><br /><sub>Yellow Pages</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser-directory.webp"><img src="docs/previews/thumbs/retro/browser-directory.webp" alt="SD Desktop 3.11: Business Directory" width="250" /></a><br /><sub>Business Directory</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/browser-squawk.webp"><img src="docs/previews/thumbs/retro/browser-squawk.webp" alt="SD Desktop 3.11: Squawk" width="250" /></a><br /><sub>Squawk</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser-laws.webp"><img src="docs/previews/thumbs/retro/browser-laws.webp" alt="SD Desktop 3.11: Laws and Fines" width="250" /></a><br /><sub>Laws and Fines</sub></td>
+    <td align="center"><a href="docs/previews/retro/browser-stocks.webp"><img src="docs/previews/thumbs/retro/browser-stocks.webp" alt="SD Desktop 3.11: Stock Market" width="250" /></a><br /><sub>Stock Market</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/bank.webp"><img src="docs/previews/thumbs/retro/bank.webp" alt="SD Desktop 3.11: Bank" width="250" /></a><br /><sub>Bank</sub></td>
+    <td align="center"><a href="docs/previews/retro/board.webp"><img src="docs/previews/thumbs/retro/board.webp" alt="SD Desktop 3.11: Company Board" width="250" /></a><br /><sub>Company Board</sub></td>
+    <td align="center"><a href="docs/previews/retro/cameras.webp"><img src="docs/previews/thumbs/retro/cameras.webp" alt="SD Desktop 3.11: Security Cameras" width="250" /></a><br /><sub>Security Cameras</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/boss.webp"><img src="docs/previews/thumbs/retro/boss.webp" alt="SD Desktop 3.11: Business Manager" width="250" /></a><br /><sub>Business Manager</sub></td>
     <td align="center"><a href="docs/previews/retro/boss-employees.webp"><img src="docs/previews/thumbs/retro/boss-employees.webp" alt="SD Desktop 3.11: Employees" width="250" /></a><br /><sub>Employees</sub></td>
-    <td align="center"><a href="docs/previews/retro/boss-hiring.webp"><img src="docs/previews/thumbs/retro/boss-hiring.webp" alt="SD Desktop 3.11: Hiring" width="250" /></a><br /><sub>Hiring</sub></td>
     <td align="center"><a href="docs/previews/retro/boss-finances.webp"><img src="docs/previews/thumbs/retro/boss-finances.webp" alt="SD Desktop 3.11: Finances" width="250" /></a><br /><sub>Finances</sub></td>
   </tr>
   <tr>
     <td align="center"><a href="docs/previews/retro/logs.webp"><img src="docs/previews/thumbs/retro/logs.webp" alt="SD Desktop 3.11: Event Viewer" width="250" /></a><br /><sub>Event Viewer</sub></td>
-    <td align="center"><a href="docs/previews/retro/logs-security.webp"><img src="docs/previews/thumbs/retro/logs-security.webp" alt="SD Desktop 3.11: Security log" width="250" /></a><br /><sub>Security log</sub></td>
     <td align="center"><a href="docs/previews/retro/cmd.webp"><img src="docs/previews/thumbs/retro/cmd.webp" alt="SD Desktop 3.11: Command Prompt" width="250" /></a><br /><sub>Command Prompt</sub></td>
+    <td align="center"><a href="docs/previews/retro/calculator.webp"><img src="docs/previews/thumbs/retro/calculator.webp" alt="SD Desktop 3.11: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/previews/retro/calculator.webp"><img src="docs/previews/thumbs/retro/calculator.webp" alt="SD Desktop 3.11: Calculator" width="250" /></a><br /><sub>Calculator</sub></td>
     <td align="center"><a href="docs/previews/retro/settings.webp"><img src="docs/previews/thumbs/retro/settings.webp" alt="SD Desktop 3.11: Settings" width="250" /></a><br /><sub>Settings</sub></td>
     <td align="center"><a href="docs/previews/retro/settings-personalization.webp"><img src="docs/previews/thumbs/retro/settings-personalization.webp" alt="SD Desktop 3.11: Personalization" width="250" /></a><br /><sub>Personalization</sub></td>
+    <td align="center"><a href="docs/previews/retro/phonelink.webp"><img src="docs/previews/thumbs/retro/phonelink.webp" alt="SD Desktop 3.11: Phone Link" width="250" /></a><br /><sub>Phone Link</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/games.webp"><img src="docs/previews/thumbs/retro/games.webp" alt="SD Desktop 3.11: Games" width="250" /></a><br /><sub>Games</sub></td>
+    <td align="center"><a href="docs/previews/retro/game-mines.webp"><img src="docs/previews/thumbs/retro/game-mines.webp" alt="SD Desktop 3.11: Mines" width="250" /></a><br /><sub>Mines</sub></td>
+    <td align="center"><a href="docs/previews/retro/game-solitaire.webp"><img src="docs/previews/thumbs/retro/game-solitaire.webp" alt="SD Desktop 3.11: Solitaire" width="250" /></a><br /><sub>Solitaire</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/previews/retro/game-snake.webp"><img src="docs/previews/thumbs/retro/game-snake.webp" alt="SD Desktop 3.11: Snake" width="250" /></a><br /><sub>Snake</sub></td>
+  </tr>
+</table>
+</div>
+
+</details>
+
+### Printed pages
+
+What a printout opens as: a sheet of A4 held up over the game, that leans with the mouse and turns like a page. A document prints the way it was set, and its lines to sign on are signed here, by whoever holds the page.
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center"><a href="docs/previews/paper/document.webp"><img src="docs/previews/thumbs/paper/document.webp" alt="Printed page: A document from Files" width="185" /></a><br /><sub>A document from Files</sub></td>
+    <td align="center"><a href="docs/previews/paper/contract.webp"><img src="docs/previews/thumbs/paper/contract.webp" alt="Printed page: A signed contract" width="185" /></a><br /><sub>A signed contract</sub></td>
+    <td align="center"><a href="docs/previews/paper/statement.webp"><img src="docs/previews/thumbs/paper/statement.webp" alt="Printed page: Bank statement" width="185" /></a><br /><sub>Bank statement</sub></td>
+    <td align="center"><a href="docs/previews/paper/logs.webp"><img src="docs/previews/thumbs/paper/logs.webp" alt="Printed page: System log" width="185" /></a><br /><sub>System log</sub></td>
   </tr>
 </table>
 </div>
 
 ### Hacking minigames
 
-Ten minigames, launched from Command Prompt or from your own scripts. Shown here in SD OS Pro; the games are the same in every style.
+Ten minigames, launched from Command Prompt or from your own scripts. Shown here in SD OS Pro; the games are the same in every look.
 
 <div align="center">
 <table>
@@ -190,7 +393,7 @@ Ten minigames, launched from Command Prompt or from your own scripts. Shown here
 
 ### Admin panel (`/computeradmin`)
 
-Every computer on the server in one list, and the tool that places new ones.
+Every computer, security camera and printer on the server, and the tools that place new ones.
 
 <p align="center"><a href="docs/previews/admin/computers.webp"><img src="docs/previews/admin/computers.webp" alt="Admin panel, Computers tab" width="960" /></a></p>
 
@@ -198,18 +401,13 @@ Every computer on the server in one list, and the tool that places new ones.
 <table>
   <tr>
     <td align="center"><a href="docs/previews/admin/overview.webp"><img src="docs/previews/thumbs/admin/overview.webp" alt="Admin panel: Overview" width="250" /></a><br /><sub>Overview</sub></td>
-    <td align="center"><a href="docs/previews/admin/place.webp"><img src="docs/previews/thumbs/admin/place.webp" alt="Admin panel: Place computer" width="250" /></a><br /><sub>Place computer</sub></td>
-    <td align="center"><a href="docs/previews/admin/place-retro.webp"><img src="docs/previews/thumbs/admin/place-retro.webp" alt="Admin panel: Prop and style" width="250" /></a><br /><sub>Prop and style</sub></td>
+    <td align="center"><a href="docs/previews/admin/cameras.webp"><img src="docs/previews/thumbs/admin/cameras.webp" alt="Admin panel: Cameras" width="250" /></a><br /><sub>Cameras</sub></td>
+    <td align="center"><a href="docs/previews/admin/printers.webp"><img src="docs/previews/thumbs/admin/printers.webp" alt="Admin panel: Printers" width="250" /></a><br /><sub>Printers</sub></td>
   </tr>
   <tr>
-    <td align="center"><a href="docs/previews/admin/edit.webp"><img src="docs/previews/thumbs/admin/edit.webp" alt="Admin panel: Change computer" width="250" /></a><br /><sub>Change computer</sub></td>
-    <td align="center"><a href="docs/previews/admin/delete.webp"><img src="docs/previews/thumbs/admin/delete.webp" alt="Admin panel: Delete" width="250" /></a><br /><sub>Delete</sub></td>
-    <td align="center"><a href="docs/previews/admin/placement-hud.webp"><img src="docs/previews/thumbs/admin/placement-hud.webp" alt="Admin panel: Placement gizmo" width="250" /></a><br /><sub>Placement gizmo</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/previews/admin/styles-modern.webp"><img src="docs/previews/thumbs/admin/styles-modern.webp" alt="Admin panel: Styles: SD OS Pro" width="250" /></a><br /><sub>Styles: SD OS Pro</sub></td>
-    <td align="center"><a href="docs/previews/admin/styles-mac.webp"><img src="docs/previews/thumbs/admin/styles-mac.webp" alt="Admin panel: Styles: SD OS Harbor" width="250" /></a><br /><sub>Styles: SD OS Harbor</sub></td>
-    <td align="center"><a href="docs/previews/admin/styles-retro.webp"><img src="docs/previews/thumbs/admin/styles-retro.webp" alt="Admin panel: Styles: SD Desktop" width="250" /></a><br /><sub>Styles: SD Desktop</sub></td>
+    <td align="center"><a href="docs/previews/admin/automatic.webp"><img src="docs/previews/thumbs/admin/automatic.webp" alt="Admin panel: Automatic" width="250" /></a><br /><sub>Automatic</sub></td>
+    <td align="center"><a href="docs/previews/admin/props.webp"><img src="docs/previews/thumbs/admin/props.webp" alt="Admin panel: Props" width="250" /></a><br /><sub>Props</sub></td>
+    <td align="center"><a href="docs/previews/admin/styles.webp"><img src="docs/previews/thumbs/admin/styles.webp" alt="Admin panel: Styles" width="250" /></a><br /><sub>Styles</sub></td>
   </tr>
 </table>
 </div>
