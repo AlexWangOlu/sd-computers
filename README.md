@@ -42,6 +42,26 @@ So is the paper. A page waits in the printer's tray, is taken as an item, and op
 
 If you're enjoying sd-computers and want to support my work, consider picking up a script from [Samuel's Development](https://fivem.samueldev.shop). Every purchase helps me keep building and improving resources like sd-computers. Browse Petty Crimes, Advanced Crafting, Horde, Smash Down, and more to find something for your server.
 
+## In game
+
+On a server, at a desk in Mission Row. Click any image for the full-size version.
+
+<p align="center"><a href="docs/previews/ingame/desk.webp"><img src="docs/previews/ingame/desk.webp" alt="A desk at Mission Row with the computer's lock screen on its monitor, and another one through the window" width="960" /></a></p>
+<p align="center"><sub>Nobody at the desk: the monitor shows its lock screen to the room, and so does the one through the window</sub></p>
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center" width="50%"><a href="docs/previews/ingame/signin.webp"><img src="docs/previews/thumbs/ingame/signin.webp" alt="The sign-in screen inside the monitor's bezel" width="410" /></a><br /><sub><b>Sitting down:</b> the camera goes up to the monitor, and the desktop is inside its bezel</sub></td>
+    <td align="center" width="50%"><a href="docs/previews/ingame/cameras.webp"><img src="docs/previews/thumbs/ingame/cameras.webp" alt="Security Cameras showing the station's front entrance live" width="410" /></a><br /><sub><b>Security Cameras:</b> the station's front entrance, live</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="50%"><a href="docs/previews/ingame/marketplace.webp"><img src="docs/previews/thumbs/ingame/marketplace.webp" alt="The Browser on marketplace.ls, with listings from sd-phone" width="410" /></a><br /><sub><b>Browser:</b> marketplace.ls, the phone's Marketplace as a website</sub></td>
+    <td align="center" width="50%"><a href="docs/previews/ingame/printout.webp"><img src="docs/previews/thumbs/ingame/printout.webp" alt="A printed page held up to read" width="410" /></a><br /><sub><b>Printed:</b> a page from the printer's tray, held up to read</sub></td>
+  </tr>
+</table>
+</div>
+
 ## See it move
 
 Recorded from the browser demo, with sample data.
