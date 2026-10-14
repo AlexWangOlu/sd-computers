@@ -526,7 +526,7 @@ Every prop a computer can be placed as, or picked from the world as, and every p
 ---
 
 > [!TIP]
-> **Running [sd-phone](https://github.com/Samuels-Development/sd-phone)? The computers pick it up.**
+> **Running [sd-phone](https://github.com/Samuels-Development/sd-phone) v1.0.7 or newer? The computers pick it up.**
 > A computer becomes another screen for the character's phone: Mail switches to the phone's own
 > mailboxes, three more apps appear (Messages, Notes and Contacts), and Files, Photos and Bank show
 > the phone's documents, gallery and banking history. Players link their phone to a machine with a code
@@ -608,7 +608,7 @@ Everything else is on the docs site, **[docs.samueldev.shop/resources/computers]
 | Frameworks | QBox, QBCore. ESX works for everything except the Business Manager, which hides itself |
 | Target | ox_target, qb-target, qtarget |
 | Society funds | sd-banking, Renewed-Banking (optional; the Finances tab hides without one) |
-| Phone | sd-phone (optional) |
+| Phone | sd-phone v1.0.7 or newer (optional) |
 
 ## Installation
 
