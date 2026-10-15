@@ -438,87 +438,15 @@ Every computer, security camera and printer on the server, and the tools that pl
 
 ### Props
 
-Every prop a computer can be placed as, or picked from the world as, and every printer: photographed in the game, as the admin panel shows them. Add any streamed prop from the panel itself, or in `configs/shared/admin.lua`. More on [props and screens](https://docs.samueldev.shop/resources/computers/props-screens) in the docs.
-
-**Monitors**
+A computer can be placed as, or picked from the world as, a monitor, a laptop or a tower PC, and a printer as a printer or a photocopier. Towers are off out of the box: they have no screen, so they open fullscreen. Add any streamed prop from the admin panel, or in `configs/shared/admin.lua`. Every prop, photographed in game, is in the docs under [props and screens](https://docs.samueldev.shop/resources/computers/props-screens).
 
 <div align="center">
 <table>
   <tr>
     <td align="center" width="200"><img src="web/public/props/prop_monitor_01a.jpg" alt="Flat monitor" width="190" /><br /><sub><b>Flat monitor</b><br /><code>prop_monitor_01a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_01b.jpg" alt="Flat monitor (off)" width="190" /><br /><sub><b>Flat monitor (off)</b><br /><code>prop_monitor_01b</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_02.jpg" alt="HD monitor" width="190" /><br /><sub><b>HD monitor</b><br /><code>prop_monitor_02</code></sub></td>
     <td align="center" width="200"><img src="web/public/props/prop_monitor_03b.jpg" alt="CRT monitor" width="190" /><br /><sub><b>CRT monitor</b><br /><code>prop_monitor_03b</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_w_large.jpg" alt="Widescreen monitor" width="190" /><br /><sub><b>Widescreen monitor</b><br /><code>prop_monitor_w_large</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_01c.jpg" alt="HD monitor (desktop)" width="190" /><br /><sub><b>HD monitor (desktop)</b><br /><code>prop_monitor_01c</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_01d.jpg" alt="Flat monitor (pop-ups)" width="190" /><br /><sub><b>Flat monitor (pop-ups)</b><br /><code>prop_monitor_01d</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_li.jpg" alt="Flat monitor (Lifeinvader)" width="190" /><br /><sub><b>Flat monitor (Lifeinvader)</b><br /><code>prop_monitor_li</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/tr_prop_tr_monitor_01a.jpg" alt="Flat monitor (grey)" width="190" /><br /><sub><b>Flat monitor (grey)</b><br /><code>tr_prop_tr_monitor_01a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_monitor_04a.jpg" alt="Widescreen monitor (browser)" width="190" /><br /><sub><b>Widescreen monitor (browser)</b><br /><code>prop_monitor_04a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/xm_prop_x17_computer_02.jpg" alt="Widescreen monitor (grey)" width="190" /><br /><sub><b>Widescreen monitor (grey)</b><br /><code>xm_prop_x17_computer_02</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_ld_monitor_01.jpg" alt="Small monitor" width="190" /><br /><sub><b>Small monitor</b><br /><code>prop_ld_monitor_01</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/v_serv_ct_monitor01.jpg" alt="Control room monitor" width="190" /><br /><sub><b>Control room monitor</b><br /><code>v_serv_ct_monitor01</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/v_serv_ct_monitor02.jpg" alt="Control room monitor (terminal)" width="190" /><br /><sub><b>Control room monitor (terminal)</b><br /><code>v_serv_ct_monitor02</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/ex_prop_monitor_01_ex.jpg" alt="All-in-one" width="190" /><br /><sub><b>All-in-one</b><br /><code>ex_prop_monitor_01_ex</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/sm_prop_smug_monitor_01.jpg" alt="All-in-one (small)" width="190" /><br /><sub><b>All-in-one (small)</b><br /><code>sm_prop_smug_monitor_01</code></sub></td>
-  </tr>
-</table>
-</div>
-
-**Laptops**
-
-<div align="center">
-<table>
-  <tr>
     <td align="center" width="200"><img src="web/public/props/prop_laptop_01a.jpg" alt="Laptop" width="190" /><br /><sub><b>Laptop</b><br /><code>prop_laptop_01a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/p_laptop_02_s.jpg" alt="Laptop (white keys)" width="190" /><br /><sub><b>Laptop (white keys)</b><br /><code>p_laptop_02_s</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_laptop_lester.jpg" alt="Laptop (browsing)" width="190" /><br /><sub><b>Laptop (browsing)</b><br /><code>prop_laptop_lester</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_laptop_lester2.jpg" alt="Laptop (idle)" width="190" /><br /><sub><b>Laptop (idle)</b><br /><code>prop_laptop_lester2</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/prop_laptop_jimmy.jpg" alt="Laptop (Lifeinvader)" width="190" /><br /><sub><b>Laptop (Lifeinvader)</b><br /><code>prop_laptop_jimmy</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/ex_prop_ex_laptop_01a.jpg" alt="Laptop (office)" width="190" /><br /><sub><b>Laptop (office)</b><br /><code>ex_prop_ex_laptop_01a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/xm_prop_x17_laptop_lester_01.jpg" alt="Gaming laptop" width="190" /><br /><sub><b>Gaming laptop</b><br /><code>xm_prop_x17_laptop_lester_01</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/p_cs_laptop_02.jpg" alt="Laptop (black)" width="190" /><br /><sub><b>Laptop (black)</b><br /><code>p_cs_laptop_02</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/v_ind_ss_laptop.jpg" alt="Rugged laptop" width="190" /><br /><sub><b>Rugged laptop</b><br /><code>v_ind_ss_laptop</code></sub></td>
-  </tr>
-</table>
-</div>
-
-**Tower PCs** <sub>(off the list out of the box: a tower has no screen, so it opens fullscreen. Take the dashes off in `admin.lua` to offer them)</sub>
-
-<div align="center">
-<table>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/prop_dyn_pc.jpg" alt="Tower PC" width="190" /><br /><sub><b>Tower PC</b><br /><code>prop_dyn_pc</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_dyn_pc_02.jpg" alt="Tower PC (dark)" width="190" /><br /><sub><b>Tower PC (dark)</b><br /><code>prop_dyn_pc_02</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_pc_01a.jpg" alt="Tower PC (beige)" width="190" /><br /><sub><b>Tower PC (beige)</b><br /><code>prop_pc_01a</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_pc_02a.jpg" alt="Tower PC (silver)" width="190" /><br /><sub><b>Tower PC (silver)</b><br /><code>prop_pc_02a</code></sub></td>
-  </tr>
-  <tr>
-    <td align="center" width="200"><img src="web/public/props/hei_prop_heist_pc_01.jpg" alt="Tower PC (black)" width="190" /><br /><sub><b>Tower PC (black)</b><br /><code>hei_prop_heist_pc_01</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/v_res_pctower.jpg" alt="Tower PC (rounded)" width="190" /><br /><sub><b>Tower PC (rounded)</b><br /><code>v_res_pctower</code></sub></td>
-  </tr>
-</table>
-</div>
-
-**Printers**
-
-<div align="center">
-<table>
-  <tr>
     <td align="center" width="200"><img src="web/public/props/prop_printer_01.jpg" alt="Laser printer" width="190" /><br /><sub><b>Laser printer</b><br /><code>prop_printer_01</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_printer_02.jpg" alt="Desktop printer" width="190" /><br /><sub><b>Desktop printer</b><br /><code>prop_printer_02</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/v_res_printer.jpg" alt="Home printer" width="190" /><br /><sub><b>Home printer</b><br /><code>v_res_printer</code></sub></td>
-    <td align="center" width="200"><img src="web/public/props/prop_copier_01.jpg" alt="Photocopier" width="190" /><br /><sub><b>Photocopier</b><br /><code>prop_copier_01</code></sub></td>
   </tr>
 </table>
 </div>
