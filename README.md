@@ -38,6 +38,8 @@ So is the paper. A page waits in the printer's tray, is taken as an item, and op
 
 [**Live demo**](https://fivem.samueldev.shop/computer) · [**Documentation**](https://docs.samueldev.shop/resources/computers/) · [**Store**](https://fivem.samueldev.shop) · [**Discord**](https://discord.gg/FzPehMQaBQ)
 
+**Works together:** [**sd-phone**](https://github.com/Samuels-Development/sd-phone) · [**sd-tablet**](https://github.com/Samuels-Development/sd-tablet) · **sd-computers**
+
 </div>
 
 ---
