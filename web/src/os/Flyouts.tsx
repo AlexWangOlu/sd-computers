@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Accessibility, Airplay, BatteryFull, BatteryCharging, Bluetooth, ChevronDown, ChevronUp, Moon, Plane, Settings as Gear, Sun, Volume2, Wifi, X } from 'lucide-react';
 import { useOS, type Toast } from '@/store/os';
-import { fmtLongDate, useNow } from '@/lib/format';
+import { fmtLongDate, fmtMonthYear, fmtWeekdayInitials, useNow } from '@/lib/format';
 import { t } from '@/i18n';
 import { useExitFx } from '@/hooks/useExitFx';
 import { AppIcon } from './icons';
@@ -27,13 +27,13 @@ export function CalendarFlyout() {
     else if (n > daysIn) cells.push({ d: n - daysIn, cur: false, today: false });
     else cells.push({ d: n, cur: true, today: offset === 0 && n === now.getDate() });
   }
-  const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const weekdays = fmtWeekdayInitials();
   return (
     <Panel>
       <div className="px-4 py-3 border-b border-stroke text-body font-semibold text-t1">{fmtLongDate(now)}</div>
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
-          <div key={offset} className={`text-body font-semibold text-t1 ${paged ? 'fade-in' : ''}`}>{view.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>
+          <div key={offset} className={`text-body font-semibold text-t1 ${paged ? 'fade-in' : ''}`}>{fmtMonthYear(view)}</div>
           <div className="flex gap-1">
             <button type="button" onClick={() => page(-1)} className="w-8 h-8 flex items-center justify-center rounded-ctl hover:bg-subtle active:scale-90 text-t1"><ChevronUp size={16} /></button>
             <button type="button" onClick={() => page(1)} className="w-8 h-8 flex items-center justify-center rounded-ctl hover:bg-subtle active:scale-90 text-t1"><ChevronDown size={16} /></button>

@@ -246,7 +246,7 @@ export default function CipherGame({
     drawBorder(ctx, OX, OY, PW, PH)
 
     if (alive) {
-      ctx.font = 'bold 7px monospace'
+      ctx.font = 'bold 7px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       for (let dir = 0; dir < 4; dir++) {
         const colIdx = sideAtDir(dir, rot)

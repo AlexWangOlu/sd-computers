@@ -1,6 +1,6 @@
 import { useId, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { t } from '@/i18n';
-import { fmtMoney, fmtTime } from '@/lib/format';
+import { fmtMoney, fmtMonthDay, fmtTime } from '@/lib/format';
 import { useWidth } from './hooks';
 import type { Tx } from './types';
 import { fmtCompactMoney, fmtSigned, txDelta } from './util';
@@ -91,7 +91,7 @@ function monotonePath(xs: number[], ys: number[]): string {
 
 const M = { l: 58, r: 14, t: 14, b: 26 };
 
-const dayLabel = (sec: number): string => new Date(sec * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const dayLabel = (sec: number): string => fmtMonthDay(new Date(sec * 1000));
 
 /** Hand-drawn SVG area chart of the society balance with gridlines and a hover tooltip. */
 export default function BalanceChart({ points, clock24, height = 220 }: { points: BalancePoint[]; clock24: boolean; height?: number }) {

@@ -6,5 +6,5 @@ return {
         SignIn = 2, -- seconds between sign-in attempts (slows password guessing)
     },
     MaxMailbox = 500, -- messages kept per address per folder; the oldest are trimmed past this
-    BounceFrom = { name = 'Mail Delivery Subsystem', email = 'mailer-daemon' }, -- @Domain is appended
+    BounceFrom = { name = '邮件投递子系统', email = 'mailer-daemon' }, -- @Domain is appended
 }

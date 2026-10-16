@@ -1,0 +1,76 @@
+{
+  "ui": {
+    "common": {
+      "no_response": "电脑没有响应。",
+      "error": "出了点问题。",
+      "cancel": "取消",
+      "ok": "确定",
+      "save": "保存",
+      "close": "关闭",
+      "loading": "加载中…",
+      "retry": "重试",
+      "refresh": "刷新",
+      "search": "搜索",
+      "delete": "删除",
+      "yes": "是",
+      "no": "否"
+    },
+    "lock": {
+      "pin": "PIN",
+      "sign_in": "登录",
+      "welcome": "欢迎",
+      "forgot": "我忘记 PIN 了",
+      "forgot_hint": "请向管理员索取这台电脑的 PIN。",
+      "locked_out": "PIN 输入错误次数过多。请在 %s 秒后重试。",
+      "bad_pin_mock": "PIN 不正确，请重试。（开发 PIN：1031）"
+    },
+    "power": {
+      "power": "电源",
+      "lock": "锁定",
+      "signout": "注销",
+      "shutdown": "关机",
+      "shutting_down": "正在关机"
+    },
+    "taskbar": {
+      "start": "开始",
+      "search": "搜索",
+      "show_desktop": "显示桌面"
+    },
+    "start": {
+      "search": "搜索应用、设置和文档",
+      "pinned": "已固定",
+      "recommended": "推荐",
+      "recommended_empty": "你越常用这台电脑，最近打开的应用就会越多地显示在这里。",
+      "best_match": "最佳匹配",
+      "no_results": "未找到与“%s”匹配的结果",
+      "app": "应用"
+    },
+    "desktop": {
+      "refresh": "刷新",
+      "display": "显示设置",
+      "personalize": "个性化",
+      "terminal": "在终端中打开",
+      "esc_again": "再次按 Esc 离开电脑。"
+    },
+    "quick": {
+      "wifi": "Wi-Fi",
+      "bluetooth": "蓝牙",
+      "airplane": "飞行模式",
+      "saver": "节电模式",
+      "focus": "专注模式",
+      "accessibility": "辅助功能",
+      "settings": "所有设置"
+    },
+    "toast": {
+      "system": "系统"
+    },
+    "hack": {
+      "difficulty_easy": "简单",
+      "difficulty_medium": "中等",
+      "difficulty_hard": "困难",
+      "step": "第 %s/%s 步",
+      "paused_focus": "输入已暂停 - 点击以聚焦",
+      "unknown_game": "未知程序：%s"
+    }
+  }
+}

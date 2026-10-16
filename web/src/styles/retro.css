@@ -23,8 +23,8 @@
   --frame: #000000;
   --paper: #ffffff;
   --ink: #000000;
-  --rt-font: 'Pixelify Sans', 'Courier New', monospace;
-  --rt-mono: 'VT323', 'Courier New', monospace;
+  --rt-font: 'Pixelify Sans', 'Courier New', 'Noto Sans SC Variable', monospace;
+  --rt-mono: 'VT323', 'Courier New', 'Noto Sans SC Variable', monospace;
   --notepad-font: var(--rt-mono); /* Notepad's editor reads this (inline font-family var) */
 
   /* The shared app tokens, repainted grey. */

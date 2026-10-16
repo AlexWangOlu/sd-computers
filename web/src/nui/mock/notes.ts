@@ -22,29 +22,29 @@ const newId = (): string => now().toString(16) + Math.floor(Math.random() * 0x10
 const notes: Note[] = [
   {
     id: '66f1a2b30a1c',
-    title: 'Shift handover',
+    title: '交接班',
     body: [
-      'Shift handover - nights -> days',
+      '交接班 - 夜班 -> 白班',
       '',
-      '- 10-80 on Route 68 ended at Harmony, suspect in custody (cell 3)',
-      '- Pillbox called: GSW victim from Grove St stable, statement pending',
-      '- Impound lot gate sticks again, ticket raised with facilities',
-      '- Armoury count done 05:40, all signed back in',
+      '- 68 号公路的 10-80 在哈莫尼收场，嫌疑人已被羁押（3 号囚室）',
+      '- 圆堡山来电：格罗夫街的枪伤伤者情况稳定，笔录待做',
+      '- 扣押场大门又卡住了，已向后勤部门报修',
+      '- 05:40 完成军械库清点，全部归还入库',
       '',
-      'Reminder: briefing room booked 14:00 for the bank detail.',
+      '提醒：简报室 14:00 已被银行押运任务占用。',
     ].join('\n'),
     updatedAt: now() - 25 * 60,
   },
   {
     id: '66f0f9e10b7e',
-    title: 'Plate list',
-    body: ['BOLO plates', '', '46EEK572  black Sultan RS  - linked to Vinewood burglaries', '88JAX190  white Speedo   - stolen, Sandy Shores', '12ROC447  red Buffalo S  - expired reg, warn only', '03FKN882  grey Baller    - flagged by Gang Unit'].join('\n'),
+    title: '车牌清单',
+    body: ['布控车牌', '', '46EEK572  黑色 Sultan RS  - 与好麦坞连环入室盗窃案有关', '88JAX190  白色 Speedo   - 被盗，沙丘海岸', '12ROC447  红色 Buffalo S  - 登记过期，仅警告', '03FKN882  灰色 Baller    - 帮派组已标记'].join('\n'),
     updatedAt: now() - 3 * 3600,
   },
   {
     id: '66ee41c70f02',
-    title: 'Passwords - DO NOT SHARE',
-    body: ['Front desk PC PIN: ask the Sergeant', 'Records terminal: hale.j / Spring2026!', 'Armoury keypad: changes every Monday', '', 'Seriously, do not leave this note open.'].join('\n'),
+    title: '密码 - 请勿外传',
+    body: ['前台电脑 PIN：问警士', '档案终端：hale.j / Spring2026!', '军械库密码锁：每周一更换', '', '说真的，别把这便签开着就走。'].join('\n'),
     updatedAt: now() - 2 * 86400,
   },
 ];
@@ -56,8 +56,8 @@ const handlers: Record<string, MockHandler> = {
 
   'notes:save': p => {
     const input = p.note as { id?: unknown; title?: unknown; body?: unknown } | undefined;
-    if (!input || typeof input !== 'object') return fail('Invalid request.');
-    const title = String(input.title ?? '').slice(0, MAX_TITLE) || 'Untitled';
+    if (!input || typeof input !== 'object') return fail('无效请求。');
+    const title = String(input.title ?? '').slice(0, MAX_TITLE) || '未命名';
     const body = String(input.body ?? '').slice(0, MAX_BODY);
     const existing = input.id !== undefined ? notes.find(n => n.id === input.id) : undefined;
     if (existing) {
@@ -66,7 +66,7 @@ const handlers: Record<string, MockHandler> = {
       existing.updatedAt = now();
       return ok({ ...existing });
     }
-    if (notes.length >= MAX_NOTES) return fail('You have reached the maximum number of notes.');
+    if (notes.length >= MAX_NOTES) return fail('你已达到便签数量上限。');
     const note: Note = { id: newId(), title, body, updatedAt: now() };
     notes.push(note);
     return ok({ ...note });

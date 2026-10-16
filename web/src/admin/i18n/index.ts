@@ -1,4 +1,6 @@
+import { isEnvBrowser } from '@/nui/bridge';
 import en from '../../../../locales/en.json';
+import cn from '../../../../locales/cn.json';
 
 type Dict = { [key: string]: string | Dict };
 type Flat = Record<string, string>;
@@ -6,9 +8,10 @@ type Flat = Record<string, string>;
 // The panel's strings are the ui.admin block of the locale (src/admin/strings.en.json, merged into
 // locales/en.json by scripts/merge-strings.mjs). The game sends the active locale flattened
 // (lib.getLocales(): 'ui.admin.tabs.overview' = ...); the bundled English is the fallback, and
-// what the browser preview shows.
+// what the browser preview shows - in this fork the bundled Chinese instead, because a browser
+// preview has no game to hand a locale over.
 const PREFIX = 'ui.admin.';
-const bundled = en as unknown as Dict;
+const bundled = (isEnvBrowser() ? cn : en) as unknown as Dict;
 let dict: Flat = {};
 
 export function setLocale(strings: Flat | null | undefined): void {

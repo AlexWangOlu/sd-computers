@@ -130,7 +130,7 @@ if config.Debug and config.Interact and config.Interact.PosCommand then
     RegisterCommand(config.Interact.PosCommand, function()
         local hit, entity, coords = lib.raycast.fromCamera(511, 4, 15.0)
         if not hit then
-            lib.notify({ description = 'Nothing under the crosshair', type = 'error' })
+            lib.notify({ description = locale('err.nothing_aimed'), type = 'error' })
             return
         end
         local line = ('coords = vec3(%.2f, %.2f, %.2f),'):format(coords.x, coords.y, coords.z)

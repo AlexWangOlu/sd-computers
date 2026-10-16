@@ -1,0 +1,119 @@
+{
+  "err": {
+    "unknown_computer": "这台电脑尚未配置。",
+    "too_far": "你已离开电脑。",
+    "no_access": "拒绝访问。你无权使用这台电脑。",
+    "no_character": "未加载任何角色。",
+    "in_use": "有其他人在使用这台电脑。",
+    "no_session": "你未登录这台电脑。",
+    "app_missing": "这台电脑未安装该应用。",
+    "not_boss": "只有老板可以使用经营管理。",
+    "locked_out": "PIN 输入错误次数过多。请在 %s 秒后重试。",
+    "bad_pin": "PIN 不正确。请重试。",
+    "invalid": "无效请求。",
+    "internal": "出了点问题。请重试。",
+    "slow_down": "操作太快了，请慢一点。",
+    "wait": "请等待 %s 秒。",
+    "notes_full": "你已达到便签数量上限。",
+    "phone_unavailable": "手机连接当前不可用。",
+    "computer_changed": "管理员移动或移除了这台电脑。",
+    "computer_updated": "管理员更改了这台电脑。请重新打开。"
+  },
+  "logs": {
+    "cleared": "审核日志已清空。主体：%s",
+    "logon": "账户登录成功。账户：%s",
+    "logon_failed": "账户登录失败（PIN 错误）。账户：%s",
+    "locked_out": "用户账户已被锁定。账户：%s，时长：%s 秒",
+    "logoff": "账户已注销。账户：%s",
+    "app_start": "应用程序已启动：%s（用户 %s）",
+    "mail_sent": "邮件已从 %s 发送至 %s，主题“%s”",
+    "mail_created": "邮件账户 %s 已创建，操作者：%s",
+    "mail_signin": "邮件账户 %s 登录成功，操作者：%s",
+    "mail_signin_failed": "邮件账户 %s 登录失败，操作者：%s",
+    "mail_signout": "邮件账户 %s 已注销，操作者：%s",
+    "practice_ok": "%s（%s）已完成，用时 %ss",
+    "practice_fail": "%s（%s）已终止，进程失败",
+    "breach_start": "对 %s 的未授权访问尝试",
+    "breach_ok": "安全入侵：%s 已被攻破",
+    "breach_fail": "针对 %s 的入侵尝试已被拦截",
+    "boss_grade": "%s 已将 %s 的职级从 %s 改为 %s",
+    "boss_fire": "%s 已将 %s 移出 %s",
+    "boss_hire": "%s 已将 %s 招入 %s",
+    "boss_deposit": "%s 已将 $%s 存入 %s",
+    "boss_withdraw": "%s 已将 $%s 从 %s 支取",
+    "camera_view": "%s 查看了安防监控“%s”",
+    "print": "已打印“%s”（%s 份）至 %s。"
+  },
+  "mail": {
+    "notify_title": "新邮件 - %s",
+    "notify_body": "%s：%s",
+    "no_subject": "（无主题）",
+    "bounce_subject": "投递失败：邮件无法送达",
+    "bounce_body": "你的邮件无法送达以下收件人，因为该地址不存在：\n\n%s\n\n原始主题：%s",
+    "err_not_signed_in": "你未登录该邮箱。",
+    "err_not_found": "该邮件已不存在。",
+    "err_recipients": "请输入 1 到 %s 个有效收件人地址。",
+    "err_empty": "请先填写主题或正文。",
+    "err_username": "用户名需为 2-32 个字符：字母、数字、点、短横线和下划线。",
+    "err_password": "密码至少需要 %s 个字符。",
+    "err_name": "请输入显示名称（最多 %s 个字符）。",
+    "err_create_cap": "你最多只能创建 %s 个邮件账户。",
+    "err_signin_cap": "你最多只能同时登录 %s 个账户。",
+    "err_taken": "该地址已被占用。",
+    "err_credentials": "地址或密码不正确。"
+  },
+  "messages": {
+    "err_number": "请输入要发送短信的电话号码。",
+    "err_empty": "请先输入消息内容。"
+  },
+  "notes": {
+    "err_missing": "该便签已不存在。"
+  },
+  "cameras": {
+    "err_unknown": "无法从这台电脑查看该摄像头。"
+  },
+  "bank": {
+    "err_disabled": "本服务器已关闭银行业务。"
+  },
+  "files": {
+    "missing": "该文档已不存在。",
+    "name_required": "请为文档命名。",
+    "name_taken": "你已有一个名为“%s”的文档。",
+    "full": "你最多只能保留 %s 个文档。请删除一个以腾出空间。",
+    "too_long": "该文档太长，无法保存在这里（最多 %s 个字符）。",
+    "untitled": "未命名",
+    "phone_missing": "该文档已不在你的手机上。",
+    "phone_no_text": "该文档没有可复制的文字。",
+    "phone_refused": "你的手机无法接收该文档。可能文档太长，或者手机空间已满。",
+    "picture_unknown": "该文档中的某张图片不在你的照片中。请先将其添加到照片。"
+  },
+  "contacts": {
+    "err_name": "请输入联系人姓名。",
+    "err_number": "请输入 %s 到 %s 位的电话号码。"
+  },
+  "phonelink": {
+    "notify_title": "手机连接",
+    "notify_body": "你的验证码是 %s。请在 %s 上的手机连接中输入。有效期 %s 分钟。",
+    "err_no_phone": "你需要随身携带手机才能获取验证码。",
+    "err_wait": "验证码刚已发送。%s 秒后可再次获取。",
+    "err_send": "验证码无法发送到你的手机。请稍后重试。",
+    "err_digits": "验证码为 %s 位数字。",
+    "err_no_code": "没有待输入的验证码。可能已过期，请重新发送。",
+    "err_wrong": "验证码不正确。还剩 %s 次尝试。",
+    "err_too_many": "验证码错误次数过多。请重新发送。"
+  },
+  "board": {
+    "err_no_board": "你的职业没有公司公告板。",
+    "err_not_boss": "只有该职业的老板才能修改公告板。",
+    "err_job_changed": "公告板打开期间你的职业发生了变化。请刷新后重试。",
+    "err_title": "请为公告填写标题。",
+    "err_gone": "该公告已不在公告板上。",
+    "err_full": "公告板已满：%s 条公告均已置顶。请先取消置顶或删除一条。"
+  },
+  "photos": {
+    "err_link": "这不是图片链接。必须以 https:// 开头",
+    "err_host": "不允许从该网站链接图片。",
+    "err_full": "你的照片已满（%s）。请先删除一张。",
+    "err_have": "该图片已在你的照片中。"
+  }
+}

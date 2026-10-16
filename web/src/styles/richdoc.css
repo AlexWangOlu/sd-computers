@@ -85,27 +85,27 @@
    in em, so a part keeps its share of the sheet however big the sheet is drawn. */
 .rd font[face='serif'],
 .rd [data-f='serif'] {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif;
 }
 .rd font[face='sans'],
 .rd [data-f='sans'] {
-  font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif;
+  font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, 'Noto Sans SC Variable', sans-serif;
 }
 .rd font[face='mono'],
 .rd [data-f='mono'] {
-  font-family: 'JetBrains Mono Variable', 'JetBrains Mono', Consolas, monospace;
+  font-family: 'JetBrains Mono Variable', 'JetBrains Mono', Consolas, 'Noto Sans SC Variable', monospace;
 }
 .rd font[face='typewriter'],
 .rd [data-f='typewriter'] {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, 'Noto Sans SC Variable', monospace;
 }
 .rd font[face='classic'],
 .rd [data-f='classic'] {
-  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', serif;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', 'Noto Sans SC Variable', serif;
 }
 .rd font[face='hand'],
 .rd [data-f='hand'] {
-  font-family: 'Segoe Print', 'Ink Free', 'Bradley Hand ITC', 'Comic Sans MS', cursive;
+  font-family: 'Segoe Print', 'Ink Free', 'Bradley Hand ITC', 'Comic Sans MS', 'Noto Sans SC Variable', cursive;
 }
 
 .rd font[size] {

@@ -47,7 +47,7 @@ return {
     -- Location computer: MRPD front desk. Locked to police, manages the police department.
     {
         id = 'mrpd_frontdesk',
-        label = 'MRPD Front Desk',
+        label = '米申罗警局前台',
         hostname = 'LSPD-MRPD-FD01',
         coords = vec3(441.62, -979.52, 30.68), -- on the desk's left monitor, with its mouse, keyboard and phone
         size = vec3(1.0, 0.6, 0.6),
@@ -61,7 +61,7 @@ return {
     -- Location computer: Pillbox reception. Locked to EMS, manages the ambulance job.
     {
         id = 'pillbox_reception',
-        label = 'Pillbox Reception',
+        label = '圆堡山医疗中心接待处',
         hostname = 'PILLBOX-RECEP01',
         coords = vec3(310.9, -597.4, 43.4),
         size = vec3(0.9, 0.7, 0.6),
@@ -77,7 +77,7 @@ return {
     -- (add 'prop_dyn_pc' and the like here if the towers should be computers too).
     {
         id = 'public_pc',
-        label = 'Computer',
+        label = '电脑',
         hostname = 'LS-WORKSTATION',
         model = {
             'prop_monitor_01a', 'prop_monitor_01b', 'prop_monitor_02', 'prop_monitor_03b',
@@ -92,7 +92,7 @@ return {
     -- if they are its boss (a mechanic boss sees the mechanic roster, a burgershot boss theirs).
     {
         id = 'business_laptop',
-        label = 'Business Laptop',
+        label = '商用笔记本',
         hostname = 'BIZ-LAPTOP',
         model = {
             'prop_laptop_01a', 'p_laptop_02_s', 'prop_laptop_lester', 'prop_laptop_lester2',

@@ -120,7 +120,7 @@ export default function News(props: LiveProps) {
       <div className="wz-top">
         <div className="mx-auto max-w-[1040px] px-6 h-7 flex items-center gap-4">
           <span>{fmtLongDate(today)}</span>
-          <span className="opacity-60">Los Santos</span>
+          <span className="opacity-60">{t('ui.browser.news_city')}</span>
           <span className="flex-1" />
           {d?.canManage && (
             <A to={under(site, 'newsroom')} onOpen={onOpen} className="text-white font-bold hover:underline">
@@ -131,8 +131,8 @@ export default function News(props: LiveProps) {
       </div>
       <header className="mx-auto w-full max-w-[1040px] px-6 py-4 flex items-end gap-4">
         <A to={site.address} onOpen={onOpen} className="wz-logo" title={site.title}>
-          <span>Weazel</span>
-          <span>News</span>
+          <span>{t('ui.browser.news_masthead_1')}</span>
+          <span>{t('ui.browser.news_masthead_2')}</span>
         </A>
         <span className="s-faint pb-2 text-[12px] italic">{t('ui.browser.news_tagline')}</span>
       </header>
@@ -157,7 +157,7 @@ export default function News(props: LiveProps) {
       <main className="flex-1 mx-auto w-full max-w-[1040px] px-6 py-7 page-in">{children}</main>
       <footer className="wz-foot">
         <div className="mx-auto max-w-[1040px] px-6 py-4 flex items-center gap-4">
-          <span className="font-bold text-white">WEAZEL NEWS NETWORK</span>
+          <span className="font-bold text-white">{t('ui.browser.news_network')}</span>
           <span>{t('ui.browser.news_foot')}</span>
         </div>
       </footer>

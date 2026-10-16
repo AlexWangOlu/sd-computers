@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { fmtShortDate, fmtTime } from '@/lib/format';
+import { fmtShortDate, fmtTime, fmtWeekdayFullStamp, fmtWeekdayLong, fmtWeekdayMonthDay, fmtWeekdayShort, getFormatLocale } from '@/lib/format';
 import type { Contact, ConversationRow, TextMessage, Thread } from './types';
 
 export const cx = (...c: (string | false | null | undefined)[]): string => c.filter(Boolean).join(' ');
@@ -181,7 +181,7 @@ export function fmtListTime(ts: number, now: number, clock24: boolean): string {
   const d = new Date(ts);
   if (days <= 0) return fmtTime(d, clock24);
   if (days === 1) return t('ui.messages.yesterday');
-  if (days < 7) return d.toLocaleDateString('en-US', { weekday: 'short' });
+  if (days < 7) return fmtWeekdayShort(d);
   return fmtShortDate(d);
 }
 
@@ -191,16 +191,17 @@ export function fmtDay(ts: number, now: number): string {
   const d = new Date(ts);
   if (days <= 0) return t('ui.messages.today');
   if (days === 1) return t('ui.messages.yesterday');
-  if (days < 7) return d.toLocaleDateString('en-US', { weekday: 'long' });
-  const opts: Intl.DateTimeFormatOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-  if (d.getFullYear() !== new Date(now).getFullYear()) opts.year = 'numeric';
-  return d.toLocaleDateString('en-US', opts);
+  if (days < 7) return fmtWeekdayLong(d);
+  if (d.getFullYear() !== new Date(now).getFullYear()) {
+    return d.toLocaleDateString(getFormatLocale(), { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return fmtWeekdayMonthDay(d);
 }
 
 /** Hover title on a bubble: "Mon, Oct 5, 2026, 6:05 PM". */
 export function fmtFull(ts: number, clock24: boolean): string {
   const d = new Date(ts);
-  return `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}, ${fmtTime(d, clock24)}`;
+  return fmtWeekdayFullStamp(d, clock24);
 }
 
 /** Badge text: 120 -> "99+". */

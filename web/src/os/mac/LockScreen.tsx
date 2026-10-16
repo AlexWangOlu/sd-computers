@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, BatteryFull, Power, Wifi } from 'lucide-react';
 import { useOS } from '@/store/os';
-import { fmtTime, useNow } from '@/lib/format';
+import { fmtTime, fmtWeekdayLongDate, useNow } from '@/lib/format';
 import { t } from '@/i18n';
 import { Wallpaper } from '../Wallpaper';
 import { signIn, powerOff } from '../session';
 import { sfx } from '../sfx';
 import { MacAvatar, MacSpinner } from './MacIcon';
 
-/** "Monday 5 October". */
-const lockDate = (d: Date): string =>
-  `${d.toLocaleDateString('en-US', { weekday: 'long' })} ${d.getDate()} ${d.toLocaleDateString('en-US', { month: 'long' })}`;
+/** "Monday 5 October" ("星期一 10月5日" in Chinese). */
+const lockDate = (d: Date): string => fmtWeekdayLongDate(d);
 
 /**
  * Harbor lock screen: the wallpaper softly blurred, the date and a big thin clock at the top, the

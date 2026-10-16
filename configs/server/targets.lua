@@ -33,7 +33,7 @@ return {
         id = 'fleeca_ledger',
         computers = { 'public_pc' },
         command = 'fleeca-ledger',
-        label = 'Fleeca Bank - branch ledger relay',
+        label = 'Fleeca 银行 - 分行账本中继',
         hidden = false,
         steps = {
             { game = 'pipe', difficulty = 'medium' },
@@ -45,8 +45,8 @@ return {
         exclusive = true,
         alert = {
             chance = 50, onFail = true,
-            title = 'Bank Network Intrusion', code = '10-90',
-            message = 'Fleeca reports an unauthorised ledger transfer traced to a public terminal',
+            title = '银行网络入侵', code = '10-90',
+            message = 'Fleeca 报告一笔未授权的账本转账，可追溯至一台公共终端',
             jobs = { 'police' },
         },
         reward = {
@@ -58,7 +58,7 @@ return {
         id = 'lifeinvader_creds',
         computers = { 'public_pc', 'business_laptop' },
         command = 'lifeinvader-db',
-        label = 'LifeInvader - credential database',
+        label = 'LifeInvader - 凭据数据库',
         hidden = true, -- not listed by `targets`: the command name is the secret
         steps = {
             { game = 'maze', difficulty = 'medium' },
@@ -68,12 +68,12 @@ return {
         cooldown = 3600,
         failCooldown = 120,
         exclusive = true,
-        alert = { chance = 20, onFail = false, title = 'Data Breach', code = '10-90', message = 'LifeInvader reports a database breach', jobs = { 'police' } },
+        alert = { chance = 20, onFail = false, title = '数据泄露', code = '10-90', message = 'LifeInvader 报告数据库遭入侵', jobs = { 'police' } },
         reward = {
             mail = {
                 from = { name = 'root', email = 'root' },
                 subject = 'dump_0x7f3a.txt',
-                body = 'Exfiltration complete.\n\nadmin@lifeinvader / Sp1d3rM0nk3y!\nj.chen@lifeinvader / hunter2\nbackup-svc / L1f3Inv@d3r2024\n\nConnection closed.',
+                body = '外泄完成。\n\nadmin@lifeinvader / Sp1d3rM0nk3y!\nj.chen@lifeinvader / hunter2\nbackup-svc / L1f3Inv@d3r2024\n\n连接已关闭。',
             },
             -- event = 'my-heist:server:lifeinvaderDump', -- your own server event: TriggerEvent(event, src, info)
         },

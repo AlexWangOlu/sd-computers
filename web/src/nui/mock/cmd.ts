@@ -46,8 +46,8 @@ const PRESETS: Record<string, Record<string, Record<string, number>>> = {
 };
 
 const TARGETS = [
-  { command: 'fleeca-ledger', label: 'Fleeca Bank - branch ledger relay', steps: [{ game: 'pipe', difficulty: 'easy' }, { game: 'typing', difficulty: 'easy' }], cooldown: 0, busy: false, requires: null as string | null },
-  { command: 'cctv-mrpd', label: 'MRPD CCTV uplink', steps: [{ game: 'maze', difficulty: 'medium' }], cooldown: 1342, busy: false, requires: 'Trojan USB' },
+  { command: 'fleeca-ledger', label: 'Fleeca 银行 - 分行账本中继', steps: [{ game: 'pipe', difficulty: 'easy' }, { game: 'typing', difficulty: 'easy' }], cooldown: 0, busy: false, requires: null as string | null },
+  { command: 'cctv-mrpd', label: '米申罗警局监控上行链路', steps: [{ game: 'maze', difficulty: 'medium' }], cooldown: 1342, busy: false, requires: 'Trojan USB' },
 ];
 
 let tokenSeq = 100;
@@ -58,8 +58,8 @@ const breaches = new Map<number, { target: (typeof TARGETS)[number]; step: numbe
 const start = (game: string, difficulty: string, extra: { breach?: number; stepIndex?: number; total?: number; lib?: boolean } = {}) => {
   const meta = mockPayload.hacks.games[game];
   const params = PRESETS[difficulty]?.[game];
-  if (!meta) return fail(`Unknown program.`);
-  if (!params) return fail(`Unknown difficulty.`);
+  if (!meta) return fail(`未知程序。`);
+  if (!params) return fail(`未知难度。`);
   const token = ++tokenSeq;
   runs.set(token, { game, difficulty, started: Date.now(), breach: extra.breach, stepIndex: extra.stepIndex, lib: extra.lib });
   return ok({ token, game, difficulty, program: meta.program, label: meta.label, params, steps: 0, minSeconds: 3, step: extra.stepIndex, total: extra.total });
@@ -75,8 +75,8 @@ const handlers: Record<string, MockHandler> = {
     ok(TARGETS.map(t => ({ command: t.command, label: t.label, steps: t.steps.length, cooldown: t.cooldown, busy: t.busy, requires: t.requires }))),
   'hack:breach': p => {
     const t = TARGETS.find(x => x.command === p.command);
-    if (!t) return fail(`Could not connect to host "${String(p.command)}": host unreachable.`);
-    if (t.cooldown > 0) return fail(`Remote host is offline (reboot in ${t.cooldown}s).`);
+    if (!t) return fail(`无法连接到主机“${String(p.command)}”：主机不可达。`);
+    if (t.cooldown > 0) return fail(`远程主机已离线（${t.cooldown} 秒后重启）。`);
     const id = ++breachSeq;
     breaches.set(id, { target: t, step: 1 });
     return ok({ id, label: t.label, steps: t.steps.map(s => ({ ...s, ...mockPayload.hacks.games[s.game] })) });
@@ -84,7 +84,7 @@ const handlers: Record<string, MockHandler> = {
   'hack:start': p => {
     if (typeof p.breach === 'number') {
       const b = breaches.get(p.breach);
-      if (!b) return fail('The session expired. Run it again.');
+      if (!b) return fail('会话已过期，请重新运行。');
       const st = b.target.steps[b.step - 1];
       return start(st.game, st.difficulty, { breach: p.breach, stepIndex: b.step, total: b.target.steps.length });
     }
@@ -93,9 +93,9 @@ const handlers: Record<string, MockHandler> = {
   'hack:advance': () => ok({}),
   'hack:submit': p => {
     const r = runs.get(Number(p.token));
-    if (!r) return fail('The session expired. Run it again.');
+    if (!r) return fail('会话已过期，请重新运行。');
     runs.delete(Number(p.token));
-    if (Date.now() - r.started < 3000) return fail('Integrity check failed - the run was rejected.');
+    if (Date.now() - r.started < 3000) return fail('完整性校验未通过，本次运行已被拒绝。');
     if (p.lib || r.lib) return ok({ proof: 'mockproof' + p.token });
     if (r.breach) {
       const b = breaches.get(r.breach)!;

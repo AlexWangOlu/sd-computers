@@ -1,0 +1,162 @@
+{
+  "ui": {
+    "admin": {
+      "screener": {
+        "title": "Screen of %s",
+        "size": "Size",
+        "lean": "Lean",
+        "middle": "Middle",
+        "over": {
+          "draw": "Draw",
+          "move": "Move",
+          "resize": "Resize"
+        },
+        "groups": {
+          "draw": "Draw",
+          "fit": "Fit",
+          "view": "View",
+          "edit": "Edit"
+        },
+        "keys": {
+          "drag": "Draw, move, resize",
+          "look": "Hold to look around",
+          "depth": "Push in / pull out",
+          "lean": "Lean back / forward",
+          "nudge": "Nudge",
+          "snap": "Sit it on the surface",
+          "coarse": "Bigger steps",
+          "front": "Front view",
+          "side": "Side view",
+          "zoom": "Zoom",
+          "picture": "Picture",
+          "turn": "Another side of the prop",
+          "undo": "Undo",
+          "reset": "Start over",
+          "copy": "Copy for the config",
+          "cancel": "Cancel",
+          "confirm": "Save"
+        },
+        "hint": {
+          "draw": "Drag across the glass, from one corner to the opposite one.",
+          "fit": "Drag an edge or a corner to fit it. Scroll in until the glass starts to hide the picture, then back out a notch. V checks it from the side.",
+          "side": "Scroll until the picture sits on the glass, and lean it (Q / E) until it lies flat on it. F goes back to the front.",
+          "edge": "Too far round to drag from here: F faces the screen again.",
+          "looking": "Looking around. Let go to get the cursor back."
+        },
+        "notes": {
+          "snapped": "On the prop's surface. Scroll in until the glass starts to hide the picture, then back out a notch",
+          "no_surface": "Nothing to sit it on there: use the wheel",
+          "copied": "Copied: paste it into Models in configs/shared/screens.lua",
+          "draw_first": "Draw the screen first"
+        }
+      },
+      "props": {
+        "add": "Add prop",
+        "add_title": "Add a prop",
+        "hint": "Add any prop model the game has, streamed ones included. A computer can then be placed as it, one can be picked from the world, and the Automatic tab offers it to every automatic computer. Then draw its screen, from its tile in the Props tab.",
+        "tab_hint": "Every prop a computer can be: placed as, picked from the world as, or ticked in the Automatic tab. The ones from configs/shared/admin.lua are changed in that file; the ones added here can be removed here.",
+        "model": "Model name",
+        "taken": "That prop is already on the list.",
+        "label": "Name",
+        "label_placeholder": "Office monitor",
+        "kind": "Kind",
+        "kind_monitor": "Monitor",
+        "kind_tower": "Tower",
+        "kind_laptop": "Laptop",
+        "screen_hint": "A prop of your own has no screen until you draw one: Draw screen, under it in the Props tab. Until then it is still a computer, opening fullscreen.",
+        "screen_none": "No screen",
+        "screen_none_hint": "It has no screen yet, so it opens fullscreen and shows nothing in the world. Draw where its screen is.",
+        "screen_draw": "Draw screen",
+        "screen_adjust": "Adjust screen",
+        "screen_adjust_hint": "Redraw where the screen is on this prop",
+        "screen_reset": "Take the drawn screen away: back to the built-in one, if it has one",
+        "screen_reset_done": "%s: drawn screen removed",
+        "search": "Search by name or model",
+        "filter_all": "All",
+        "filter_monitor": "Monitors",
+        "filter_tower": "Towers",
+        "filter_laptop": "Laptops",
+        "filter_custom": "Added here",
+        "custom": "Added",
+        "auto": "Automatic: %s",
+        "placed": "%s placed",
+        "unused": "Not in use",
+        "none": "No props added yet.",
+        "remove": "Remove",
+        "added": "%s added",
+        "removed": "%s removed"
+      },
+      "placement": {
+        "title": "Placing %s",
+        "handles": {
+          "move": "Move",
+          "rotate": "Rotate"
+        },
+        "modes": {
+          "snap": "Snap",
+          "local": "Local axes",
+          "world": "World axes",
+          "stick": "Stick to ground",
+          "cursor": "Cursor",
+          "move": "Move",
+          "rotate": "Rotate"
+        },
+        "warnings": {
+          "floating": "Floating %s m above the ground — press Alt to drop it"
+        },
+        "groups": {
+          "gizmo": "Gizmo",
+          "move": "Adjust",
+          "edit": "Edit"
+        },
+        "keys": {
+          "drag": "Grab arrow or ring",
+          "nudge": "Nudge",
+          "height": "Height",
+          "rotate": "Turn",
+          "snap": "Snap",
+          "stick": "Stick",
+          "drop": "Drop",
+          "undo": "Undo",
+          "cancel": "Cancel",
+          "confirm": "Place",
+          "cursor": "Cursor on / off",
+          "look": "Hold to look around",
+          "move": "Move mode",
+          "rotate_mode": "Rotate mode"
+        }
+      },
+      "overview": {
+        "by_style": "Computers by style",
+        "by_prop": "Placed computers by prop",
+        "no_data": "Nothing to show yet",
+        "rules": "Rules",
+        "rule_style": "Default style",
+        "rule_boot": "Boot sequence when a computer opens",
+        "rule_reach": "A computer closes itself %s m away",
+        "on": "On",
+        "off": "Off"
+      },
+      "actions": {
+        "teleport": "Teleport",
+        "move": "Move",
+        "edit": "Change",
+        "delete": "Delete",
+        "delete_all": "Delete all",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "save": "Save",
+        "close": "Close"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "computers": "Computers",
+        "cameras": "Cameras",
+        "printers": "Printers",
+        "automatic": "Automatic",
+        "props": "Props",
+        "styles": "Styles"
+      }
+    }
+  }
+}

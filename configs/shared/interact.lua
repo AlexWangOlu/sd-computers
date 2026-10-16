@@ -1,7 +1,7 @@
 return {
     -- The target option on every computer (location zones and prop models alike).
     Target = {
-        label = 'Use Computer',
+        label = '使用电脑',
         icon = 'fas fa-desktop',
         distance = 1.8, -- metres from the zone/prop the option shows at
     },

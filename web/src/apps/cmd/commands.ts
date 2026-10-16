@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { fmtDuration } from '@/lib/format';
+import { fmtDuration, fmtLongDateFull, fmtTime } from '@/lib/format';
 import { useOS } from '@/store/os';
 import type { HackRun } from '@/types';
 import type { Command, Ctx, Printer } from './types';
@@ -246,7 +246,7 @@ const IPC = {
 const NIC = 'LS-Net Gigabit Ethernet Adapter';
 
 const longStamp = (d: Date, clock24: boolean): string =>
-  `${d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} ${d.toLocaleTimeString('en-US', { hour12: !clock24 })}`;
+  `${fmtLongDateFull(d)} ${fmtTime(d, clock24)}`;
 
 const ipconfig: Command = async (ctx, args) => {
   const opt = (args[0] ?? '').toLowerCase();

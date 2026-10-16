@@ -8,16 +8,16 @@ return {
     -- executable CMD "launches"; `label` is the window title. Removing an entry hides that game
     -- from practice AND from the StartHack export.
     Games = {
-        maze = { program = 'net-maze.exe', label = 'Network Maze' },
-        capture = { program = 'node-grab.exe', label = 'Node Capture' },
-        cipher = { program = 'cipher-lock.exe', label = 'Cipher Lock' },
-        snake = { program = 'data-worm.exe', label = 'Data Worm' },
-        firewall = { program = 'fw-defense.exe', label = 'Firewall Defense' },
-        evasion = { program = 'highway-evade.exe', label = 'Highway Evasion' },
-        typing = { program = 'code-inject.exe', label = 'Code Injection' },
-        signal = { program = 'sig-replay.exe', label = 'Signal Replay' },
-        pipe = { program = 'pipe-route.exe', label = 'Packet Routing' },
-        breakout = { program = 'ice-break.exe', label = 'ICE Breaker' },
+        maze = { program = 'net-maze.exe', label = '网络迷宫' },
+        capture = { program = 'node-grab.exe', label = '节点占领' },
+        cipher = { program = 'cipher-lock.exe', label = '密码破译' },
+        snake = { program = 'data-worm.exe', label = '数据蠕虫' },
+        firewall = { program = 'fw-defense.exe', label = '防火墙防御' },
+        evasion = { program = 'highway-evade.exe', label = '高速公路规避' },
+        typing = { program = 'code-inject.exe', label = '代码注入' },
+        signal = { program = 'sig-replay.exe', label = '信号重放' },
+        pipe = { program = 'pipe-route.exe', label = '数据包路由' },
+        breakout = { program = 'ice-break.exe', label = 'ICE 突破' },
     },
 
     -- Difficulty presets: each game's knobs per difficulty. `medium` is every game's tuned default.

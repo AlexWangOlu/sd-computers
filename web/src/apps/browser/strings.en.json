@@ -234,5 +234,9 @@
   "stocks_h_symbol": "Symbol",
   "stocks_h_name": "Name",
   "stocks_h_price": "Last",
-  "stocks_h_change": "Change"
+  "stocks_h_change": "Change",
+  "news_city": "Los Santos",
+  "news_masthead_1": "Weazel",
+  "news_masthead_2": "News",
+  "news_network": "WEAZEL NEWS NETWORK"
 }

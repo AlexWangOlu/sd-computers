@@ -65,14 +65,14 @@ const notes: StoredNote[] = [
   {
     id: 'k3v9q1m7z2xa',
     body: [
-      'Fleeca job - Great Ocean Hwy',
+      'Fleeca 行动 - Great Ocean Hwy',
       '',
-      'Crew: me, Dex (wheel), Kira (laptop)',
-      'Need: thermite x2, drill, laptop, 3 burners',
-      'Hit at shift change, 21:00 sharp',
-      'Route out: Paleto back roads -> boat at Procopio',
+      '人手：我、Dex（开车）、Kira（电脑）',
+      '需要：铝热剂 x2、钻机、笔记本电脑、3 部一次性手机',
+      '动手时机：换班时，21:00 整',
+      '撤离路线：佩里托湾后路 -> Procopio 上船',
       '',
-      'No names on comms. Burners go in the ocean after.',
+      '对讲里不许提名字。用完的一次性手机扔海里。',
     ].join('\n'),
     images: ['https://picsum.photos/seed/fleeca/600/400', 'https://picsum.photos/seed/procopio/600/400'],
     sketches: [ROUTE_SKETCH],
@@ -82,12 +82,12 @@ const notes: StoredNote[] = [
   {
     id: 'p8d2w6r4t0yb',
     body: [
-      'Shopping list',
-      '- Birthday gift card for Mia (Burger Shot)',
-      '- New tyres for the Sultan, ask Benny about a deal',
-      '- Phone case, Digital Den',
-      '- Laundry detergent',
-      '- Dog food (the good stuff)',
+      '采购清单',
+      '- 给 Mia 的生日礼品卡（Burger Shot）',
+      '- Sultan 的新轮胎，找 Benny 问个折扣',
+      '- 手机壳，Digital Den',
+      '- 洗衣液',
+      '- 狗粮（要好的那种）',
     ].join('\n'),
     images: [],
     sketches: [],
@@ -96,7 +96,7 @@ const notes: StoredNote[] = [
   },
   {
     id: 'g5n1c7h3j9ue',
-    body: ['Grocery run - 24/7 on Innocence Blvd', 'Eggs', 'Bread', 'Oat milk', 'Coffee beans', 'Frozen pizza x3', 'Cat food!!'].join('\n'),
+    body: ['采购 - Innocence Blvd 的 24/7', '鸡蛋', '面包', '燕麦奶', '咖啡豆', '冷冻披萨 x3', '猫粮！！'].join('\n'),
     images: ['https://picsum.photos/seed/receipt/600/400'],
     sketches: [],
     createdAt: iso(DAY + 5 * HOUR),
@@ -105,14 +105,14 @@ const notes: StoredNote[] = [
   {
     id: 'b2x8m4q6s0lf',
     body: [
-      'Numbers',
-      'Benny (mechanic) 555-0142',
-      'Dr. Sato, Pillbox 555-0177',
-      'Hale & Partners (lawyer) 555-0109',
-      'Davis Towing 555-0163',
+      '电话号码',
+      'Benny（修车）555-0142',
+      'Sato 医生，圆堡山 555-0177',
+      'Hale & Partners（律师）555-0109',
+      'Davis 拖车 555-0163',
       'Pizza This 555-0120',
       '',
-      "Don't save Kira's number. Memorise it.",
+      "别存 Kira 的号码。记在脑子里。",
     ].join('\n'),
     images: [],
     sketches: [],
@@ -122,14 +122,14 @@ const notes: StoredNote[] = [
   {
     id: 'r7t3y9u1i5oc',
     body: [
-      'Vinewood Nights (draft)',
+      '好麦坞之夜（草稿）',
       '',
-      'Neon on the boulevard, sirens in the rain',
-      'I wrote your number on a parking ticket, now I owe the city twice again',
-      'Del Perro to the hills and back, the radio plays our song',
-      "Every light in this town says go, so how'd we get it wrong",
+      '大道上的霓虹，雨里的警笛',
+      '我把你的号码写在罚单上，如今又欠这座城市两回',
+      '从德尔佩罗开到山丘再折返，电台放着我们的歌',
+      "满城灯火都在说走吧，我们怎么就走岔了",
       '',
-      'chorus?? something about the pier',
+      '副歌？？写点和码头有关的',
     ].join('\n'),
     images: [],
     sketches: [],
@@ -147,10 +147,10 @@ const notes: StoredNote[] = [
   {
     id: 'c9v5b1n7m3qg',
     body: [
-      'Court date - Tue 10:00',
-      'Mission Row courthouse, room 2',
-      'Bring: ID, proof of insurance, bail receipt ($2,500)',
-      'Call Hale the day before. Wear the grey suit, not the tracksuit.',
+      '开庭 - 周二 10:00',
+      '米申罗法院，2 号庭',
+      '带：身份证件、保险证明、保释金收据（$2,500）',
+      '前一天给 Hale 打个电话。穿灰西装，别穿运动服。',
     ].join('\n'),
     images: [],
     sketches: [],
@@ -159,7 +159,7 @@ const notes: StoredNote[] = [
   },
   {
     id: 'm1q7w3e9r5th',
-    body: ['Car meet - Saturday', 'LS Customs lot, 22:00', 'Bring the Elegy, clean plates', 'No masks, the cops always roll through'].join('\n'),
+    body: ['车聚 - 周六', 'LS Customs 停车场，22:00', '开 Elegy 来，车牌要干净', '别戴面罩，警察总会来转一圈'].join('\n'),
     images: [],
     sketches: [],
     createdAt: iso(40 * DAY),
@@ -174,7 +174,7 @@ const linkDown = (): boolean => {
     return false;
   }
 };
-const LINK_DOWN = 'The phone link is unavailable right now.';
+const LINK_DOWN = '手机连接当前不可用。';
 
 /** server/computers/phoneapps.lua noteTitle(): the first non-empty line, trimmed, max 80. */
 const titleOf = (body: string): string => {
@@ -203,9 +203,9 @@ const handlers: Record<string, MockHandler> = {
 
   'phonenotes:get': p => {
     if (linkDown()) return fail(LINK_DOWN);
-    if (typeof p.id !== 'string') return fail('Invalid request.');
+    if (typeof p.id !== 'string') return fail('无效请求。');
     const n = notes.find(x => x.id === p.id);
-    if (!n) return fail('That note no longer exists.');
+    if (!n) return fail('该便签已不存在。');
     const full: NoteFull = { id: n.id, body: n.body, images: [...n.images], sketches: [...n.sketches], createdAt: n.createdAt, updatedAt: n.updatedAt };
     return ok(full);
   },
@@ -222,7 +222,7 @@ const handlers: Record<string, MockHandler> = {
       const res: SaveData = { id, createdAt: existing.createdAt, updatedAt: now };
       return ok(res);
     }
-    if (notes.length >= MAX_NOTES) return fail('Note limit reached');
+    if (notes.length >= MAX_NOTES) return fail('你已达到便签数量上限。');
     notes.push({ id, body, images: [], sketches: [], createdAt: now, updatedAt: now });
     const res: SaveData = { id, createdAt: now, updatedAt: now };
     return ok(res);
@@ -230,7 +230,7 @@ const handlers: Record<string, MockHandler> = {
 
   'phonenotes:delete': p => {
     if (linkDown()) return fail(LINK_DOWN);
-    if (typeof p.id !== 'string' || p.id === '') return fail('Bad note id');
+    if (typeof p.id !== 'string' || p.id === '') return fail('无效的便签 ID');
     const i = notes.findIndex(x => x.id === p.id);
     if (i >= 0) notes.splice(i, 1);
     return ok();

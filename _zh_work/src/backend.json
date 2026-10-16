@@ -1,0 +1,119 @@
+{
+  "err": {
+    "unknown_computer": "This computer is not configured.",
+    "too_far": "You walked away from the computer.",
+    "no_access": "Access denied - you are not authorised to use this computer.",
+    "no_character": "No character loaded.",
+    "in_use": "Someone else is using this computer.",
+    "no_session": "You are not signed in to this computer.",
+    "app_missing": "That app is not installed on this computer.",
+    "not_boss": "Only the boss can use the Business Manager.",
+    "locked_out": "Too many incorrect PINs. Try again in %s seconds.",
+    "bad_pin": "The PIN is incorrect. Try again.",
+    "invalid": "Invalid request.",
+    "internal": "Something went wrong. Please try again.",
+    "slow_down": "Slow down a little.",
+    "wait": "Please wait %s seconds.",
+    "notes_full": "You have reached the maximum number of notes.",
+    "phone_unavailable": "The phone link is unavailable right now.",
+    "computer_changed": "An administrator moved or removed this computer.",
+    "computer_updated": "An administrator changed this computer. Open it again."
+  },
+  "logs": {
+    "cleared": "The audit log was cleared. Subject: %s",
+    "logon": "An account was successfully logged on. Account: %s",
+    "logon_failed": "An account failed to log on (incorrect PIN). Account: %s",
+    "locked_out": "A user account was locked out. Account: %s, duration: %s seconds",
+    "logoff": "An account was logged off. Account: %s",
+    "app_start": "Application started: %s (user %s)",
+    "mail_sent": "Mail sent from %s to %s - \"%s\"",
+    "mail_created": "Mail account %s created by %s",
+    "mail_signin": "Mail account %s signed in by %s",
+    "mail_signin_failed": "Failed sign-in to mail account %s by %s",
+    "mail_signout": "Mail account %s signed out by %s",
+    "practice_ok": "%s (%s) completed in %ss",
+    "practice_fail": "%s (%s) terminated - process failed",
+    "breach_start": "Unauthorised access attempt against %s",
+    "breach_ok": "SECURITY BREACH: %s was compromised",
+    "breach_fail": "Intrusion attempt against %s was blocked",
+    "boss_grade": "%s changed %s from %s to %s",
+    "boss_fire": "%s removed %s from %s",
+    "boss_hire": "%s hired %s into %s",
+    "boss_deposit": "%s deposited $%s into %s",
+    "boss_withdraw": "%s withdrew $%s from %s",
+    "camera_view": "%s viewed the security camera \"%s\"",
+    "print": "Printed \"%s\" (%s) on %s."
+  },
+  "mail": {
+    "notify_title": "New mail - %s",
+    "notify_body": "%s: %s",
+    "no_subject": "(no subject)",
+    "bounce_subject": "Undeliverable: message could not be delivered",
+    "bounce_body": "Your message could not be delivered to the following recipients because the address does not exist:\n\n%s\n\nOriginal subject: %s",
+    "err_not_signed_in": "You are not signed in to that mailbox.",
+    "err_not_found": "That message no longer exists.",
+    "err_recipients": "Enter between 1 and %s valid recipient addresses.",
+    "err_empty": "Write a subject or a message first.",
+    "err_username": "Usernames are 2-32 characters: letters, numbers, dots, dashes and underscores.",
+    "err_password": "Passwords must be at least %s characters.",
+    "err_name": "Enter a display name (max %s characters).",
+    "err_create_cap": "You can only create %s mail accounts.",
+    "err_signin_cap": "You can be signed in to at most %s accounts.",
+    "err_taken": "That address is already taken.",
+    "err_credentials": "That address or password is incorrect."
+  },
+  "messages": {
+    "err_number": "Enter a phone number to text.",
+    "err_empty": "Type a message first."
+  },
+  "notes": {
+    "err_missing": "That note no longer exists."
+  },
+  "cameras": {
+    "err_unknown": "That camera cannot be watched from this computer."
+  },
+  "bank": {
+    "err_disabled": "Banking is switched off on this server."
+  },
+  "files": {
+    "missing": "That document no longer exists.",
+    "name_required": "Give the document a name.",
+    "name_taken": "You already have a document called \"%s\".",
+    "full": "You can keep %s documents at most. Delete one to make room.",
+    "too_long": "That document is too long to keep here (%s characters at most).",
+    "untitled": "Untitled",
+    "phone_missing": "That document is no longer on your phone.",
+    "phone_no_text": "That document has no text to copy.",
+    "phone_refused": "Your phone would not take that document. It may be too long for it, or the phone may be full.",
+    "picture_unknown": "A picture in this document is not in your pictures. Add it to Photos first."
+  },
+  "contacts": {
+    "err_name": "Enter a name for the contact.",
+    "err_number": "Enter a phone number of %s to %s digits."
+  },
+  "phonelink": {
+    "notify_title": "Phone Link",
+    "notify_body": "Your code is %s. Type it into Phone Link on %s. It works for %s minutes.",
+    "err_no_phone": "You need your phone on you to get a code.",
+    "err_wait": "A code was just sent. You can ask for another in %s seconds.",
+    "err_send": "The code could not be sent to your phone. Try again in a moment.",
+    "err_digits": "The code is %s digits long.",
+    "err_no_code": "There is no code waiting. It may have run out - send a new one.",
+    "err_wrong": "That code is not right. %s tries left.",
+    "err_too_many": "Too many wrong codes. Send a new one."
+  },
+  "board": {
+    "err_no_board": "You are not in a job that has a company board.",
+    "err_not_boss": "Only a boss of this job can change its board.",
+    "err_job_changed": "Your job changed while the board was open. Refresh it and try again.",
+    "err_title": "Give the announcement a headline.",
+    "err_gone": "That announcement is no longer on the board.",
+    "err_full": "The board is full: all %s announcements are pinned. Unpin or delete one first."
+  },
+  "photos": {
+    "err_link": "That is not a link to a picture. It has to start with https://",
+    "err_host": "Pictures cannot be linked from that site here.",
+    "err_full": "Your pictures are full (%s). Delete one first.",
+    "err_have": "That picture is already in your pictures."
+  }
+}

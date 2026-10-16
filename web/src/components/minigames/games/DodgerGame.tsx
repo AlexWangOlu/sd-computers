@@ -258,7 +258,7 @@ export default function DodgerGame({
     ctx.shadowBlur = 8
     ctx.shadowColor = `${alpha('danger', lp)}`
     ctx.fillStyle = `${alpha('danger', lp + 0.15)}`
-    ctx.font = 'bold 8px monospace'
+    ctx.font = 'bold 8px "Noto Sans SC Variable", monospace'
     ctx.textAlign = 'center'
     ctx.fillText(`▼  ${t('minigames.dodger.incoming_traffic')}  ▼`, OX + PW / 2, OY + 12)
     ctx.shadowBlur = 0

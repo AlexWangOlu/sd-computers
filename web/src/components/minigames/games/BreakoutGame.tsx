@@ -202,7 +202,7 @@ export default function BreakoutGame({
     if (!ballLaunchedRef.current && phaseRef.current === 'playing') {
       const hPulse = 0.3 + 0.2 * Math.sin(tick * 0.08)
       ctx.fillStyle = `${alpha('green', hPulse)}`
-      ctx.font = '700 9px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+      ctx.font = '700 9px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.fillText(t('minigames.breakout.canvas_launch_hint'), OX + PW / 2, OY + PADDLE_Y - 24)
       ctx.textAlign = 'start'

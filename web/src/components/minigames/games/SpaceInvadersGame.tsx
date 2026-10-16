@@ -255,7 +255,7 @@ export default function SpaceInvadersGame({
       ctx.fillRect(bx, barY, barW * hpRatio, barH)
 
       ctx.fillStyle = `${alpha('green', 0.2 + 0.3 * hpRatio)}`
-      ctx.font = '700 7px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+      ctx.font = '700 7px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.fillText(t('minigames.firewall.node_label'), bx + CITY_BLOCK_W / 2, by - 3)
       ctx.textAlign = 'start'

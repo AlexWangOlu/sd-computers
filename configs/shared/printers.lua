@@ -28,16 +28,16 @@ return {
     Signatures = true,
 
     -- The option a printer gets (ox_target / qb-target / qtarget).
-    Target = { label = 'Take printouts', icon = 'fas fa-print', distance = 1.8 },
+    Target = { label = '取打印件', icon = 'fas fa-print', distance = 1.8 },
 
     -- The props a printer can be placed as, and the ones "Pick existing prop" takes from the world.
     -- Add any streamed prop; a model the game does not have is refused when placed. The panel shows
     -- web/public/props/<model>.jpg for each (the ones here are photographs taken in the game; rebuild
     -- the UI after adding one), or set `image = 'https://...'`; with neither it shows an icon.
     Props = {
-        { model = 'prop_printer_01', label = 'Laser printer' },
-        { model = 'prop_printer_02', label = 'Desktop printer' },
-        { model = 'v_res_printer', label = 'Home printer' },
-        { model = 'prop_copier_01', label = 'Photocopier' },
+        { model = 'prop_printer_01', label = '激光打印机' },
+        { model = 'prop_printer_02', label = '桌面打印机' },
+        { model = 'v_res_printer', label = '家用打印机' },
+        { model = 'prop_copier_01', label = '复印机' },
     },
 }

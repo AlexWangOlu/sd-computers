@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
 import { useOS, desktopBounds, type Win } from '@/store/os';
 import { useExitFx } from '@/hooks/useExitFx';
+import { useI18n } from '@/i18n';
 import { AppIcon, GlyphClose, GlyphMax, GlyphMin, GlyphRestore } from './icons';
 
 const MIN_W = 320;
@@ -32,6 +33,7 @@ interface Props {
 
 export default function WindowFrame({ win, active, children }: Props) {
   const { focus, close, minimize, finalize, toggleMax, move, resize } = useOS.getState();
+  const t = useI18n();
   const [gesture, setGesture] = useState(false);
   const [snapHint, setSnapHint] = useState(false);
   const [morphing, setMorphing] = useState(false);
@@ -186,13 +188,13 @@ export default function WindowFrame({ win, active, children }: Props) {
         >
           <span className="pl-3 pr-2 flex items-center"><AppIcon app={win.app} size={16} /></span>
           <span className={`flex-1 truncate text-caption transition-colors duration-150 ${active ? 'text-t1' : 'text-t3'}`}>{win.title}</span>
-          <CaptionButton label="Minimize" onClick={() => minimize(win.id)} active={active}><GlyphMin /></CaptionButton>
+          <CaptionButton label={t('ui.common.minimize')} onClick={() => minimize(win.id)} active={active}><GlyphMin /></CaptionButton>
           {win.resizable && (
-            <CaptionButton label={win.max ? 'Restore' : 'Maximize'} onClick={zoom} active={active}>
+            <CaptionButton label={win.max ? t('ui.common.restore') : t('ui.common.maximize')} onClick={zoom} active={active}>
               {win.max ? <GlyphRestore /> : <GlyphMax />}
             </CaptionButton>
           )}
-          <CaptionButton label="Close" onClick={() => close(win.id)} active={active} danger><GlyphClose /></CaptionButton>
+          <CaptionButton label={t('ui.common.close')} onClick={() => close(win.id)} active={active} danger><GlyphClose /></CaptionButton>
         </div>
         <div className={`relative flex-1 min-h-0 ${gesture ? 'pointer-events-none' : ''}`}>{children}</div>
         {!win.max && win.resizable && GRIPS.map(g => (

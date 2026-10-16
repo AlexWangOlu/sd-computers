@@ -2,7 +2,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import { Search, Wifi } from 'lucide-react';
 import { useOS, selectActiveId } from '@/store/os';
 import type { AppId } from '@/types';
-import { fmtTime, useNow } from '@/lib/format';
+import { fmtTime, fmtWeekdayDate, useNow } from '@/lib/format';
 import { t } from '@/i18n';
 import { lockSession } from '../session';
 import { MarkMono } from './MacIcon';
@@ -153,7 +153,7 @@ export default function MenuBar() {
   ];
 
   const battery = Math.max(12, batteryStart(payload.computer.id) - Math.floor((now.getTime() - since) / 300000));
-  const day = `${now.toLocaleDateString('en-US', { weekday: 'short' })} ${now.getDate()} ${now.toLocaleDateString('en-US', { month: 'short' })}`;
+  const day = fmtWeekdayDate(now);
 
   return (
     <div

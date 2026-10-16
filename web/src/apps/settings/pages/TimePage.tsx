@@ -1,7 +1,7 @@
 import { Clock, Globe, Languages, RefreshCw } from 'lucide-react';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
-import { fmtTime, useNow } from '@/lib/format';
+import { fmtLongDateFull, fmtTime, useNow } from '@/lib/format';
 import { Select, Toggle } from '@/ui/controls';
 import { Group, PageHeader, Row } from '../ui';
 
@@ -9,7 +9,7 @@ import { Group, PageHeader, Row } from '../ui';
 export default function TimePage() {
   const clock24 = useOS(s => s.payload!.desktop.clock24);
   const now = useNow(1000);
-  const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const date = fmtLongDateFull(now);
 
   return (
     <>

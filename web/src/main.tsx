@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/noto-sans-sc'; // 中文：简繁通用，unicode-range 分片按需加载
 import './styles.css';
 import './styles/retro.css';
 import './styles/mac.css';

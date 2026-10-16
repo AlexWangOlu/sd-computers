@@ -17,7 +17,8 @@
     "notes_full": "You have reached the maximum number of notes.",
     "phone_unavailable": "The phone link is unavailable right now.",
     "computer_changed": "An administrator moved or removed this computer.",
-    "computer_updated": "An administrator changed this computer. Open it again."
+    "computer_updated": "An administrator changed this computer. Open it again.",
+    "nothing_aimed": "Nothing under the crosshair"
   },
   "logs": {
     "cleared": "The audit log was cleared. Subject: %s",
@@ -574,7 +575,17 @@
       "search": "Search",
       "delete": "Delete",
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "unknown": "Unknown",
+      "citizen": "Citizen",
+      "yesterday": "Yesterday",
+      "just_now": "Just now",
+      "minutes_ago": "%s min ago",
+      "hours_ago": "%s hr ago",
+      "days_ago": "%s d ago",
+      "minimize": "Minimize",
+      "maximize": "Maximize",
+      "restore": "Restore"
     },
     "lock": {
       "pin": "PIN",
@@ -1095,7 +1106,9 @@
       "about_title": "About Event Viewer",
       "about_version": "Version 1.0",
       "about_os_version": "Version %s",
-      "about_copyright": "© %s. All rights reserved."
+      "about_copyright": "© %s. All rights reserved.",
+      "sec_system": "System",
+      "sec_eventdata": "EventData"
     },
     "notepad": {
       "untitled": "Untitled",
@@ -2445,7 +2458,11 @@
       "stocks_h_symbol": "Symbol",
       "stocks_h_name": "Name",
       "stocks_h_price": "Last",
-      "stocks_h_change": "Change"
+      "stocks_h_change": "Change",
+      "news_city": "Los Santos",
+      "news_masthead_1": "Weazel",
+      "news_masthead_2": "News",
+      "news_network": "WEAZEL NEWS NETWORK"
     },
     "cameras": {
       "title": "Security Cameras",

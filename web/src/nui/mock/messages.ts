@@ -14,7 +14,7 @@ import type { Contact, ConversationRow, IncomingPush, Thread, TextMessage } from
 //   window.__phoneDown = true       every endpoint fails like a dropped sd-phone link
 //   window.__phoneNoService = true  sends fail with "No Service" (the failed bubble + Retry)
 
-const UNAVAILABLE = 'The phone link is unavailable right now.';
+const UNAVAILABLE = '手机连接当前不可用。';
 const MY_NUMBER = '5551234';
 const MY_NAME = 'Jessica Hale';
 const MAX_TEXT = 1000;
@@ -56,7 +56,7 @@ const TASHA = person('Tasha Reyes', '5550117', '#c50f1f', 'TR');
 const MARCO = person('Marco Bellini', '5553370', '#498205', 'MB');
 const LENA = person('Lena - LSMC', '5554410', '#038387', 'LL');
 const RAY = person('Ray - Tow Yard', '5557731', '#986f0b', 'RT');
-const MOM = person('Mom', '5552020', '#881798', 'M');
+const MOM = person('妈妈', '5552020', '#881798', 'M');
 const ALVAREZ = person('Det. Alvarez', '5553090', '#0f6cbd', 'DA');
 const VINNY = person('Vinny Castellano', '5556677', '#5c2e91', 'VC');
 const KIM = person('Dr. Kim - Pillbox', '5559146', '#00727c', 'DK');
@@ -131,27 +131,27 @@ add({
   id: BENNY.phone!,
   members: [],
   messages: [
-    m('me', ago(2 * DAY + 5 * HOUR), "Hey Benny, the Sultan's grinding every time I shift into third."),
-    m(BENNY.phone!, ago(2 * DAY + 4 * HOUR + 48 * MIN), 'Bring it by the shop. Probably the clutch, those RS kits eat them.'),
-    m('me', ago(2 * DAY + 4 * HOUR + 40 * MIN), 'Can you squeeze me in tomorrow?'),
-    m(BENNY.phone!, ago(DAY + 2 * HOUR), "Tomorrow 10am. Don't be late, I've got a Banshee on the lift after you."),
-    m(BENNY.phone!, ago(42 * MIN), "Your Sultan's done. New clutch, fresh fluids, and I balanced the tires while I was in there. $1,850.", { unread: true }),
-    m(BENNY.phone!, ago(39 * MIN), 'Shop closes at 8. Bring cash or it becomes a lawn ornament.', { unread: true }),
+    m('me', ago(2 * DAY + 5 * HOUR), "嘿 Benny，我的 Sultan 每次挂三挡都打齿。"),
+    m(BENNY.phone!, ago(2 * DAY + 4 * HOUR + 48 * MIN), '开到店里来看看。多半是离合器，RS 那套动力特别费离合。'),
+    m('me', ago(2 * DAY + 4 * HOUR + 40 * MIN), '明天能给我挤个空吗？'),
+    m(BENNY.phone!, ago(DAY + 2 * HOUR), "明天上午 10 点。别迟到，你弄完还有辆 Banshee 要上架子。"),
+    m(BENNY.phone!, ago(42 * MIN), "你的 Sultan 好了。新离合器、全车油液，顺手还做了轮胎动平衡。$1,850。", { unread: true }),
+    m(BENNY.phone!, ago(39 * MIN), '店里 8 点关门。带现金来，不然它就成草坪摆件了。', { unread: true }),
   ],
 });
 
 add({
   id: 'g-bs01',
-  groupName: 'Burgershot crew',
+  groupName: 'Burgershot 小队',
   members: [TASHA, MARCO, DWAYNE],
   messages: [
-    m(TASHA.phone!, ago(3 * HOUR), "Who's on the 6pm shift? Board says nobody"),
-    m(MARCO.phone!, ago(3 * HOUR - 2 * MIN), "not me, I'm on drive-thru till close"),
-    m('me', ago(2 * HOUR + 50 * MIN), 'I can cover till 9 if someone takes over after'),
-    m(DWAYNE.phone!, ago(2 * HOUR + 46 * MIN), 'I got you after 9 👍'),
-    m(TASHA.phone!, ago(14 * MIN), 'Also the fryer is making That Noise again. Nobody touch it.', { unread: true }),
+    m(TASHA.phone!, ago(3 * HOUR), "6 点的班谁来值？排班表上是空的"),
+    m(MARCO.phone!, ago(3 * HOUR - 2 * MIN), "不是我，我得在得来速顶到打烊"),
+    m('me', ago(2 * HOUR + 50 * MIN), '要是之后有人接班，我可以顶到 9 点'),
+    m(DWAYNE.phone!, ago(2 * HOUR + 46 * MIN), '9 点之后交给我 👍'),
+    m(TASHA.phone!, ago(14 * MIN), '还有炸锅又在发那种怪声了。谁都别碰它。', { unread: true }),
     m(MARCO.phone!, ago(12 * MIN), '', { kind: 'gif', gifUrl: GIF_FRYER, unread: true }),
-    m(DWAYNE.phone!, ago(6 * MIN), 'lmaooo not again', { unread: true }),
+    m(DWAYNE.phone!, ago(6 * MIN), '哈哈哈哈哈又来了', { unread: true }),
   ],
 });
 
@@ -159,8 +159,8 @@ add({
   id: '5550199',
   members: [],
   messages: [
-    m('5550199', ago(65 * MIN), 'You still owe me for the thing.', { unread: true }),
-    m('5550199', ago(64 * MIN), 'Pier. Midnight. Come alone.', { unread: true }),
+    m('5550199', ago(65 * MIN), '那件事你还欠着我。', { unread: true }),
+    m('5550199', ago(64 * MIN), '码头。午夜。一个人来。', { unread: true }),
   ],
 });
 
@@ -168,11 +168,11 @@ add({
   id: LENA.phone!,
   members: [],
   messages: [
-    m(LENA.phone!, ago(DAY + 3 * HOUR), "Rent's due Friday, you good for your half?"),
-    m('me', ago(DAY + 2 * HOUR + 55 * MIN), 'Yep, sending it now'),
+    m(LENA.phone!, ago(DAY + 3 * HOUR), "周五交房租，你那份没问题吧？"),
+    m('me', ago(DAY + 2 * HOUR + 55 * MIN), '没问题，这就转'),
     m('me', ago(DAY + 2 * HOUR + 54 * MIN), '', { kind: 'money', amount: 1250, seenAt: ago(DAY + 2 * HOUR + 30 * MIN) }),
-    m(LENA.phone!, ago(DAY + 2 * HOUR + 28 * MIN), 'Got it, thank you!! 🙏'),
-    m(LENA.phone!, ago(5 * HOUR), 'Pizza money from last night 🍕', { kind: 'money', amount: 120 }),
+    m(LENA.phone!, ago(DAY + 2 * HOUR + 28 * MIN), '收到了，谢谢！！🙏'),
+    m(LENA.phone!, ago(5 * HOUR), '昨晚的披萨钱 🍕', { kind: 'money', amount: 120 }),
   ],
 });
 
@@ -180,10 +180,10 @@ add({
   id: RAY.phone!,
   members: [],
   messages: [
-    m('me', ago(3 * DAY + 4 * HOUR), 'Did you pick up the Blista from Grove St?'),
+    m('me', ago(3 * DAY + 4 * HOUR), '格罗夫街那辆 Blista 你拖回来了吗？'),
     m(RAY.phone!, ago(3 * DAY + 3 * HOUR), '', { kind: 'image', gifUrl: PHOTO_IMPOUND }),
-    m(RAY.phone!, ago(3 * DAY + 3 * HOUR - MIN), "Impound lot B. Owner's got 48h before it goes to auction."),
-    m('me', ago(3 * DAY + 2 * HOUR), 'Appreciate it Ray', { seenAt: ago(3 * DAY + HOUR) }),
+    m(RAY.phone!, ago(3 * DAY + 3 * HOUR - MIN), "B 扣押场。车主还有 48 小时，之后就要拍卖了。"),
+    m('me', ago(3 * DAY + 2 * HOUR), '谢了 Ray', { seenAt: ago(3 * DAY + HOUR) }),
   ],
 });
 
@@ -191,11 +191,11 @@ add({
   id: MOM.phone!,
   members: [],
   messages: [
-    m(MOM.phone!, ago(6 * DAY + 3 * HOUR), 'Are you eating enough? You look thin in your license photo.'),
-    m('me', ago(6 * DAY + 2 * HOUR), "Mom I'm fine 😅"),
+    m(MOM.phone!, ago(6 * DAY + 3 * HOUR), '你饭吃得够吗？驾照照片上你瘦得吓人。'),
+    m('me', ago(6 * DAY + 2 * HOUR), "妈，我好着呢 😅"),
     m(MOM.phone!, ago(6 * DAY + HOUR), '', { kind: 'voice', duration: 47 }),
-    m(MOM.phone!, ago(6 * DAY + 59 * MIN), 'Call me back!! ❤️'),
-    m('me', ago(5 * DAY + 20 * HOUR), 'Will do this weekend, promise', { seenAt: ago(5 * DAY + 19 * HOUR) }),
+    m(MOM.phone!, ago(6 * DAY + 59 * MIN), '回个电话！！❤️'),
+    m('me', ago(5 * DAY + 20 * HOUR), '这周末就打，说好了', { seenAt: ago(5 * DAY + 19 * HOUR) }),
   ],
 });
 
@@ -203,15 +203,15 @@ add({
   id: ALVAREZ.phone!,
   members: [],
   messages: [
-    m(ALVAREZ.phone!, ago(12 * DAY), 'Need your statement on the Vinewood thing. Come by Mission Row when you can.'),
-    m('me', ago(12 * DAY - 20 * MIN), 'On my way'),
-    m('me', ago(12 * DAY - 19 * MIN), 'Mission Row PD', { kind: 'location' }),
-    m(ALVAREZ.phone!, ago(12 * DAY - 10 * MIN), 'Copy. Front desk, ask for me.'),
-    m('me', ago(11 * DAY), 'Thanks detective', { seenAt: ago(11 * DAY - 30 * MIN) }),
+    m(ALVAREZ.phone!, ago(12 * DAY), '好麦坞那件案子需要你的笔录。有空来米申罗一趟。'),
+    m('me', ago(12 * DAY - 20 * MIN), '这就去'),
+    m('me', ago(12 * DAY - 19 * MIN), '米申罗警局', { kind: 'location' }),
+    m(ALVAREZ.phone!, ago(12 * DAY - 10 * MIN), '收到。前台，找我。'),
+    m('me', ago(11 * DAY), '谢谢警官', { seenAt: ago(11 * DAY - 30 * MIN) }),
   ],
 });
 
-add({ id: 'g-pw77', groupName: 'Paleto weekend', members: [TASHA, LENA, VINNY], messages: [] });
+add({ id: 'g-pw77', groupName: '佩里托湾周末', members: [TASHA, LENA, VINNY], messages: [] });
 
 // ── Shapes (phoneapps.lua's conversation/contact/message trimmers) ─────────────────────────
 
@@ -254,29 +254,29 @@ function threadOf(th: StoredThread): Thread {
 // ── People texting back ─────────────────────────────────────────────────────────────────────
 
 const REPLIES: Record<string, string[]> = {
-  [BENNY.phone!]: ["Cash only. Card machine's busted again.", "Yeah yeah, I'm here till 8.", "Want me to look at the brakes while it's on the lift? They sound crunchy."],
-  [LENA.phone!]: ['👍', 'lol ok', 'Are you still coming to Paleto this weekend?'],
-  [RAY.phone!]: ['10-4.', 'Lot B, gate code is 0451.'],
-  [MOM.phone!]: ['Love you sweetie ❤️', 'Did you get my voicemail?', 'Your aunt says hi'],
-  [ALVAREZ.phone!]: ['Noted.', 'Stay reachable. I may have follow-up questions.'],
-  '5550199': ['Tick tock.', "Don't be late."],
+  [BENNY.phone!]: ["只收现金。刷卡机又坏了。", "行行行，我在店里到 8 点。", "趁车还在架子上，要不要我顺手看看刹车？听着挺响的。"],
+  [LENA.phone!]: ['👍', '哈哈行', '这周末你还来佩里托湾吗？'],
+  [RAY.phone!]: ['10-4。', 'B 场区，大门密码 0451。'],
+  [MOM.phone!]: ['爱你，宝贝 ❤️', '我的语音留言你收到了吗？', '你姑妈问你好'],
+  [ALVAREZ.phone!]: ['记下了。', '保持联络。可能还有后续问题。'],
+  '5550199': ['时间不等人。', "别迟到。"],
 };
 
 const GROUP_REPLIES: Record<string, [string, string][]> = {
   'g-bs01': [
-    [TASHA.phone!, 'ok bet'],
-    [MARCO.phone!, 'manager says thanks 🙏'],
+    [TASHA.phone!, '行吧'],
+    [MARCO.phone!, '店长说谢谢 🙏'],
     [DWAYNE.phone!, '🍔🍔🍔'],
-    [TASHA.phone!, 'who restocked the ketchup with mustard'],
+    [TASHA.phone!, '谁把番茄酱换成了芥末'],
   ],
   'g-pw77': [
-    [TASHA.phone!, 'I call the top bunk'],
-    [VINNY.phone!, "I'm bringing the boat"],
+    [TASHA.phone!, '上铺归我'],
+    [VINNY.phone!, "船我带过来"],
   ],
 };
 
-const STRANGER = ['New phone, who dis?', 'Who is this?'];
-const FRIENDLY = ['👍', 'Got it.', 'Ok!'];
+const STRANGER = ['新号，你谁？', '你是哪位？'];
+const FRIENDLY = ['👍', '收到。', '好！'];
 
 const turn = new Map<string, number>();
 const nextOf = <T>(key: string, list: T[]): T => {
@@ -319,7 +319,7 @@ let nudged = false;
 function nudgeOnce(): void {
   if (nudged) return;
   nudged = true;
-  window.setTimeout(() => receive('5550199', '5550199', 'Tick tock.'), 25000);
+  window.setTimeout(() => receive('5550199', '5550199', '时间不等人。'), 25000);
 }
 
 // ── Handlers ────────────────────────────────────────────────────────────────────────────────
@@ -346,11 +346,11 @@ const handlers: Record<string, MockHandler> = {
   'messages:thread': p => {
     if (flags().__phoneDown) return fail(UNAVAILABLE);
     const id = p.id;
-    if (typeof id !== 'string' || id === '') return fail('Invalid request.');
+    if (typeof id !== 'string' || id === '') return fail('无效请求。');
     const th = threads.get(id);
     if (th) return ok(threadOf(th));
     // Like sd-phone: an unknown key is just an empty thread (a group nobody knows reads "Group").
-    if (id.startsWith('g-')) return ok({ id, title: 'Group', participants: [], group: true, unread: 0, muted: false, messages: [] } satisfies Thread);
+    if (id.startsWith('g-')) return ok({ id, title: '群聊', participants: [], group: true, unread: 0, muted: false, messages: [] } satisfies Thread);
     return ok(threadOf({ id, members: [], messages: [] }));
   },
 
@@ -358,15 +358,15 @@ const handlers: Record<string, MockHandler> = {
     if (flags().__phoneDown) return fail(UNAVAILABLE);
     let conv = typeof p.conversation === 'string' ? p.conversation : String(p.conversation ?? '');
     if (!conv.startsWith('g-')) conv = conv.replace(/\D/g, '');
-    if (conv === '' || conv === 'g-') return fail('Enter a phone number to text.');
+    if (conv === '' || conv === 'g-') return fail('请输入要发送短信的手机号。');
     const body = String(p.body ?? '').slice(0, MAX_TEXT).trim();
-    if (!body) return fail('Type a message first.');
-    if (Date.now() - lastSend < SEND_GAP_MS) return fail('Slow down');
-    if (flags().__phoneNoService) return fail('No Service');
-    if (conv === MY_NUMBER) return fail("You can't message yourself");
+    if (!body) return fail('请先输入消息内容。');
+    if (Date.now() - lastSend < SEND_GAP_MS) return fail('操作太快了');
+    if (flags().__phoneNoService) return fail('无服务');
+    if (conv === MY_NUMBER) return fail("不能给自己发消息");
     let th = threads.get(conv);
     if (!th) {
-      if (conv.startsWith('g-')) return fail('Conversation not found');
+      if (conv.startsWith('g-')) return fail('找不到该会话');
       th = { id: conv, members: [], messages: [] };
       add(th);
     }
@@ -380,7 +380,7 @@ const handlers: Record<string, MockHandler> = {
 
   'messages:read': p => {
     if (flags().__phoneDown) return fail(UNAVAILABLE);
-    if (typeof p.conversation !== 'string') return fail('Invalid request.');
+    if (typeof p.conversation !== 'string') return fail('无效请求。');
     const th = threads.get(p.conversation);
     if (th) for (const x of th.messages) if (x.from !== 'me') x.read = true;
     return ok();
@@ -388,7 +388,7 @@ const handlers: Record<string, MockHandler> = {
 
   'messages:delete': p => {
     if (flags().__phoneDown) return fail(UNAVAILABLE);
-    if (typeof p.conversation !== 'string') return fail('Invalid request.');
+    if (typeof p.conversation !== 'string') return fail('无效请求。');
     threads.delete(p.conversation);
     return ok();
   },

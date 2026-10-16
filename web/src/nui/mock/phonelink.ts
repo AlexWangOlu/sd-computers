@@ -76,10 +76,10 @@ const handlers: Record<string, MockHandler> = {
 
   'phonelink:send': () => {
     if (linkedAt !== null) return ok(state());
-    if (!CARRYING) return fail('You need your phone on you to get a code.');
+    if (!CARRYING) return fail('你需要随身携带手机才能获取验证码。');
     const now = nowS();
     const old = waiting();
-    if (old && old.sentAt + RESEND > now) return fail(`A code was just sent. You can ask for another in ${old.sentAt + RESEND - now} seconds.`);
+    if (old && old.sentAt + RESEND > now) return fail(`验证码刚已发送。${old.sentAt + RESEND - now} 秒后可再次获取。`);
     pending = { expires: now + CODE_TTL, sentAt: now, tries: 0 };
     console.info(`[mock] Phone Link: the code "sent to the phone" is ${CODE}`);
     return ok(state());
@@ -87,16 +87,16 @@ const handlers: Record<string, MockHandler> = {
 
   'phonelink:confirm': p => {
     const typed = typeof p.code === 'string' ? p.code.replace(/\D/g, '') : '';
-    if (typed.length !== CODE.length) return fail(`The code is ${CODE.length} digits long.`);
+    if (typed.length !== CODE.length) return fail(`验证码为 ${CODE.length} 位数字。`);
     const w = waiting();
-    if (!w) return fail('There is no code waiting. It may have run out - send a new one.');
+    if (!w) return fail('没有待输入的验证码。可能已过期，请重新发送。');
     if (typed !== CODE) {
       w.tries += 1;
       if (w.tries >= MAX_TRIES) {
         pending = null;
-        return fail('Too many wrong codes. Send a new one.');
+        return fail('验证码错误次数过多。请重新发送。');
       }
-      return fail(`That code is not right. ${MAX_TRIES - w.tries} tries left.`);
+      return fail(`验证码不正确。还剩 ${MAX_TRIES - w.tries} 次尝试。`);
     }
     pending = null;
     linkedAt = nowS();

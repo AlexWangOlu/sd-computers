@@ -1,0 +1,76 @@
+{
+  "ui": {
+    "common": {
+      "no_response": "No response from the computer.",
+      "error": "Something went wrong.",
+      "cancel": "Cancel",
+      "ok": "OK",
+      "save": "Save",
+      "close": "Close",
+      "loading": "Loading…",
+      "retry": "Try again",
+      "refresh": "Refresh",
+      "search": "Search",
+      "delete": "Delete",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "lock": {
+      "pin": "PIN",
+      "sign_in": "Sign in",
+      "welcome": "Welcome",
+      "forgot": "I forgot my PIN",
+      "forgot_hint": "Ask an administrator for this computer's PIN.",
+      "locked_out": "Too many incorrect PINs. Try again in %s seconds.",
+      "bad_pin_mock": "The PIN is incorrect. Try again. (dev PIN: 1031)"
+    },
+    "power": {
+      "power": "Power",
+      "lock": "Lock",
+      "signout": "Sign out",
+      "shutdown": "Shut down",
+      "shutting_down": "Shutting down"
+    },
+    "taskbar": {
+      "start": "Start",
+      "search": "Search",
+      "show_desktop": "Show desktop"
+    },
+    "start": {
+      "search": "Search for apps, settings, and documents",
+      "pinned": "Pinned",
+      "recommended": "Recommended",
+      "recommended_empty": "The more you use this computer, the more your recently opened apps will show up here.",
+      "best_match": "Best match",
+      "no_results": "No results for \"%s\"",
+      "app": "App"
+    },
+    "desktop": {
+      "refresh": "Refresh",
+      "display": "Display settings",
+      "personalize": "Personalize",
+      "terminal": "Open in Terminal",
+      "esc_again": "Press Esc again to leave the computer."
+    },
+    "quick": {
+      "wifi": "Wi-Fi",
+      "bluetooth": "Bluetooth",
+      "airplane": "Airplane mode",
+      "saver": "Battery saver",
+      "focus": "Focus",
+      "accessibility": "Accessibility",
+      "settings": "All settings"
+    },
+    "toast": {
+      "system": "System"
+    },
+    "hack": {
+      "difficulty_easy": "easy",
+      "difficulty_medium": "medium",
+      "difficulty_hard": "hard",
+      "step": "step %s/%s",
+      "paused_focus": "INPUT PAUSED - click to focus",
+      "unknown_game": "Unknown program: %s"
+    }
+  }
+}

@@ -53,7 +53,7 @@ local HANDLERS = {
                 infoM = 'fa-info-circle',
                 info = data.message,
             },
-            caller = 'Citizen',
+            caller = locale('ui.common.citizen'),
             coords = ctx.coords,
         })
     end,

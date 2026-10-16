@@ -96,7 +96,7 @@ export function EventDetails({ entry, hostname, clock24, tall }: { entry: Entry;
             </div>
             {view === 'friendly' ? (
               <div className="rounded-[2px] border border-stroke-strong bg-[var(--input-focus)] p-2">
-                <Section title="System">
+                <Section title={L('sec_system')}>
                   <div className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-6 gap-y-[2px]">
                     {systemRows(entry, hostname).map(r => (
                       <div key={r.k} className="contents">
@@ -106,7 +106,7 @@ export function EventDetails({ entry, hostname, clock24, tall }: { entry: Entry;
                     ))}
                   </div>
                 </Section>
-                <Section title="EventData">
+                <Section title={L('sec_eventdata')}>
                   {rows.length ? (
                     <div className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-6 gap-y-[2px]">
                       {rows.map(r => (

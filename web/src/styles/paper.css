@@ -5,7 +5,7 @@
 
 .paper-root {
   /* Paper fibre: fine noise, tiled. */
-  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .26 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-grain: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .26 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), 'Noto Sans SC Variable';
   position: absolute;
   inset: 0;
   z-index: 10001;
@@ -234,7 +234,7 @@
   margin-bottom: 24px;
   padding-bottom: 10px;
   border-bottom: 2px solid #1c1c1f;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif;
 }
 .paper-letterhead {
   font-size: 29px;
@@ -256,7 +256,7 @@
 
 .rd .paper-title {
   margin: 0 0 18px;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif;
   font-size: 21px;
   font-weight: 700;
   line-height: 1.25;
@@ -343,7 +343,7 @@
   gap: 14px;
   padding-top: 9px;
   border-top: 1px solid rgba(0, 0, 0, 0.26);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, 'Noto Sans SC Variable', monospace;
   font-size: 10.5px;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -417,7 +417,7 @@
 }
 .paper-sheet.is-logs .paper-head,
 .paper-sheet.is-logs .paper-title {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Courier New', Courier, 'Noto Sans SC Variable', monospace;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -506,7 +506,7 @@
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 19px;
   background: rgba(14, 15, 19, 0.72);
-  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  font-family: 'Inter Variable', Inter, system-ui, 'Noto Sans SC Variable', sans-serif;
   font-size: 12.5px;
   color: rgba(255, 255, 255, 0.86);
 }
@@ -552,7 +552,7 @@
   padding: 5px 12px 5px 20px;
   background: linear-gradient(180deg, #ffe264, #f9cf2f);
   clip-path: polygon(13px 0, 100% 0, 100% 100%, 13px 100%, 0 50%);
-  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  font-family: 'Inter Variable', Inter, system-ui, 'Noto Sans SC Variable', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -579,7 +579,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(4, 5, 8, 0.55);
-  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  font-family: 'Inter Variable', Inter, system-ui, 'Noto Sans SC Variable', sans-serif;
   animation: signIn 160ms ease-out;
 }
 @keyframes signIn {

@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { OsStyle } from '@/types';
-import { fmtLongDate, fmtTime, useNow } from '@/lib/format';
+import { fmtLongDate, fmtTime, fmtWeekdayLongDate, useNow } from '@/lib/format';
 import { t, useI18n } from '@/i18n';
 import { accentVars } from '@/os/theme';
 import { Wallpaper } from '@/os/Wallpaper';
@@ -39,7 +39,7 @@ function Modern({ now }: { now: Date }) {
 }
 
 function Mac({ now }: { now: Date }) {
-  const date = `${now.toLocaleDateString('en-US', { weekday: 'long' })} ${now.getDate()} ${now.toLocaleDateString('en-US', { month: 'long' })}`;
+  const date = fmtWeekdayLongDate(now);
   return (
     <>
       <div className="absolute inset-0" style={{ filter: 'blur(22px) brightness(0.86)', transform: 'scale(1.08)' }}>

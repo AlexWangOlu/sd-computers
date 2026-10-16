@@ -7,7 +7,7 @@ import { fail, ok } from './index';
 // State is module-level so promotions, firings, hires and transfers persist for the dev session.
 // Errors use the server's own locale keys, so the wording matches the game exactly.
 
-const JOB = { name: 'police', label: 'Los Santos Police Department' };
+const JOB = { name: 'police', label: '洛圣都警察局' };
 const GRADES = [
   { level: 0, name: 'Recruit' },
   { level: 1, name: 'Officer' },
@@ -78,31 +78,31 @@ const uuid = (): string =>
 
 const H = 3600;
 const D = 86400;
-const COURTS = 'San Andreas Superior Court';
+const COURTS = '圣安地列斯高等法院';
 
 // [seconds ago, title, amount, kind, issuer, receiver, message] - newest first, like the server.
 // One 'transfer' line (society as issuer) exercises the UI's unknown-kind heuristic.
 const SEED: [number, string, number, string, string, string, string][] = [
-  [2.4 * H, 'Fine revenue', 4850, 'deposit', COURTS, JOB.label, 'Citation batch #4471 (17 citations)'],
-  [9 * H, 'Equipment order', 12400, 'withdraw', JOB.label, 'Ammu-Nation Wholesale', 'PO-20931: duty ammunition and tasers'],
-  [20 * H, 'Society deposit', 25000, 'deposit', MY_NAME, JOB.label, 'Deposit by Jessica Hale'],
-  [1.4 * D, 'Impound fees', 3150, 'deposit', 'Hayes Auto Impound', JOB.label, 'Weekly impound release fees'],
-  [1.9 * D, 'Vehicle maintenance', 8720, 'withdraw', JOB.label, 'Los Santos Customs', 'Fleet service: 4 cruisers, 1 interceptor'],
-  [2.5 * D, 'Fine revenue', 6300, 'deposit', COURTS, JOB.label, 'Citation batch #4470 (22 citations)'],
-  [3.1 * D, 'Payroll', 38600, 'withdraw', JOB.label, 'LSPD Payroll', 'Weekly payroll - 9 employees'],
-  [3.6 * D, 'City budget allocation', 75000, 'deposit', 'City of Los Santos', JOB.label, 'Q4 operating budget, tranche 2'],
-  [4.2 * D, 'Transfer to Pillbox Medical', 5000, 'transfer', JOB.label, 'Pillbox Hill Medical Center', 'Shared first-aid training costs'],
-  [4.8 * D, 'Fine revenue', 5480, 'deposit', COURTS, JOB.label, 'Citation batch #4469 (19 citations)'],
-  [5.3 * D, 'Fuel card settlement', 4210, 'withdraw', JOB.label, 'Ron Petroleum', 'September fleet fuel'],
-  [5.9 * D, 'Evidence auction proceeds', 14250, 'deposit', COURTS, JOB.label, 'Lots 12-18: seized vehicles'],
-  [6.4 * D, 'Equipment order', 9860, 'withdraw', JOB.label, 'Ammu-Nation Wholesale', 'PO-20877: body armour (12)'],
-  [7.0 * D, 'Society withdrawal', 10000, 'withdraw', JOB.label, MY_NAME, 'Withdrawal by Jessica Hale'],
-  [7.5 * D, 'Fine revenue', 7120, 'deposit', COURTS, JOB.label, 'Citation batch #4468 (25 citations)'],
-  [8.1 * D, 'Payroll', 38600, 'withdraw', JOB.label, 'LSPD Payroll', 'Weekly payroll - 9 employees'],
-  [8.6 * D, 'Impound fees', 2780, 'deposit', 'Hayes Auto Impound', JOB.label, 'Weekly impound release fees'],
-  [9.0 * D, 'Radio network contract', 3400, 'withdraw', JOB.label, 'Lifeinvader Comms', 'Quarterly encrypted radio fee'],
-  [9.4 * D, 'Fine revenue', 4960, 'deposit', COURTS, JOB.label, 'Citation batch #4467 (16 citations)'],
-  [9.9 * D, 'Society deposit', 40000, 'deposit', MY_NAME, JOB.label, 'Deposit by Jessica Hale'],
+  [2.4 * H, '罚款收入', 4850, 'deposit', COURTS, JOB.label, '罚单批次 #4471（17 张罚单）'],
+  [9 * H, '装备采购', 12400, 'withdraw', JOB.label, 'Ammu-Nation Wholesale', 'PO-20931：执勤弹药与电击枪'],
+  [20 * H, '公司资金存入', 25000, 'deposit', MY_NAME, JOB.label, '由 Jessica Hale 存入'],
+  [1.4 * D, '拖车费收入', 3150, 'deposit', 'Hayes Auto Impound', JOB.label, '每周放车费'],
+  [1.9 * D, '车辆保养', 8720, 'withdraw', JOB.label, 'Los Santos Customs', '车队保养：4 辆巡逻车、1 辆拦截者'],
+  [2.5 * D, '罚款收入', 6300, 'deposit', COURTS, JOB.label, '罚单批次 #4470（22 张罚单）'],
+  [3.1 * D, '工资发放', 38600, 'withdraw', JOB.label, '洛圣都警局工资科', '每周工资 - 9 名员工'],
+  [3.6 * D, '市政预算拨款', 75000, 'deposit', '洛圣都市', JOB.label, '第四季度运营预算，第二批'],
+  [4.2 * D, '转账至圆堡山医疗中心', 5000, 'transfer', JOB.label, '圆堡山医疗中心', '急救培训分摊费用'],
+  [4.8 * D, '罚款收入', 5480, 'deposit', COURTS, JOB.label, '罚单批次 #4469（19 张罚单）'],
+  [5.3 * D, '油卡结算', 4210, 'withdraw', JOB.label, 'Ron Petroleum', '九月车队燃油'],
+  [5.9 * D, '证物拍卖所得', 14250, 'deposit', COURTS, JOB.label, '第 12-18 号拍品：查扣车辆'],
+  [6.4 * D, '装备采购', 9860, 'withdraw', JOB.label, 'Ammu-Nation Wholesale', 'PO-20877：防弹衣（12 件）'],
+  [7.0 * D, '公司资金支取', 10000, 'withdraw', JOB.label, MY_NAME, '由 Jessica Hale 支取'],
+  [7.5 * D, '罚款收入', 7120, 'deposit', COURTS, JOB.label, '罚单批次 #4468（25 张罚单）'],
+  [8.1 * D, '工资发放', 38600, 'withdraw', JOB.label, '洛圣都警局工资科', '每周工资 - 9 名员工'],
+  [8.6 * D, '拖车费收入', 2780, 'deposit', 'Hayes Auto Impound', JOB.label, '每周放车费'],
+  [9.0 * D, '无线电网络合同', 3400, 'withdraw', JOB.label, 'Lifeinvader 通信', '季度加密无线电费用'],
+  [9.4 * D, '罚款收入', 4960, 'deposit', COURTS, JOB.label, '罚单批次 #4467（16 张罚单）'],
+  [9.9 * D, '公司资金存入', 40000, 'deposit', MY_NAME, JOB.label, '由 Jessica Hale 存入'],
 ];
 
 let balance = 284650;

@@ -63,11 +63,11 @@ local function attachments(list)
             if a.kind == 'photo' and type(a.url) == 'string' then
                 out[#out + 1] = { kind = 'photo', url = a.url }
             elseif a.kind == 'audio' then
-                out[#out + 1] = { kind = 'audio', name = a.name or 'Voice memo', duration = a.duration }
+                out[#out + 1] = { kind = 'audio', name = a.name or locale('ui.mail.att_audio'), duration = a.duration }
             elseif a.kind == 'note' then
                 out[#out + 1] = { kind = 'note', title = a.title or '', body = text.clip(a.body or '', 5000) }
             elseif a.kind == 'document' then
-                out[#out + 1] = { kind = 'document', name = a.name or 'Document' }
+                out[#out + 1] = { kind = 'document', name = a.name or locale('ui.mail.att_document') }
             end
         end
     end

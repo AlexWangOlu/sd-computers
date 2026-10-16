@@ -43,11 +43,11 @@ const DAY = 86400;
 
 const accounts: Record<string, Account> = {
   'jessica.hale@lsmail.com': { name: 'Jessica Hale', password: 'hale1031' },
-  'lspd.records@lsmail.com': { name: 'LSPD Records', password: 'records1' },
-  'dispatch@lsmail.com': { name: 'LSPD Dispatch', password: 'dispatch-9' },
-  'hr@lsmail.com': { name: 'City of Los Santos HR', password: 'hr-portal' },
+  'lspd.records@lsmail.com': { name: '洛圣都警局档案科', password: 'records1' },
+  'dispatch@lsmail.com': { name: '洛圣都警局调度', password: 'dispatch-9' },
+  'hr@lsmail.com': { name: '洛圣都市人事部', password: 'hr-portal' },
   'mike.r@lsmail.com': { name: 'Mike Rodriguez', password: 'mikerod' },
-  'mailer-daemon@lsmail.com': { name: 'Mail Delivery Subsystem', password: 'daemon-x' },
+  'mailer-daemon@lsmail.com': { name: '邮件投递子系统', password: 'daemon-x' },
 };
 
 const signedIn = new Set<string>(['jessica.hale@lsmail.com']);
@@ -55,11 +55,11 @@ let created = 0;
 let seq = 1000;
 
 const JH = { email: 'jessica.hale@lsmail.com', name: 'Jessica Hale' };
-const DISPATCH = { email: 'dispatch@lsmail.com', name: 'LSPD Dispatch' };
-const HR = { email: 'hr@lsmail.com', name: 'City of Los Santos HR' };
+const DISPATCH = { email: 'dispatch@lsmail.com', name: '洛圣都警局调度' };
+const HR = { email: 'hr@lsmail.com', name: '洛圣都市人事部' };
 const MIKE = { email: 'mike.r@lsmail.com', name: 'Mike Rodriguez' };
-const RECORDS = { email: 'lspd.records@lsmail.com', name: 'LSPD Records' };
-const DAEMON = { email: 'mailer-daemon@lsmail.com', name: 'Mail Delivery Subsystem' };
+const RECORDS = { email: 'lspd.records@lsmail.com', name: '洛圣都警局档案科' };
+const DAEMON = { email: 'mailer-daemon@lsmail.com', name: '邮件投递子系统' };
 
 const seed = (owner: string, folder: StoredFolder, from: Row['from'], to: string[], subject: string, body: string, ago: number, opts: { read?: boolean; flagged?: boolean; prevFolder?: StoredFolder } = {}): Row => ({
   id: ++seq,
@@ -80,60 +80,60 @@ const R = RECORDS.email;
 
 // Oldest first, so ids climb with time like the real AUTO_INCREMENT.
 const rows: Row[] = [
-  seed(J, 'inbox', HR, [J], 'Welcome to the Los Santos Police Department',
-    `Officer Hale,\n\nWelcome aboard. Your badge number is 1031 and you are assigned to Mission Row (MRPD), B-shift.\n\nBefore your first patrol, please:\n  1. Collect your duty kit from the armory (bring this email).\n  2. Complete the MDT orientation with Sgt. Collins.\n  3. Sign the use-of-force policy acknowledgement at the front desk.\n\nYour LSMail address is now active. Keep the password private - addresses are shared resources and anyone with the password can sign in.\n\nCity of Los Santos - Human Resources`,
+  seed(J, 'inbox', HR, [J], '欢迎加入洛圣都警察局',
+    `Hale 警官，\n\n欢迎加入。你的警号是 1031，被分配到米申罗（MRPD）B 班。\n\n首次巡逻之前，请：\n  1. 到军械库领取执勤装备（带上这封邮件）。\n  2. 与 Sgt. Collins 完成 MDT 入门培训。\n  3. 在前台签阅使用武力政策确认书。\n\n你的 LSMail 地址现已启用。请勿外泄密码——地址是共享资源，知道密码的人都能登录。\n\n洛圣都市人事部`,
     21 * DAY),
-  seed(J, 'inbox', { email: 'no-reply@fleeca.com', name: 'Fleeca Bank' }, [J], 'Your monthly statement is ready',
-    `Hi Jessica,\n\nYour statement for checking account ****4471 is ready to view.\n\nOpening balance: $4,812.20\nClosing balance: $6,143.75\n\nLog in at any Fleeca branch or ATM to view the full statement.\n\nFleeca - Banking that moves with you.\nThis is an automated message, please do not reply.`,
+  seed(J, 'inbox', { email: 'no-reply@fleeca.com', name: 'Fleeca 银行' }, [J], '你的月度对账单已就绪',
+    `Jessica 你好，\n\n你尾号 ****4471 的支票账户对账单已可查看。\n\n期初余额：$4,812.20\n期末余额：$6,143.75\n\n到任意 Fleeca 分行或 ATM 登录即可查看完整对账单。\n\nFleeca - 与你同行的银行。\n本邮件为系统自动发送，请勿回复。`,
     5 * DAY + 2 * HOUR),
-  seed(J, 'sent', JH, [MIKE.email], 'Vespucci beat swap',
-    `Mike,\n\nAny chance you'd swap your Vespucci beat on Thursday for my Mirror Park one? I've got a court date at 14:00 and Mirror Park is a lot closer to the courthouse.\n\nHappy to cover your Saturday in return.\n\nJess`,
+  seed(J, 'sent', JH, [MIKE.email], '维斯普奇巡逻区换班',
+    `Mike，\n\n周四能不能拿你的维斯普奇巡逻区换我的镜湖公园？我 14:00 要出庭，镜湖公园离法院近得多。\n\n作为交换，我很乐意替你值周六的班。\n\nJess`,
     4 * DAY + 3 * HOUR),
-  seed(J, 'inbox', DISPATCH, [J, 'patrol.b@lsmail.com'], 'Shift roster: week 41',
-    `B-shift roster for week 41 is attached below.\n\nMON  Hale / Rodriguez     Unit 1-ADAM-12   Mission Row\nTUE  Hale / Rodriguez     Unit 1-ADAM-12   Vinewood\nWED  OFF\nTHU  Hale / Collins       Unit 1-LINCOLN-4 Mirror Park\nFRI  Hale / Rodriguez     Unit 1-ADAM-12   Vespucci\n\nSwaps must be approved by the watch commander 24h in advance.\n\nLSPD Dispatch`,
+  seed(J, 'inbox', DISPATCH, [J, 'patrol.b@lsmail.com'], '排班表：第 41 周',
+    `第 41 周 B 班排班表见下。\n\n周一  Hale / Rodriguez    1-ADAM-12 号车    米申罗\n周二  Hale / Rodriguez    1-ADAM-12 号车    好麦坞\n周三  休息\n周四  Hale / Collins      1-LINCOLN-4 号车  镜湖公园\n周五  Hale / Rodriguez    1-ADAM-12 号车    维斯普奇\n\n调班须提前 24 小时经值班指挥官批准。\n\n洛圣都警局调度`,
     6 * DAY, { flagged: true }),
-  seed(J, 'inbox', MIKE, [J], 'Re: Vespucci beat swap',
-    `Deal. Thursday's yours, Saturday's mine - don't forget I'm on nights that week so it's the 22:00 start.\n\nAlso the cruiser's AC is still busted, bring water.\n\n- Mike`,
+  seed(J, 'inbox', MIKE, [J], '回复：维斯普奇巡逻区换班',
+    `成交。周四归你，周六归我——别忘了那周我上夜班，所以是 22:00 开始。\n\n还有巡逻车的空调还是坏的，自带水。\n\n- Mike`,
     3 * DAY + 5 * HOUR),
-  seed(J, 'sent', JH, [R], 'Records request - case 26-1187',
-    `Hi Records,\n\nCould you pull the full history for plate 46EEK572 and any priors for the registered owner? It's for case 26-1187 (vehicle pursuit, Del Perro Fwy).\n\nThanks,\nOfficer J. Hale #1031`,
+  seed(J, 'sent', JH, [R], '档案调取请求 - 案件 26-1187',
+    `档案科你好，\n\n能否调取车牌 46EEK572 的完整记录，以及登记车主的全部前科？用于案件 26-1187（德尔佩罗高速追车）。\n\n谢谢，\nJ. Hale 警官 #1031`,
     2 * DAY + 6 * HOUR),
-  seed(J, 'inbox', RECORDS, [J], 'Records request #4471 completed',
-    `Officer Hale,\n\nYour request for case 26-1187 is complete.\n\nPlate 46EEK572 - Black Ubermacht Sentinel XS\nRegistered owner: Trevor P. (address on file, Sandy Shores)\nPriors: 3x reckless driving, 1x evading, 1x unpaid impound (Davis Mega Mall lot)\n\nThe full packet is in the records room, drawer 4.\n\nLSPD Records`,
+  seed(J, 'inbox', RECORDS, [J], '档案调取请求 #4471 已完成',
+    `Hale 警官，\n\n你对案件 26-1187 的调取请求已完成。\n\n车牌 46EEK572 - 黑色 Ubermacht Sentinel XS\n登记车主：Trevor P.（地址在档，沙丘海岸）\n前科：3 次危险驾驶、1 次逃避执法、1 次未缴拖车费（Davis 大型商场停车场）\n\n完整材料在档案室 4 号抽屉。\n\n洛圣都警局档案科`,
     2 * DAY),
-  seed(J, 'inbox', { email: 'newsletter@lifeinvader.com', name: 'LifeInvader' }, [J], 'Your weekly LifeInvader digest: 14 new pokes',
-    `Hey Jessica!\n\nHere's what you missed this week on LifeInvader:\n\n- 14 people poked you\n- Lester Crest viewed your profile (again)\n- 3 friends checked in at Bahama Mamas West\n- Trending: "Is the Vinewood sign actually haunted?"\n\nRemember: privacy is so last decade. Share more!\n\nLifeInvader - Invading your life since 2008.\nUnsubscribe? Ha.`,
+  seed(J, 'inbox', { email: 'newsletter@lifeinvader.com', name: 'LifeInvader' }, [J], '你的每周 LifeInvader 摘要：14 个新戳一戳',
+    `嘿 Jessica！\n\n这是你本周在 LifeInvader 上错过的内容：\n\n- 14 个人戳了你\n- Lester Crest 看了你的资料（又看了）\n- 3 位好友在 Bahama Mamas West 打卡\n- 热门话题：“好麦坞标志其实闹鬼吗？”\n\n记住：隐私早过时了。多分享！\n\nLifeInvader - 自 2008 年起入侵你的生活。\n想退订？哈。`,
     1 * DAY + 4 * HOUR, { read: false }),
-  seed(J, 'inbox', DAEMON, [J], 'Undeliverable: message could not be delivered',
-    `Your message could not be delivered to the following recipients because the address does not exist:\n\nsgt.colins@lsmail.com\n\nOriginal subject: MDT orientation - Friday?`,
+  seed(J, 'inbox', DAEMON, [J], '投递失败：邮件无法送达',
+    `你的邮件无法送达以下收件人，因为该地址不存在：\n\nsgt.colins@lsmail.com\n\n原始主题：MDT 入门培训 - 周五行吗？`,
     1 * DAY + 1 * HOUR),
-  seed(J, 'inbox', HR, [J], 'Action required: Q4 firearms recertification',
-    `Officer Hale,\n\nOur records show your firearms qualification expires on 10/31. Recertification sessions at the Pillbox Hill range:\n\n  - Tue 10/13, 09:00\n  - Thu 10/15, 14:00\n  - Sat 10/17, 10:00\n\nReply with your preferred session. Officers who are not recertified by the deadline will be placed on desk duty.\n\nCity of Los Santos - Human Resources`,
+  seed(J, 'inbox', HR, [J], '需要处理：第四季度枪械复训',
+    `Hale 警官，\n\n记录显示你的枪械资格将于 10/31 到期。复训场次安排在圆堡山靶场：\n\n  - 周二 10/13，09:00\n  - 周四 10/15，14:00\n  - 周六 10/17，10:00\n\n请回复你想参加的场次。截止日期前未完成复训的警官将被安排内勤。\n\n洛圣都市人事部`,
     3 * HOUR, { flagged: true }),
-  seed(J, 'drafts', JH, [HR.email], 'Leave request: Oct 18-20',
-    `Hi HR,\n\nI'd like to request annual leave from Sunday 10/18 to Tuesday 10/20 (3 days). Mike Rodriguez has agreed to`,
+  seed(J, 'drafts', JH, [HR.email], '请假申请：10 月 18-20 日',
+    `人事部你好，\n\n我想申请 10/18（周日）至 10/20（周二）的年假，共 3 天。Mike Rodriguez 已经答应`,
     90 * MIN),
-  seed(J, 'inbox', MIKE, [J], 'Lunch at Bean Machine?',
-    `Bean Machine on Vinewood Blvd at 1? I owe you a coffee for covering my report last week.\n\nIf we get a call we'll just take it to go.`,
+  seed(J, 'inbox', MIKE, [J], '去 Bean Machine 吃午饭？',
+    `1 点在好麦坞大道的 Bean Machine？上周你帮我顶了报告，我欠你一杯咖啡。\n\n要是来了警情，我们就打包带走。`,
     40 * MIN, { read: false }),
-  seed(J, 'inbox', DISPATCH, [J, 'patrol.b@lsmail.com', MIKE.email], 'BOLO: Black Sultan RS, plate 46EEK572',
-    `ALL UNITS - BE ON THE LOOKOUT\n\nVehicle: Black Karin Sultan RS, tinted windows, aftermarket spoiler\nPlate: 46EEK572 (may be swapped)\nLast seen: Northbound on Del Perro Fwy near the Pier exit, 14:52\nWanted for: Armed robbery - 24/7 Supermarket, Innocence Blvd\n\nOccupants: 2 males, one wearing a green hoodie. Considered ARMED. Do NOT attempt a solo stop - call it in and wait for backup.\n\nLSPD Dispatch`,
+  seed(J, 'inbox', DISPATCH, [J, 'patrol.b@lsmail.com', MIKE.email], '布控：黑色 Sultan RS，车牌 46EEK572',
+    `全体单位 - 注意布控\n\n车辆：黑色 Karin Sultan RS，车窗贴膜，改装尾翼\n车牌：46EEK572（可能已更换）\n最后目击：14:52 德尔佩罗高速北向，靠近码头出口\n涉嫌：持械抢劫 - 24/7 超市，Innocence Blvd\n\n车内人员：2 名男性，其中一人穿绿色连帽衫。认定为持械。切勿单独拦截 - 立即上报并等待增援。\n\n洛圣都警局调度`,
     12 * MIN, { read: false, flagged: true }),
-  seed(J, 'bin', { email: 'warranty@autoexotics.com', name: 'Auto Exotics' }, [J], "We've been trying to reach you about your car's extended warranty",
-    `Dear valued motorist,\n\nThis is your FINAL notice regarding your vehicle's extended warranty. Call 1-800-AUTO-EXO now to avoid losing coverage on your Vapid Stanier.\n\n(Your vehicle is a police cruiser. We know. Call anyway.)`,
+  seed(J, 'bin', { email: 'warranty@autoexotics.com', name: 'Auto Exotics' }, [J], "我们一直在联系你，关于你汽车的延保",
+    `尊敬的车主：\n\n这是关于你车辆延保的最终通知。请立即致电 1-800-AUTO-EXO，以免你的 Vapid Stanier 失去保障。\n\n（你的车是警用巡逻车。我们知道。还是请来电。）`,
     4 * DAY, { prevFolder: 'inbox' }),
 
-  seed(R, 'inbox', HR, [R], 'Records retention policy update',
-    `Records team,\n\nEffective November 1st, incident reports must be retained for 7 years (up from 5). Please update the archive schedule accordingly.\n\nCity of Los Santos - Human Resources`,
+  seed(R, 'inbox', HR, [R], '档案保留政策更新',
+    `档案组：\n\n自 11 月 1 日起，事故报告须保留 7 年（原为 5 年）。请相应更新归档计划。\n\n洛圣都市人事部`,
     9 * DAY),
-  seed(R, 'inbox', DISPATCH, [R], 'Incident report IR-26-3310 filed',
-    `Incident report IR-26-3310 (traffic collision, Alta St / Las Lagunas Blvd) has been filed by Unit 1-ADAM-12 and is ready for indexing.\n\nLSPD Dispatch`,
+  seed(R, 'inbox', DISPATCH, [R], '事故报告 IR-26-3310 已归档',
+    `事故报告 IR-26-3310（交通事故，阿尔塔街 / Las Lagunas Blvd）已由 1-ADAM-12 号车归档，可以进行编目。\n\n洛圣都警局调度`,
     3 * DAY, { read: false }),
-  seed(R, 'inbox', JH, [R], 'Records request - case 26-1187',
-    `Hi Records,\n\nCould you pull the full history for plate 46EEK572 and any priors for the registered owner? It's for case 26-1187 (vehicle pursuit, Del Perro Fwy).\n\nThanks,\nOfficer J. Hale #1031`,
+  seed(R, 'inbox', JH, [R], '档案调取请求 - 案件 26-1187',
+    `档案科你好，\n\n能否调取车牌 46EEK572 的完整记录，以及登记车主的全部前科？用于案件 26-1187（德尔佩罗高速追车）。\n\n谢谢，\nJ. Hale 警官 #1031`,
     2 * DAY + 6 * HOUR),
-  seed(R, 'sent', RECORDS, [J], 'Records request #4471 completed',
-    `Officer Hale,\n\nYour request for case 26-1187 is complete.\n\n(see full packet in drawer 4)\n\nLSPD Records`,
+  seed(R, 'sent', RECORDS, [J], '档案调取请求 #4471 已完成',
+    `Hale 警官，\n\n你对案件 26-1187 的调取请求已完成。\n\n（完整材料见 4 号抽屉）\n\n洛圣都警局档案科`,
     2 * DAY),
 ];
 
@@ -165,7 +165,7 @@ const mine = (email: unknown): string | null => {
   return a && signedIn.has(a) ? a : null;
 };
 
-const NOT_SIGNED_IN = 'You are not signed in to that mailbox.';
+const NOT_SIGNED_IN = '你未登录该邮箱。';
 
 const clip = (subject: unknown, body: unknown): [string, string] => [String(subject ?? '').slice(0, MAX_SUBJECT), String(body ?? '').slice(0, MAX_BODY)];
 
@@ -228,8 +228,8 @@ function deliver(from: Row['from'], to: string[], subject: string, body: string,
         'inbox',
         DAEMON,
         [from.email],
-        'Undeliverable: message could not be delivered',
-        `Your message could not be delivered to the following recipients because the address does not exist:\n\n${failed.join('\n')}\n\nOriginal subject: ${subject}`,
+        '投递失败：邮件无法送达',
+        `你的邮件无法送达以下收件人，因为该地址不存在：\n\n${failed.join('\n')}\n\n原始主题：${subject}`,
         false,
       );
       push(from.email, bounce);
@@ -244,7 +244,7 @@ function queueDemoMail(): void {
   if (demoQueued) return;
   demoQueued = true;
   window.setTimeout(() => {
-    deliver(MIKE, [JH.email], 'Still on for 1?', "Grabbing a table by the window. Want your usual or are you finally trying the Pumpkin Spice Liberty?\n\n- Mike", false);
+    deliver(MIKE, [JH.email], '1 点还来吗？', "我占了靠窗的桌子。还是老样子，还是你终于要试南瓜香料的 Liberty 了？\n\n- Mike", false);
   }, 75000);
 }
 
@@ -279,7 +279,7 @@ const handlers: Record<string, MockHandler> = {
     const email = mine(p.email);
     if (!email) return fail(NOT_SIGNED_IN);
     const r = find(email, p.id);
-    if (!r) return fail('That message no longer exists.');
+    if (!r) return fail('该邮件已不存在。');
     r.read = true;
     return ok(shape(r, true));
   },
@@ -288,9 +288,9 @@ const handlers: Record<string, MockHandler> = {
     const from = mine(p.from);
     if (!from) return fail(NOT_SIGNED_IN);
     const to = recipients(p.to);
-    if (!to) return fail(`Enter between 1 and ${MAX_RECIPIENTS} valid recipient addresses.`);
+    if (!to) return fail(`请输入 1 到 ${MAX_RECIPIENTS} 个有效收件人地址。`);
     const [subject, body] = clip(p.subject, p.body);
-    if (!subject && !body) return fail('Write a subject or a message first.');
+    if (!subject && !body) return fail('请先填写主题或正文。');
     const res = deliver({ email: from, name: accounts[from]?.name ?? from }, to, subject, body, true);
     const draft = find(from, p.draftId);
     if (draft && (draft.folder === 'drafts' || draft.folder === 'bin')) rows.splice(rows.indexOf(draft), 1);
@@ -361,15 +361,15 @@ const handlers: Record<string, MockHandler> = {
 
   'mail:signUp': p => {
     const user = typeof p.username === 'string' ? p.username.toLowerCase() : '';
-    if (!/^[a-z0-9][a-z0-9._-]{1,31}$/.test(user)) return fail('Usernames are 2-32 characters: letters, numbers, dots, dashes and underscores.');
+    if (!/^[a-z0-9][a-z0-9._-]{1,31}$/.test(user)) return fail('用户名需为 2-32 个字符：字母、数字、点、短划线和下划线。');
     const pw = p.password;
-    if (typeof pw !== 'string' || pw.length < MIN_PASSWORD || pw.length > 64) return fail(`Passwords must be at least ${MIN_PASSWORD} characters.`);
+    if (typeof pw !== 'string' || pw.length < MIN_PASSWORD || pw.length > 64) return fail(`密码至少需要 ${MIN_PASSWORD} 个字符。`);
     const name = typeof p.name === 'string' ? p.name.trim() : '';
-    if (!name || name.length > MAX_DISPLAY_NAME) return fail(`Enter a display name (max ${MAX_DISPLAY_NAME} characters).`);
-    if (created >= MAX_CREATED) return fail(`You can only create ${MAX_CREATED} mail accounts.`);
-    if (signedIn.size >= MAX_SIGNED_IN) return fail(`You can be signed in to at most ${MAX_SIGNED_IN} accounts.`);
+    if (!name || name.length > MAX_DISPLAY_NAME) return fail(`请输入显示名称（最多 ${MAX_DISPLAY_NAME} 个字符）。`);
+    if (created >= MAX_CREATED) return fail(`你最多只能创建 ${MAX_CREATED} 个邮件账户。`);
+    if (signedIn.size >= MAX_SIGNED_IN) return fail(`你最多只能同时登录 ${MAX_SIGNED_IN} 个账户。`);
     const email = `${user}@${DOMAIN}`;
-    if (accounts[email]) return fail('That address is already taken.');
+    if (accounts[email]) return fail('该地址已被占用。');
     accounts[email] = { name, password: pw };
     created++;
     signedIn.add(email);
@@ -378,10 +378,10 @@ const handlers: Record<string, MockHandler> = {
 
   'mail:signIn': p => {
     const email = normalize(p.email);
-    if (!email || typeof p.password !== 'string') return fail('That address or password is incorrect.');
-    if (signedIn.size >= MAX_SIGNED_IN) return fail(`You can be signed in to at most ${MAX_SIGNED_IN} accounts.`);
+    if (!email || typeof p.password !== 'string') return fail('地址或密码不正确。');
+    if (signedIn.size >= MAX_SIGNED_IN) return fail(`你最多只能同时登录 ${MAX_SIGNED_IN} 个账户。`);
     const acct = accounts[email];
-    if (!acct || acct.password !== p.password) return fail('That address or password is incorrect.');
+    if (!acct || acct.password !== p.password) return fail('地址或密码不正确。');
     signedIn.add(email);
     return ok({ email });
   },

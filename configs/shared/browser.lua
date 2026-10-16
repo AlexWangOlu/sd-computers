@@ -71,42 +71,42 @@ return {
         -- { address = 'rules.city', title = 'Server Rules', bookmark = true, url = 'https://your-community.example/rules' },
 
         -- The city, live from sd-phone. Rename, re-address or take out any of them.
-        { address = 'weazel.news', title = 'Weazel News', bookmark = true, live = 'news' },
-        { address = 'marketplace.ls', title = 'Marketplace', bookmark = true, live = 'market' },
-        { address = 'yellowpages.ls', title = 'Yellow Pages', bookmark = true, live = 'pages' },
-        { address = 'directory.ls', title = 'Business Directory', bookmark = true, live = 'directory' },
-        { address = 'squawk.ls', title = 'Squawk', bookmark = true, live = 'squawk' },
-        { address = 'laws.gov', title = 'Laws and Fines', bookmark = true, live = 'laws' },
-        { address = 'stocks.ls', title = 'Stock Market', bookmark = true, live = 'stocks' },
+        { address = 'weazel.news', title = '威泽尔新闻', bookmark = true, live = 'news' },
+        { address = 'marketplace.ls', title = '交易市场', bookmark = true, live = 'market' },
+        { address = 'yellowpages.ls', title = '黄页', bookmark = true, live = 'pages' },
+        { address = 'directory.ls', title = '商家名录', bookmark = true, live = 'directory' },
+        { address = 'squawk.ls', title = '叽喳', bookmark = true, live = 'squawk' },
+        { address = 'laws.gov', title = '法律与罚款', bookmark = true, live = 'laws' },
+        { address = 'stocks.ls', title = '股票行情', bookmark = true, live = 'stocks' },
 
         -- Help: what this browser is and how to use it.
         {
             address = 'network.help',
-            title = 'How This Network Works',
+            title = '这个网络如何运作',
             bookmark = true,
             blocks = {
-                { heading = 'How this network works' },
-                { text = 'This computer is connected to the city network. It is smaller than you might expect: only sites that have been set up on the network can be opened, and nothing here leads outside it.' },
+                { heading = '这个网络如何运作' },
+                { text = '这台电脑连接的是城市网络。它比你预想的要小：只有已经在网络上建好的网站才打得开，这里也没有任何东西会通到网络之外。' },
 
-                { subheading = 'Opening a site' },
+                { subheading = '打开网站' },
                 { list = {
-                    'Type its address in the bar at the top, such as weazel.news, and press Enter.',
-                    'Or pick a bookmark from the row underneath.',
-                    'Or search by name on the start page. Typing home in the address bar takes you there.',
+                    '在顶部的地址栏里输入它的地址，比如 weazel.news，然后按 Enter。',
+                    '或者从下面那一行里挑一个书签。',
+                    '也可以在起始页上按名称搜索。在地址栏里输入 home 就会回到那里。',
                 } },
 
-                { subheading = 'Finding your way around' },
+                { subheading = '页面导航' },
                 { facts = {
-                    { 'Back and Forward', 'Step through the pages you have visited in this tab' },
-                    { 'Reload', 'Load the page again' },
-                    { 'Home', 'Go to the page a new tab opens on' },
-                    { 'Tabs', 'Keep several pages open at once. The plus button opens another' },
+                    { '后退与前进', '在本标签页里按顺序翻看你访问过的页面。' },
+                    { '刷新', '重新加载这个页面。' },
+                    { '主页', '打开新标签页时默认显示的页面。' },
+                    { '标签页', '可以同时打开多个页面，加号按钮会再开一个。' },
                 } },
 
-                { subheading = 'When a site can\'t be reached' },
-                { text = 'That message means the address is not on this network. Check the spelling first. Addresses from anywhere else will not work, however well you remember them.' },
+                { subheading = '网站打不开时' },
+                { text = '出现这句提示，说明这个地址不在本网络上。先检查拼写。别处的地址在这里都用不了，不管你记得多牢。' },
 
-                { notice = 'Other people use this computer after you, and anyone standing behind you can read the screen. What you post from here goes up under your own name.', kind = 'warning', title = 'On a shared computer' },
+                { notice = '你用过之后还有别人会用这台电脑，站在你身后的人也能看到屏幕。你在这里发布的内容都会署你自己的名字。', kind = 'warning', title = '在共用电脑上' },
             },
         },
     },

@@ -20,36 +20,36 @@ const CASH = 635;
 
 const H = 3600;
 const D = 86400;
-const EMPLOYER = 'Los Santos Police Department';
-const LANDLORD = 'Eclipse Towers Management';
+const EMPLOYER = '洛圣都警察局';
+const LANDLORD = 'Eclipse Towers 物业';
 
 // [seconds ago, title, amount, kind, the other party, message] - newest first, like the server.
 const SEED: [number, string, number, Tx['kind'], string, string][] = [
-  [1.5 * H, 'Card payment', 62, 'withdraw', 'Ron Petroleum', 'Fuel - pump 4, Strawberry Ave'],
-  [5 * H, 'ATM withdrawal', 200, 'withdraw', 'ATM - Legion Square', 'Cash withdrawal'],
-  [0.9 * D, 'Card payment', 38, 'withdraw', '24/7 Supermarket', 'Groceries'],
-  [1.3 * D, 'Transfer received', 450, 'deposit', 'Marcus Delgado', 'Concert tickets - thanks!'],
-  [1.8 * D, 'Card payment', 320, 'withdraw', 'Binco Clothing', 'Jacket and boots'],
-  [2.2 * D, 'Salary', 3200, 'deposit', EMPLOYER, 'Weekly pay - Chief'],
-  [2.9 * D, 'Card payment', 54, 'withdraw', 'LTD Gasoline', 'Fuel'],
-  [3.4 * D, 'ATM withdrawal', 100, 'withdraw', 'ATM - Vespucci Boulevard', 'Cash withdrawal'],
-  [3.9 * D, 'Phone plan', 85, 'withdraw', 'Whiz Wireless', 'Monthly plan'],
-  [4.6 * D, 'Card payment', 146, 'withdraw', 'Los Santos Customs', 'Brake pads and an oil change'],
-  [5.1 * D, 'Transfer sent', 250, 'withdraw', 'Priya Nair', 'Dinner split'],
-  [5.7 * D, 'Cash deposit', 600, 'deposit', 'ATM - Legion Square', ''],
-  [6.3 * D, 'Card payment', 71, 'withdraw', 'Ron Petroleum', 'Fuel'],
-  [7.0 * D, 'Rent', 1450, 'withdraw', LANDLORD, 'Apartment 31 - weekly rent'],
-  [7.4 * D, 'Card payment', 29, 'withdraw', 'Bean Machine', 'Coffee and bagels'],
-  [8.1 * D, 'Card payment', 210, 'withdraw', 'Suburban', 'Jeans and two shirts'],
-  [9.2 * D, 'Salary', 3200, 'deposit', EMPLOYER, 'Weekly pay - Chief'],
-  [9.6 * D, 'Parking fine', 180, 'withdraw', 'City of Los Santos', 'Citation #88214'],
-  [10.3 * D, 'ATM withdrawal', 300, 'withdraw', 'ATM - Del Perro Pier', 'Cash withdrawal'],
-  [10.9 * D, 'Card payment', 47, 'withdraw', '24/7 Supermarket', 'Groceries'],
-  [11.5 * D, 'Vehicle insurance', 220, 'withdraw', 'Mors Mutual Insurance', 'Monthly cover'],
-  [12.2 * D, 'Transfer received', 120, 'deposit', 'Tom Becker', 'Poker night'],
-  [12.8 * D, 'Card payment', 58, 'withdraw', 'LTD Gasoline', 'Fuel'],
-  [13.3 * D, 'Card payment', 95, 'withdraw', 'Pillbox Hill Medical Center', ''],
-  [13.8 * D, 'Rent', 1450, 'withdraw', LANDLORD, 'Apartment 31 - weekly rent'],
+  [1.5 * H, '刷卡消费', 62, 'withdraw', 'Ron Petroleum', '燃油 - 斯卓贝里大道 4 号加油机'],
+  [5 * H, 'ATM 取现', 200, 'withdraw', 'ATM - 军团广场', '现金取款'],
+  [0.9 * D, '刷卡消费', 38, 'withdraw', '24/7 Supermarket', '日用品'],
+  [1.3 * D, '收到转账', 450, 'deposit', 'Marcus Delgado', '演唱会门票 - 谢谢！'],
+  [1.8 * D, '刷卡消费', 320, 'withdraw', 'Binco Clothing', '夹克和靴子'],
+  [2.2 * D, '工资', 3200, 'deposit', EMPLOYER, '每周薪金 - 局长'],
+  [2.9 * D, '刷卡消费', 54, 'withdraw', 'LTD Gasoline', '燃油'],
+  [3.4 * D, 'ATM 取现', 100, 'withdraw', 'ATM - 维斯普奇大道', '现金取款'],
+  [3.9 * D, '手机资费', 85, 'withdraw', 'Whiz Wireless', '包月套餐'],
+  [4.6 * D, '刷卡消费', 146, 'withdraw', 'Los Santos Customs', '刹车片和换机油'],
+  [5.1 * D, '转出', 250, 'withdraw', 'Priya Nair', '饭钱 AA'],
+  [5.7 * D, '现金存入', 600, 'deposit', 'ATM - 军团广场', ''],
+  [6.3 * D, '刷卡消费', 71, 'withdraw', 'Ron Petroleum', '燃油'],
+  [7.0 * D, '房租', 1450, 'withdraw', LANDLORD, '31 号公寓 - 周租'],
+  [7.4 * D, '刷卡消费', 29, 'withdraw', 'Bean Machine', '咖啡和贝果'],
+  [8.1 * D, '刷卡消费', 210, 'withdraw', 'Suburban', '牛仔裤和两件衬衫'],
+  [9.2 * D, '工资', 3200, 'deposit', EMPLOYER, '每周薪金 - 局长'],
+  [9.6 * D, '停车罚款', 180, 'withdraw', '洛圣都市', '罚单 #88214'],
+  [10.3 * D, 'ATM 取现', 300, 'withdraw', 'ATM - 德尔佩罗码头', '现金取款'],
+  [10.9 * D, '刷卡消费', 47, 'withdraw', '24/7 Supermarket', '日用品'],
+  [11.5 * D, '车险', 220, 'withdraw', 'Mors Mutual Insurance', '月度保费'],
+  [12.2 * D, '收到转账', 120, 'deposit', 'Tom Becker', '牌局'],
+  [12.8 * D, '刷卡消费', 58, 'withdraw', 'LTD Gasoline', '燃油'],
+  [13.3 * D, '刷卡消费', 95, 'withdraw', '圆堡山医疗中心', ''],
+  [13.8 * D, '房租', 1450, 'withdraw', LANDLORD, '31 号公寓 - 周租'],
 ];
 
 const loadedAt = Math.floor(Date.now() / 1000);

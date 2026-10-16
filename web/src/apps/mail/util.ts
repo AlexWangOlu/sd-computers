@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { fmtShortDate, fmtTime } from '@/lib/format';
+import { fmtLongDateFull, fmtShortDate, fmtTime, fmtWeekdayShort } from '@/lib/format';
 import type { Attachment, Counts, MailId, Message } from './types';
 
 export const cx = (...c: (string | false | null | undefined)[]): string => c.filter(Boolean).join(' ');
@@ -65,16 +65,16 @@ export function personaColor(key: string): string {
   return PERSONA[h % PERSONA.length];
 }
 
-/** "Mon 10/5/2026 6:05 PM" (reading pane header). */
+/** "Mon 10/5/2026 6:05 PM" / "周一 2026/10/5 下午6:05" (reading pane header). */
 export function fmtFull(ts: number, clock24: boolean): string {
   const d = new Date(ts * 1000);
-  return `${d.toLocaleDateString('en-US', { weekday: 'short' })} ${fmtShortDate(d)} ${fmtTime(d, clock24)}`;
+  return `${fmtWeekdayShort(d)} ${fmtShortDate(d)} ${fmtTime(d, clock24)}`;
 }
 
 /** "Monday, October 5, 2026 6:05 PM" (quoted header of a reply/forward). */
 function fmtQuoteDate(ts: number, clock24: boolean): string {
   const d = new Date(ts * 1000);
-  return `${d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} ${fmtTime(d, clock24)}`;
+  return `${fmtLongDateFull(d)} ${fmtTime(d, clock24)}`;
 }
 
 export type DateGroup = 'today' | 'yesterday' | 'week' | 'older';

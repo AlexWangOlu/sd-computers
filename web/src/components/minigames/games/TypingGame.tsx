@@ -136,12 +136,12 @@ export default function TypingGame({
 
       const secsLeft = Math.max(0, (active.timeout - elapsed) / 1000)
       ctx.fillStyle = isUrgent ? palette.danger : alpha('fog', 0.4)
-      ctx.font = '9px monospace'
+      ctx.font = '9px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'right'
       ctx.fillText(t('minigames.typing.canvas_timer', secsLeft.toFixed(1)), barX + barW, barY - 4)
 
       ctx.fillStyle = alpha('fog', 0.3)
-      ctx.font = '9px monospace'
+      ctx.font = '9px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.fillText(t('minigames.typing.canvas_inject_payload', completedRef.current + 1, target), cx, cy - 60)
 
@@ -159,7 +159,7 @@ export default function TypingGame({
       ctx.lineWidth = 1
       ctx.strokeRect(textStartX - boxPad, cy - 30, totalTextW + boxPad * 2, 36)
 
-      ctx.font = 'bold 16px monospace'
+      ctx.font = 'bold 16px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
 
@@ -191,24 +191,24 @@ export default function TypingGame({
       }
 
       ctx.fillStyle = alpha('dim', 0.5)
-      ctx.font = '10px monospace'
+      ctx.font = '10px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'left'
       ctx.fillText('> ' + input + (Math.floor(tick / 30) % 2 === 0 ? '█' : ''), textStartX - boxPad, cy + 28)
 
       ctx.fillStyle = alpha('fog', 0.2)
-      ctx.font = '8px monospace'
+      ctx.font = '8px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.fillText(t('minigames.typing.canvas_chars', targetText.length), cx, cy + 50)
 
     } else if (phaseRef.current === 'playing' && !active) {
       const pulse = 0.3 + 0.2 * Math.sin(tick * 0.08)
       ctx.fillStyle = `${alpha('dim', pulse)}`
-      ctx.font = 'bold 12px monospace'
+      ctx.font = 'bold 12px "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.fillText(t('minigames.typing.canvas_loading'), cx, cy - 10)
     }
 
-    ctx.font = '9px monospace'
+    ctx.font = '9px "Noto Sans SC Variable", monospace'
     ctx.textAlign = 'center'
     const rainAlpha = 0.04
     for (let col = 0; col < 3; col++) {

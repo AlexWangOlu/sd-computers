@@ -83,7 +83,7 @@ function player.getName(source)
     local p = resolveGet(source)
     if not p then
         dprint('getName: player not found for src=%s — returning Unknown', tostring(source))
-        return 'Unknown'
+        return locale('ui.common.unknown')
     end
 
     if framework.name == 'esx'  then
@@ -97,7 +97,7 @@ function player.getName(source)
         return name
     end
     dprint('getName: unsupported framework %s for src=%s — returning Unknown', tostring(framework.name), tostring(source))
-    return 'Unknown'
+    return locale('ui.common.unknown')
 end
 
 ---Returns the player's current job name.

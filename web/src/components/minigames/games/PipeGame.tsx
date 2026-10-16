@@ -110,11 +110,11 @@ export default function PipeGame({
       const snkPy = gridOY + sinkYRef.current * cellPx + cellPx / 2
 
       ctx.shadowBlur = 8; ctx.shadowColor = palette.green
-      ctx.fillStyle = palette.green; ctx.font = '700 10px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'
+      ctx.fillStyle = palette.green; ctx.font = '700 10px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'
       ctx.fillText(t('minigames.pipe.canvas_in'), gridOX - 6, srcPy); ctx.shadowBlur = 0
 
       ctx.shadowBlur = 8; ctx.shadowColor = palette.warn
-      ctx.fillStyle = palette.warn; ctx.font = '700 10px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'; ctx.textAlign = 'left'
+      ctx.fillStyle = palette.warn; ctx.font = '700 10px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'; ctx.textAlign = 'left'
       ctx.fillText(t('minigames.pipe.canvas_out'), gridOX + gridPxW + 6, snkPy); ctx.shadowBlur = 0
 
       for (let gy = 0; gy < gh; gy++) {
@@ -178,7 +178,7 @@ export default function PipeGame({
       ctx.strokeStyle = `${alpha('green', 0.4 + pulse)}`; ctx.lineWidth = 2
       ctx.beginPath(); ctx.arc(curPx, curPy, cellPx / 2 - 2, 0, Math.PI * 2); ctx.stroke()
 
-      ctx.fillStyle = alpha('fog', 0.2); ctx.font = '7px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'
+      ctx.fillStyle = alpha('fog', 0.2); ctx.font = '7px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'
       ctx.fillText(t('minigames.pipe.canvas_controls'), OX + PW / 2, gridOY + gridPxH + 14)
     }
 

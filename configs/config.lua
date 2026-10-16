@@ -3,7 +3,9 @@
 -- and configs/server/ holds the sensitive data - excluded from fxmanifest files{}, so it never
 -- ships to a client. The server-only files are deep-merged below on the server ONLY.
 local config = {
-    Locale = 'en', -- lib.locale loads locales/<Locale>.json, falling back to en per-key
+    -- 界面语言：locales/<Locale>.json。'cn' = 简体中文（本分支的汉化语言包），'en' = 英文。
+    -- 缺失的键会按 key 回落到 en（lib.locale 与 NUI 两侧都是这个行为）。
+    Locale = 'cn', -- lib.locale loads locales/<Locale>.json, falling back to en per-key
     Debug = false, -- dev logging (cyan [sd-computers:*] console lines); leave off in production
 
     -- Bridge diagnostics (bridge/shared/debug.lua): very verbose per-call prints from the

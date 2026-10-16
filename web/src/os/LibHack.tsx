@@ -3,6 +3,7 @@ import type { HackRun } from '@/types';
 import { fetchNui, isEnvBrowser } from '@/nui/bridge';
 import HackRunner, { libHackApi, type HackResult } from '@/apps/hack/HackRunner';
 import { useExitFx } from '@/hooks/useExitFx';
+import { t } from '@/i18n';
 import { accentVars } from './theme';
 import { AppIcon, GlyphClose } from './icons';
 
@@ -35,7 +36,7 @@ export default function LibHack({ run, onClose }: { run: HackRun; onClose: () =>
           <span className="flex-1 truncate text-caption">{title}</span>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t('ui.common.close')}
             onClick={() => finish({ won: false, aborted: true })}
             className="w-[46px] h-8 flex items-center justify-center transition-colors duration-150 hover:bg-[#c42b1c] hover:text-white"
           >

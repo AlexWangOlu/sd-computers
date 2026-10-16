@@ -22,10 +22,10 @@ const MIN_INK = 60;
 
 /** The hands a typed signature can be set in. Every one is a font Windows carries. */
 const HANDS = [
-  { id: 'script', font: "'Segoe Script', 'Lucida Handwriting', cursive", weight: 400, italic: false },
-  { id: 'flowing', font: "'Lucida Handwriting', 'Segoe Script', cursive", weight: 400, italic: false },
-  { id: 'pen', font: "'Ink Free', 'Segoe Print', cursive", weight: 400, italic: false },
-  { id: 'formal', font: "Georgia, 'Times New Roman', serif", weight: 600, italic: true },
+  { id: 'script', font: "'Segoe Script', 'Lucida Handwriting', 'KaiTi', 'STKaiti', 'Noto Sans SC Variable', cursive", weight: 400, italic: false },
+  { id: 'flowing', font: "'Lucida Handwriting', 'Segoe Script', 'KaiTi', 'STKaiti', 'Noto Sans SC Variable', cursive", weight: 400, italic: false },
+  { id: 'pen', font: "'Ink Free', 'Segoe Print', 'KaiTi', 'STKaiti', 'Noto Sans SC Variable', cursive", weight: 400, italic: false },
+  { id: 'formal', font: "Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif", weight: 600, italic: true },
 ] as const;
 type Hand = (typeof HANDS)[number];
 

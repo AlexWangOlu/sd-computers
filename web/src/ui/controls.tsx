@@ -1,6 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { AlertTriangle, CheckCircle2, Info, XCircle, X } from 'lucide-react';
 import { useExitFx } from '@/hooks/useExitFx';
+import { t } from '@/i18n';
 
 // The control kit every app builds from. Colours come only from the theme tokens
 // (tailwind.config.js), so dark/light/accent all "just work". Keep app code on these instead of
@@ -143,7 +144,7 @@ export function InfoBar({ severity = 'info', title, children, onClose }: { sever
         <span className="text-t2">{children}</span>
       </div>
       {onClose && (
-        <button type="button" onClick={onClose} className="shrink-0 text-t2 hover:text-t1" aria-label="Close">
+        <button type="button" onClick={onClose} className="shrink-0 text-t2 hover:text-t1" aria-label={t('ui.common.close')}>
           <X size={14} />
         </button>
       )}

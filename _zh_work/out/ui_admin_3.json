@@ -1,0 +1,162 @@
+{
+  "ui": {
+    "admin": {
+      "screener": {
+        "title": "%s 的屏幕",
+        "size": "尺寸",
+        "lean": "倾角",
+        "middle": "中心",
+        "over": {
+          "draw": "绘制",
+          "move": "移动",
+          "resize": "调整大小"
+        },
+        "groups": {
+          "draw": "绘制",
+          "fit": "贴合",
+          "view": "视图",
+          "edit": "编辑"
+        },
+        "keys": {
+          "drag": "绘制、移动、调整大小",
+          "look": "按住环顾四周",
+          "depth": "推入 / 拉出",
+          "lean": "后仰 / 前倾",
+          "nudge": "微调",
+          "snap": "贴合到表面",
+          "coarse": "加大步长",
+          "front": "正视图",
+          "side": "侧视图",
+          "zoom": "缩放",
+          "picture": "画面",
+          "turn": "道具的另一面",
+          "undo": "撤销",
+          "reset": "重新开始",
+          "copy": "复制配置片段",
+          "cancel": "取消",
+          "confirm": "保存"
+        },
+        "hint": {
+          "draw": "在玻璃上拖拽，从一个角拖到对角。",
+          "fit": "拖动边或角把它贴合到玻璃上。向前滚动直到玻璃开始遮住画面，再回退一点。按 V 可从侧面检查。",
+          "side": "滚动直到画面落在玻璃上，再按 Q / E 调整倾角，让它平贴在玻璃上。按 F 回到正面。",
+          "edge": "视角太偏，无法从这里拖拽：按 F 重新面向屏幕。",
+          "looking": "正在环顾四周。松开即可取回光标。"
+        },
+        "notes": {
+          "snapped": "已贴合道具表面。向前滚动直到玻璃开始遮住画面，再回退一点",
+          "no_surface": "此处没有可贴合的表面：请用滚轮",
+          "copied": "已复制：粘贴到 configs/shared/screens.lua 的 Models 中",
+          "draw_first": "请先绘制屏幕"
+        }
+      },
+      "props": {
+        "add": "添加道具",
+        "add_title": "添加道具",
+        "hint": "可以添加游戏里的任意道具模型，包括流式加载的。之后就能以它放置电脑、从世界中拾取，自动电脑标签页也会把它提供给每台自动电脑。最后在道具标签页中从它的卡片上绘制屏幕。",
+        "tab_hint": "所有能充当电脑的道具：可放置、可从世界拾取，或在自动电脑标签页中勾选。来自 configs/shared/admin.lua 的条目在该文件中修改；在此添加的可以在这里移除。",
+        "model": "模型名",
+        "taken": "该道具已在列表中。",
+        "label": "名称",
+        "label_placeholder": "办公显示器",
+        "kind": "类型",
+        "kind_monitor": "显示器",
+        "kind_tower": "主机",
+        "kind_laptop": "笔记本",
+        "screen_hint": "自己添加的道具在你绘制之前没有屏幕：在道具标签页中，点它下方的“绘制屏幕”。在此之前它仍是电脑，会全屏打开。",
+        "screen_none": "无屏幕",
+        "screen_none_hint": "它还没有屏幕，会全屏打开，世界里也看不到画面。请绘制它屏幕的位置。",
+        "screen_draw": "绘制屏幕",
+        "screen_adjust": "调整屏幕",
+        "screen_adjust_hint": "重新绘制该道具上屏幕的位置",
+        "screen_reset": "移除绘制的屏幕：若有内置屏幕则恢复为内置",
+        "screen_reset_done": "%s：已移除绘制的屏幕",
+        "search": "按名称或模型搜索",
+        "filter_all": "全部",
+        "filter_monitor": "显示器",
+        "filter_tower": "主机",
+        "filter_laptop": "笔记本",
+        "filter_custom": "在此添加",
+        "custom": "已添加",
+        "auto": "自动电脑：%s",
+        "placed": "已放置 %s",
+        "unused": "未使用",
+        "none": "还没有添加道具。",
+        "remove": "移除",
+        "added": "已添加 %s",
+        "removed": "已移除 %s"
+      },
+      "placement": {
+        "title": "正在放置 %s",
+        "handles": {
+          "move": "移动",
+          "rotate": "旋转"
+        },
+        "modes": {
+          "snap": "吸附",
+          "local": "本地轴",
+          "world": "世界轴",
+          "stick": "贴地",
+          "cursor": "光标",
+          "move": "移动",
+          "rotate": "旋转"
+        },
+        "warnings": {
+          "floating": "悬空，离地面 %s m — 按 Alt 放下"
+        },
+        "groups": {
+          "gizmo": "操作器",
+          "move": "调整",
+          "edit": "编辑"
+        },
+        "keys": {
+          "drag": "抓取箭头或圆环",
+          "nudge": "微调",
+          "height": "高度",
+          "rotate": "旋转",
+          "snap": "吸附",
+          "stick": "贴地",
+          "drop": "放下",
+          "undo": "撤销",
+          "cancel": "取消",
+          "confirm": "放置",
+          "cursor": "光标开 / 关",
+          "look": "按住环顾四周",
+          "move": "移动模式",
+          "rotate_mode": "旋转模式"
+        }
+      },
+      "overview": {
+        "by_style": "按外观统计电脑",
+        "by_prop": "按道具统计已放置电脑",
+        "no_data": "暂无数据",
+        "rules": "规则",
+        "rule_style": "默认外观",
+        "rule_boot": "电脑打开时的启动序列",
+        "rule_reach": "距离超过 %s m 时电脑自动关闭",
+        "on": "开",
+        "off": "关"
+      },
+      "actions": {
+        "teleport": "传送",
+        "move": "移动",
+        "edit": "修改",
+        "delete": "删除",
+        "delete_all": "全部删除",
+        "cancel": "取消",
+        "confirm": "确认",
+        "save": "保存",
+        "close": "关闭"
+      },
+      "tabs": {
+        "overview": "概览",
+        "computers": "电脑",
+        "cameras": "摄像头",
+        "printers": "打印机",
+        "automatic": "自动电脑",
+        "props": "道具",
+        "styles": "外观"
+      }
+    }
+  }
+}

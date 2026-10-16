@@ -141,7 +141,7 @@ export default function SignalGame({
       ctx.stroke()
 
       ctx.fillStyle = isLit || isInputFlash ? palette.white : isWrong ? alpha('danger', 0.6) : col + '30'
-      ctx.font = `700 ${isLit ? 28 : 22}px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace`
+      ctx.font = `700 ${isLit ? 28 : 22}px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", 'Noto Sans SC Variable', monospace`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(PAD_LABELS[i], px + pw / 2, py + ph / 2)
@@ -163,23 +163,23 @@ export default function SignalGame({
 
     if (phaseRef.current === 'playing') {
       ctx.fillStyle = alpha('fog', 0.6)
-      ctx.font = '700 12px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+      ctx.font = '700 12px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(t('minigames.signal.canvas_round', roundRef.current + 1, totalRounds), hcx, hcy - 24)
 
       ctx.fillStyle = alpha('fog', 0.25)
-      ctx.font = '9px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+      ctx.font = '9px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
       ctx.fillText(t('minigames.signal.canvas_signals', roundRef.current + startLen), hcx, hcy - 10)
 
       if (sub === 'start' || sub === 'show') {
         const pulse = 0.4 + 0.3 * Math.sin(tick * 0.08)
         ctx.fillStyle = `${alpha('dim', pulse)}`
-        ctx.font = '700 14px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+        ctx.font = '700 14px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
         ctx.fillText(t('minigames.signal.canvas_watch'), hcx, hcy + 12)
       } else if (sub === 'input') {
         ctx.fillStyle = palette.green
-        ctx.font = '700 14px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+        ctx.font = '700 14px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
         ctx.fillText(t('minigames.signal.canvas_repeat'), hcx, hcy + 12)
 
         const seqLen = roundRef.current + startLen
@@ -208,13 +208,13 @@ export default function SignalGame({
 
         const secsLeft = Math.max(0, (inputWindowMs - elapsed) / 1000)
         ctx.fillStyle = remaining < 0.3 ? palette.danger : alpha('fog', 0.4)
-        ctx.font = '10px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+        ctx.font = '10px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
         ctx.fillText(t('minigames.signal.canvas_seconds', secsLeft.toFixed(1)), hcx, arcY + 1)
       } else if (sub === 'correct') {
         ctx.shadowBlur = 12
         ctx.shadowColor = alpha('green', 0.8)
         ctx.fillStyle = palette.green
-        ctx.font = '700 14px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+        ctx.font = '700 14px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
         ctx.fillText(t('minigames.signal.canvas_correct'), hcx, hcy + 12)
         ctx.shadowBlur = 0
       }

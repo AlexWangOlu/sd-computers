@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react';
+import { isEnvBrowser } from '@/nui/bridge';
 import en from '../../../locales/en.json';
+import cn from '../../../locales/cn.json';
 
 type Dict = { [k: string]: string | Dict };
 
 const EN = en as unknown as Dict;
+const CN = cn as unknown as Dict;
 const clone = (d: Dict): Dict => JSON.parse(JSON.stringify(d));
 
-let active: Dict = EN;
+// In game the active locale arrives over the NUI bridge (App.tsx fetches computers:ui:locale) and
+// is deep-merged over this base, so English stays the per-key fallback for anything a translation
+// misses. Opened in a plain browser - the dev server, the live demo - nothing arrives, so the
+// preview starts in this fork's own language.
+let active: Dict = isEnvBrowser() ? CN : EN;
 const listeners = new Set<() => void>();
 
 const resolve = (dict: Dict, path: string): string | Dict | undefined =>

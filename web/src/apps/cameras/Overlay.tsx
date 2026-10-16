@@ -1,5 +1,5 @@
 import { useOS } from '@/store/os';
-import { fmtShortDate, useNow } from '@/lib/format';
+import { fmtShortDate, fmtTime, useNow } from '@/lib/format';
 import { t } from '@/i18n';
 import type { Filter } from './types';
 
@@ -34,7 +34,7 @@ export function Static({ on, children }: { on: boolean; children?: string }) {
 export function useStamp(): string {
   const clock24 = useOS(s => s.payload?.desktop.clock24 ?? false);
   const now = useNow();
-  return `${fmtShortDate(now)}  ${now.toLocaleTimeString('en-US', { hour12: !clock24 })}`;
+  return `${fmtShortDate(now)}  ${fmtTime(now, clock24)}`;
 }
 
 /** The recording light. */

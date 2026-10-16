@@ -13,7 +13,7 @@ import type { Contact, ListData, RemoveData } from '@/apps/contacts/types';
 // Dev switch (browser console): window.__phoneDown = true fails every endpoint like a dropped
 // sd-phone link (as in Messages; localStorage['mock:phonelink'] = 'down' works too).
 
-const UNAVAILABLE = 'The phone link is unavailable right now.';
+const UNAVAILABLE = '手机连接当前不可用。';
 const MY_NUMBER = '5551234';
 const NOT_IN_SERVICE = '5550000';
 const MAX_NAME = 60;
@@ -54,15 +54,15 @@ const card = (id: string, name: string, number: string, color: string, extra: Pa
 });
 
 let contacts: Contact[] = [
-  card('c8k2m5x1q9za', 'Mechanic - Benny', '5558214', '#ff9f0a', { address: "Benny's Original Motor Works, Strawberry" }),
+  card('c8k2m5x1q9za', 'Mechanic - Benny', '5558214', '#ff9f0a', { address: "Benny's Original Motor Works, 斯卓贝里" }),
   card('c3n7v4b0w6yb', 'Tasha Reyes', '5550117', '#ff375f', { favorite: true, email: 'tasha.reyes@lsmail.net' }),
   card('c9r1e5t3q7uc', 'Marco Bellini', '5553370', '#30d158'),
   card('c6j2k8l4z0xd', 'Lena - LSMC', '5554410', '#64d2ff', { email: 'l.okafor@lsmc.org' }),
   card('c1o5i9u3y7te', 'Ray - Tow Yard', '5557731', '#636366'),
-  card('c4n8b2v6c0xf', 'Mom', '5552020', '#bf5af2', { favorite: true }),
-  card('c7w1e5r9t3yg', 'Det. Alvarez', '5553090', '#0a84ff', { address: 'Mission Row Police Station' }),
+  card('c4n8b2v6c0xf', '妈妈', '5552020', '#bf5af2', { favorite: true }),
+  card('c7w1e5r9t3yg', 'Det. Alvarez', '5553090', '#0a84ff', { address: '米申罗警局' }),
   card('c2s6d0f4g8hh', 'Vinny Castellano', '5556677', '#5e5ce6'),
-  card('c5x9c3v7b1ni', 'Dr. Kim - Pillbox', '5559146', '#ff453a', { email: 'kim@pillboxmedical.org', address: 'Pillbox Hill Medical Center' }),
+  card('c5x9c3v7b1ni', 'Dr. Kim - Pillbox', '5559146', '#ff453a', { email: 'kim@pillboxmedical.org', address: '圆堡山医疗中心' }),
   card('c0k4j8h2g6fj', 'Hector - PDM Sales', '5558870', '#ffd60a'),
   card('c3t7r1e5w9qk', 'Élodie Marchetti', '5551907', '#30d158'),
   card('c8i2o6p0a4sl', 'Zed', '5550642', '#0a84ff'),
@@ -103,14 +103,14 @@ const handlers: Record<string, MockHandler> = {
   'contacts:add': p => {
     if (linkDown()) return fail(UNAVAILABLE);
     const name = (typeof p.name === 'string' ? p.name : '').slice(0, MAX_NAME).trim();
-    if (!name) return fail('Enter a name for the contact.');
+    if (!name) return fail('请输入联系人姓名。');
     const number = digits(p.number);
-    if (number === null || number.length < MIN_DIGITS || number.length > MAX_DIGITS) return fail(`Enter a phone number of ${MIN_DIGITS} to ${MAX_DIGITS} digits.`);
+    if (number === null || number.length < MIN_DIGITS || number.length > MAX_DIGITS) return fail(`请输入 ${MIN_DIGITS} 到 ${MAX_DIGITS} 位的手机号码。`);
     // From here on it is the phone talking (sd-phone server/contacts/actions.lua add).
-    if (number === NOT_IN_SERVICE) return fail("That number isn't in service");
-    if (number === MY_NUMBER) return fail("You can't add your own number");
-    if (contacts.some(c => c.number === number)) return fail('You already have a contact with this number');
-    if (contacts.length >= MAX_CONTACTS) return fail(`You can store at most ${MAX_CONTACTS} contacts`);
+    if (number === NOT_IN_SERVICE) return fail("该号码不在服务区");
+    if (number === MY_NUMBER) return fail("不能添加你自己的号码");
+    if (contacts.some(c => c.number === number)) return fail('你的通讯录里已经有这个号码了');
+    if (contacts.length >= MAX_CONTACTS) return fail(`最多只能存 ${MAX_CONTACTS} 个联系人`);
     const added = card(newId(), name, number, colorFor(name));
     contacts = [...contacts, added];
     return ok(added);
@@ -119,7 +119,7 @@ const handlers: Record<string, MockHandler> = {
   'contacts:remove': p => {
     if (linkDown()) return fail(UNAVAILABLE);
     const number = digits(p.number);
-    if (!number) return fail('Invalid request.');
+    if (!number) return fail('无效请求。');
     const before = contacts.length;
     contacts = contacts.filter(c => c.number !== number);
     const data: RemoveData = { removed: before - contacts.length };

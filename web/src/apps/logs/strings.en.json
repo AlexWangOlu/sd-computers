@@ -15,13 +15,11 @@
   "log_kms": "Key Management Service",
   "log_powershell": "Script Host",
   "subscriptions": "Subscriptions",
-
   "level_information": "Information",
   "level_warning": "Warning",
   "level_error": "Error",
   "level_success": "Audit Success",
   "level_failure": "Audit Failure",
-
   "task_logon": "Logon",
   "task_logoff": "Logoff",
   "task_lockout": "Account Lockout",
@@ -33,7 +31,6 @@
   "na": "N/A",
   "opcode_info": "Info",
   "online_help": "Event Log Online Help",
-
   "m_file": "File",
   "m_action": "Action",
   "m_view": "View",
@@ -45,12 +42,10 @@
   "m_customize": "Customize…",
   "m_help_topics": "Help Topics",
   "m_about": "About Event Viewer",
-
   "t_back": "Back",
   "t_forward": "Forward",
   "t_tree": "Show/Hide Console Tree",
   "t_actions": "Show/Hide Action Pane",
-
   "actions": "Actions",
   "a_open_saved": "Open Saved Log…",
   "a_create_view": "Create Custom View…",
@@ -68,10 +63,8 @@
   "a_event_props": "Event Properties",
   "a_copy": "Copy",
   "a_save_selected": "Save Selected Events…",
-
   "not_available": "This action is not available on this computer.",
   "access_denied": "Access is denied. Your account is not allowed to connect to other computers from this console.",
-
   "num_events": "Number of events: %s",
   "filtered": "Filtered: %s. Number of events: %s",
   "event_title": "Event %s, %s",
@@ -80,7 +73,6 @@
   "loading_more": "Loading older events…",
   "no_items": "There are no items to show in this view.",
   "load_failed": "Event Viewer could not read this log.",
-
   "col_level": "Level",
   "col_date": "Date and Time",
   "col_source": "Source",
@@ -101,7 +93,6 @@
   "col_name": "Name",
   "col_type": "Type",
   "col_events": "Number of Events",
-
   "type_admin": "Administrative",
   "type_operational": "Operational",
   "type_custom": "Custom View",
@@ -109,14 +100,12 @@
   "enabled": "Enabled",
   "retention_overwrite": "Overwrite events as necessary",
   "open_hint": "Double-click to open this log",
-
   "overview_title": "Overview and Summary",
   "last_refreshed": "Last refreshed: %s",
   "overview_band": "Overview",
   "overview_text": "To view events that have occurred on your computer, select the appropriate source, log or custom view node in the console tree. The Administrative Events custom view contains all the administrative events, regardless of source. An aggregate view of all the logs is shown below.",
   "summary_band": "Summary of Administrative Events",
   "log_summary_band": "Log Summary",
-
   "tab_general": "General",
   "tab_details": "Details",
   "friendly_view": "Friendly View",
@@ -135,14 +124,12 @@
   "d_opcode": "OpCode",
   "d_more_info": "More Information",
   "d_description": "Description",
-
   "props_title": "Event Properties - Event %s, %s",
   "prev_event": "Previous event",
   "next_event": "Next event",
   "copy": "Copy",
   "copied": "The event details were copied to the clipboard.",
   "copy_failed": "The clipboard is not available here.",
-
   "filter_title": "Filter Current Log",
   "create_view_title": "Create Custom View",
   "f_log": "Log",
@@ -175,18 +162,15 @@
   "ids_hint": "Enter ID numbers and/or ID ranges separated by commas. To exclude criteria, type a minus sign first. For example 1,3,5-99,-76",
   "keywords_ph": "Text in the message or user name",
   "clear": "Clear",
-
   "clear_title": "Clear %s?",
   "clear_body": "Every event recorded on %s will be permanently deleted. The Application, Security and System logs share one store on this computer, so all of them are emptied.",
   "clear_body_1102": "The system records event 1102 \"The audit log was cleared\" naming you as the account that cleared it.",
   "clearing": "Clearing…",
   "cleared_status": "%s was cleared.",
-
   "find_what": "Find what",
   "find_next": "Find Next",
   "find_none": "Event Viewer could not find \"%s\" in this log.",
   "find_wrapped": "Reached the end of the log; continued from the top.",
-
   "log_props_title": "Log Properties - %s (Type: %s)",
   "p_name": "Name",
   "p_description": "Description",
@@ -203,9 +187,10 @@
   "p_archive": "Archive the log when full, do not overwrite events",
   "p_no_overwrite": "Do not overwrite events (Clear logs manually)",
   "bytes": "bytes",
-
   "about_title": "About Event Viewer",
   "about_version": "Version 1.0",
   "about_os_version": "Version %s",
-  "about_copyright": "© %s. All rights reserved."
+  "about_copyright": "© %s. All rights reserved.",
+  "sec_system": "System",
+  "sec_eventdata": "EventData"
 }

@@ -18,7 +18,7 @@ const STAFF = FLAGS.has('staff');
 const NO_ROSTER = FLAGS.has('noroster');
 const NO_JOB = FLAGS.has('nojob');
 
-const JOB = { name: 'police', label: 'Los Santos Police Department' };
+const JOB = { name: 'police', label: '洛圣都警察局' };
 const GRADES: Record<number, string> = { 0: 'Recruit', 1: 'Officer', 2: 'Sergeant', 3: 'Lieutenant', 4: 'Chief' };
 const MY_CID = 'JH123';
 const MY_NAME = 'Jessica Hale';
@@ -66,31 +66,31 @@ const SEED: [number, boolean, string, string, string[], number?][] = [
     2.5 * H,
     false,
     MY_NAME,
-    'Range qualification this Saturday',
+    '本周六射击资格考核',
     [
-      'Annual sidearm qualification runs Saturday from 10:00 at the indoor range under Mission Row.',
+      '年度手枪资格考核周六 10:00 开始，地点在米申罗地下的室内靶场。',
       '',
-      'Sergeants, put your squads down for a slot on the sheet outside the armoury by Thursday. Anyone who has not qualified by the end of the month comes off patrol until they have.',
+      '各位警士请在周四前把你们的班组写在军械库外的登记表上。到月底还没通过考核的人一律停止巡逻，直到通过为止。',
     ],
   ],
   [
     1.1 * D,
     false,
     MY_NAME,
-    'Welcome Recruit Okafor',
-    ['Dante Okafor starts with us this week. He rides along with Sgt. Nair until his field training is signed off - say hello, show him where the coffee is, and let him take the radio on quiet calls.'],
+    '欢迎 Okafor 新警员',
+    ['Dante Okafor 本周起加入我们。在他的实地训练签核之前，他跟着 Nair 警士同车——都去打声招呼，告诉他咖啡在哪，遇到清闲的警情让他拿对讲机。'],
   ],
   [
     2.2 * D,
     true,
     MY_NAME,
-    'Body cameras stay on for every call',
+    '每次出警都必须开启执法记录仪',
     [
-      'From Monday, every stop, search and arrest is recorded from start to finish. No camera, no patrol.',
+      '从周一起，每一次盘查、搜查和抓捕都要全程录像。没有记录仪，就不出勤。',
       '',
-      '- Dock your camera at the end of the shift so the footage uploads',
-      '- A dead battery is a reason to swing by the station, not a reason to carry on without one',
-      '- Lost or damaged units go on a report to your Lieutenant the same day',
+      '- 下班时把记录仪放回充电座，让录像自动上传',
+      '- 电池没电是回一趟警局的理由，不是不带的理由',
+      '- 设备丢失或损坏，当天就要向你的中尉提交报告',
     ],
     1.9 * D,
   ],
@@ -98,22 +98,22 @@ const SEED: [number, boolean, string, string, string[], number?][] = [
     3.4 * D,
     false,
     'Raymond Cole',
-    'Cruiser 14 is out of service',
-    ['Transmission is gone. It is at Los Santos Customs until further notice - do not sign it out, the board in the garage is wrong.'],
+    '14 号巡逻车停用',
+    ['变速箱报废了，在 Los Santos Customs 修理，恢复时间另行通知——别再签它的派车单，车库那块牌子上的信息是错的。'],
   ],
   [
     5.2 * D,
     true,
     'Raymond Cole',
-    'Radio channels',
-    ['Channel 1 - dispatch and patrol', 'Channel 2 - traffic stops and pursuits', 'Channel 3 - tactical, by invitation', 'Channel 5 - joint operations with medical', '', 'Keep chatter off 1. If it is not a call, take it to the car park.'],
+    '无线电频道',
+    ['1 频道 - 调度与巡逻', '2 频道 - 拦车与追捕', '3 频道 - 战术行动，受邀加入', '5 频道 - 与医疗部门的联合行动', '', '1 频道不要闲聊。不是警情的事，到停车场去说。'],
   ],
   [
     6.3 * D,
     false,
     MY_NAME,
-    'Incident reports within 24 hours',
-    ['The courts threw out two cases last month because the paperwork arrived after the hearing. Reports are filed before you go off duty, or first thing on your next shift at the latest.'],
+    '事故报告 24 小时内提交',
+    ['上个月有两个案子被法院驳回，原因就是文书在听证会之后才送到。报告要在下班前提交，最晚下一个班次一开始就交。'],
   ],
 ];
 

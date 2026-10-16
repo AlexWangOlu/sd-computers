@@ -197,7 +197,7 @@ export default function MazeGame({
           ctx.fillStyle = open
             ? alpha('green', a * 0.55)
             : alpha('danger', a * 0.35)
-          ctx.font = `700 ${Math.max(7, cellPx * 0.26)}px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace`
+          ctx.font = `700 ${Math.max(7, cellPx * 0.26)}px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", 'Noto Sans SC Variable', monospace`
           ctx.textAlign = 'center'
           ctx.fillText(open ? t('minigames.maze.canvas_exit') : t('minigames.maze.canvas_locked'), ex, ey + rad + Math.max(8, cellPx * 0.35))
           ctx.textAlign = 'start'
@@ -289,7 +289,7 @@ export default function MazeGame({
       }
 
       ctx.fillStyle = alpha('dim', 0.3)
-      ctx.font = '600 7px "JetBrains Mono Variable","JetBrains Mono","Fira Code",monospace'
+      ctx.font = '600 7px "JetBrains Mono Variable", "JetBrains Mono", "Fira Code", "Noto Sans SC Variable", monospace'
       ctx.textAlign = 'right'
       ctx.fillText(t('minigames.maze.canvas_map'), mmX + mmW, mmY - 4)
       ctx.textAlign = 'start'

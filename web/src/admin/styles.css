@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; /* (this resource bundles the variable Inter) */
+  --sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', 'Noto Sans SC Variable', sans-serif; /* (this resource bundles the variable Inter) */
 
   --bg: #0c0d0f;
   --surface: #121316;

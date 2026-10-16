@@ -25,9 +25,9 @@
   --s-link: #1d4ed8;
   --s-focus: rgba(37, 99, 235, 0.25);
   --s-radius: 6px;
-  --s-font: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
+  --s-font: 'Inter Variable', 'Segoe UI', system-ui, 'Noto Sans SC Variable', sans-serif;
   --s-head: var(--s-font);
-  --s-mono: 'JetBrains Mono Variable', ui-monospace, Consolas, monospace;
+  --s-mono: 'JetBrains Mono Variable', ui-monospace, Consolas, 'Noto Sans SC Variable', monospace;
 
   min-height: 100%;
   background: var(--s-bg);
@@ -324,7 +324,7 @@
   --s-link: #a50d25;
   --s-focus: rgba(200, 16, 46, 0.22);
   --s-radius: 2px;
-  --s-head: Georgia, 'Times New Roman', serif;
+  --s-head: Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif;
 }
 .wz-top {
   background: #111;
@@ -336,7 +336,7 @@
 .wz-logo {
   display: inline-flex;
   align-items: stretch;
-  font-family: 'Arial Black', 'Inter Variable', sans-serif;
+  font-family: 'Arial Black', 'Inter Variable', 'Noto Sans SC Variable', sans-serif;
   font-weight: 900;
   font-style: italic;
   font-size: 30px;
@@ -557,7 +557,7 @@ button:hover .wz-headline {
   --s-link: #141414;
   --s-focus: rgba(255, 212, 0, 0.55);
   --s-radius: 0px;
-  --s-head: 'Arial Black', 'Inter Variable', Arial, sans-serif;
+  --s-head: 'Arial Black', 'Inter Variable', Arial, 'Noto Sans SC Variable', sans-serif;
 }
 .yp-head {
   background: #ffd400;
@@ -568,7 +568,7 @@ button:hover .wz-headline {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Arial Black', 'Inter Variable', Arial, sans-serif;
+  font-family: 'Arial Black', 'Inter Variable', Arial, 'Noto Sans SC Variable', sans-serif;
   font-weight: 900;
   font-size: 24px;
   line-height: 1;
@@ -720,7 +720,7 @@ button:hover .wz-headline {
   --s-link: #1d9bf0;
   --s-focus: rgba(29, 155, 240, 0.3);
   --s-radius: 999px;
-  --s-font: 'Segoe UI', 'Inter Variable', system-ui, sans-serif;
+  --s-font: 'Segoe UI', 'Inter Variable', system-ui, 'Noto Sans SC Variable', sans-serif;
   color-scheme: dark;
 }
 .sq-side .sq-nav {
@@ -785,8 +785,8 @@ button:hover .wz-headline {
   --s-link: #17458f;
   --s-focus: rgba(27, 54, 93, 0.25);
   --s-radius: 3px;
-  --s-font: 'Segoe UI', Arial, 'Inter Variable', sans-serif;
-  --s-head: Georgia, 'Times New Roman', serif;
+  --s-font: 'Segoe UI', Arial, 'Inter Variable', 'Noto Sans SC Variable', sans-serif;
+  --s-head: Georgia, 'Times New Roman', 'Noto Sans SC Variable', serif;
 }
 .gv-strip {
   background: #e9ecf1;

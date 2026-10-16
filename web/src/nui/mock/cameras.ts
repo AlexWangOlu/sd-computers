@@ -6,11 +6,11 @@ import { fail, ok } from './index';
 // desk shows a police officer - the station's own cameras, and one out in the car park.
 
 const CAMERAS = [
-  { id: 'mrpd_lobby', label: 'Lobby', area: 'Mission Row Police Station' },
-  { id: 'mrpd_entrance', label: 'Front entrance', area: 'Mission Row Police Station' },
-  { id: 'mrpd_cells', label: 'Holding cells', area: 'Mission Row Police Station' },
-  { id: 'mrpd_garage', label: 'Garage ramp', area: 'Mission Row Police Station' },
-  { id: 'impound_gate', label: 'Gate', area: 'Impound lot' },
+  { id: 'mrpd_lobby', label: '大厅', area: '米申罗警局' },
+  { id: 'mrpd_entrance', label: '正门', area: '米申罗警局' },
+  { id: 'mrpd_cells', label: '拘留室', area: '米申罗警局' },
+  { id: 'mrpd_garage', label: '车库坡道', area: '米申罗警局' },
+  { id: 'impound_gate', label: '大门', area: '扣押场' },
 ];
 
 const handlers: Record<string, MockHandler> = {

@@ -1,4 +1,5 @@
 import { t } from '@/i18n';
+import { fmtShortDate, fmtTime } from '@/lib/format';
 
 // Console helpers: the classic conhost (Campbell) palette, column padding and the deterministic
 // "random" numbers (PIDs, memory, serials) that keep fake output stable between runs.
@@ -76,9 +77,8 @@ export const timeHM = (d: Date, clock24: boolean): string => {
   return `${pad2(h)}:${pad2(d.getMinutes())} ${d.getHours() < 12 ? 'AM' : 'PM'}`;
 };
 
-/** "10/5/2026, 9:12:44 AM" (systeminfo). */
-export const stampLong = (d: Date, clock24: boolean): string =>
-  `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}, ${d.toLocaleTimeString('en-US', { hour12: !clock24 })}`;
+/** "10/5/2026, 9:12:44 AM" / "2026/10/5, 上午9:12:44" (systeminfo). */
+export const stampLong = (d: Date, clock24: boolean): string => `${fmtShortDate(d)}, ${fmtTime(d, clock24)}`;
 
 /** Split a command tail into arguments, honouring "quoted strings". */
 export const tokenize = (s: string): string[] => {

@@ -146,10 +146,10 @@ const handlers: Record<string, MockHandler> = {
   },
   'photos:add': p => {
     const url = typeof p.url === 'string' ? p.url.trim() : '';
-    if (!/^https:\/\/\S+$/i.test(url)) return fail('That is not a link to a picture. It has to start with https://');
-    if (!/^https:\/\/([^/]+\.)?(imgur\.com|fivemanage\.com|discordapp\.com|discordapp\.net|ibb\.co)(\/|$)/i.test(url)) return fail('Pictures cannot be linked from that site here.');
-    if (own.some(x => x.url === url)) return fail('That picture is already in your pictures.');
-    if (own.length >= MAX_OWN) return fail(`Your pictures are full (${MAX_OWN}). Delete one first.`);
+    if (!/^https:\/\/\S+$/i.test(url)) return fail('这不是图片链接。必须以 https:// 开头');
+    if (!/^https:\/\/([^/]+\.)?(imgur\.com|fivemanage\.com|discordapp\.com|discordapp\.net|ibb\.co)(\/|$)/i.test(url)) return fail('不允许从该网站链接图片。');
+    if (own.some(x => x.url === url)) return fail('该图片已在你的照片中。');
+    if (own.length >= MAX_OWN) return fail(`你的照片已存满（${MAX_OWN}）。请先删除一张。`);
     // (offline, a real link would not draw: the picture kept is a stand-in for it)
     const row: Photo = { id: `pc:${nextOwn++}`, url: hills('#8ec5ff', '#e8f4ff', '#fff6c9', '#35705a'), ts: Math.floor(Date.now() / 1000), video: false, favorite: false, place: 'computer' };
     own = [row, ...own];

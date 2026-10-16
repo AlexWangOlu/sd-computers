@@ -1,4 +1,5 @@
 import { t } from '@/i18n';
+import { getFormatLocale } from '@/lib/format';
 import type { Contact } from './types';
 
 // Contacts' data helpers: what comes off the wire, the A-Z groups, search, numbers and avatars.
@@ -70,7 +71,7 @@ export function normContact(raw: unknown): Contact | null {
   };
 }
 
-const collator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+const collator = new Intl.Collator(getFormatLocale(), { sensitivity: 'base', numeric: true });
 
 /** The heading a name files under: its first letter without accents ("Élodie" -> E), # for a number or symbol. */
 export function letterOf(name: string): string {

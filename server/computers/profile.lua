@@ -92,7 +92,7 @@ function profile.saveNote(citizenid, note)
     if type(note) ~= 'table' then return nil, 'err.invalid' end
     local title = text.clip(note.title, MAX_TITLE)
     local body = text.clip(note.body, MAX_BODY)
-    if title == '' then title = 'Untitled' end
+    if title == '' then title = locale('files.untitled') end
 
     local list = profile.notes(citizenid)
     local saved

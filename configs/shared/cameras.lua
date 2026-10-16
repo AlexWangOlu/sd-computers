@@ -36,8 +36,8 @@ return {
     Filter = 'cctv',
 
     Cameras = {
-        { id = 'mrpd_lobby', label = 'Lobby', area = 'Mission Row Police Station', coords = vec3(435.7, -987.5, 33.8), rot = vec3(-20.0, 0.0, -32.0), fov = 70.0, groups = { police = 0 } },
-        { id = 'mrpd_entrance', label = 'Front entrance', area = 'Mission Row Police Station', coords = vec3(433.4, -976.6, 34.3), rot = vec3(-24.0, 0.0, 150.0), fov = 75.0, groups = { police = 0 } },
-        { id = 'pillbox_reception', label = 'Reception', area = 'Pillbox Hill Medical Center', coords = vec3(303.9, -590.6, 46.0), rot = vec3(-22.0, 0.0, 215.0), fov = 70.0, groups = { ambulance = 0 } },
+        { id = 'mrpd_lobby', label = '大厅', area = '米申罗警局', coords = vec3(435.7, -987.5, 33.8), rot = vec3(-20.0, 0.0, -32.0), fov = 70.0, groups = { police = 0 } },
+        { id = 'mrpd_entrance', label = '正门', area = '米申罗警局', coords = vec3(433.4, -976.6, 34.3), rot = vec3(-24.0, 0.0, 150.0), fov = 75.0, groups = { police = 0 } },
+        { id = 'pillbox_reception', label = '接待处', area = '圆堡山医疗中心', coords = vec3(303.9, -590.6, 46.0), rot = vec3(-22.0, 0.0, 215.0), fov = 70.0, groups = { ambulance = 0 } },
     },
 }
