@@ -59,6 +59,22 @@ Locale = 'cn', -- 'cn' = 简体中文，'en' = 英文
 
 ---
 
+## 先看界面（不用进游戏）
+
+仓库里带了浏览器开发预览：`cd web && npm ci && npm run dev`，然后开
+
+```
+http://localhost:5173/os.html?style=modern#desktop     # 现代外观（可换 retro / mac）
+http://localhost:5173/os.html?style=modern#mail        # 直接打开某个应用（#logs #cmd #boss …）
+http://localhost:5173/admin.html                       # 管理面板
+```
+
+预览用内建中文语言包与样例数据，不需要游戏客户端。
+
+> **注意**：与上游一致，仓库分支**不提交构建产物** `web/build/`。要直接部署，请用发布包 `sd-computers-cn.zip`（已含构建好的前端），或在 `web/` 里自行 `npm ci && npm run build`。
+
+---
+
 ## 与上游保持同步
 
 本分支的目标是「上游一更新就能合」。因此：
