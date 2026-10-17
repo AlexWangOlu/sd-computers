@@ -5,6 +5,8 @@
 上游仓库：`https://github.com/Samuels-Development/sd-computers`
 本分支仓库：`https://github.com/AlexWangOlu/sd-computers`（分支 `custom`）
 
+> **游戏内怎么用**：见 **[docs/GAMEPLAY-CN.md](docs/GAMEPLAY-CN.md)** —— 玩家篇（交互、登录、每个应用、入侵、打印与签批、手机联动、常见问题）与管理员篇（`/computeradmin` 放置电脑/摄像头/打印机、绘制屏幕、常用配置、排查清单）。
+
 ---
 
 ## 这一版改了什么

@@ -32,6 +32,7 @@ foreach ($d in @('bridge', 'client', 'server', 'shared', 'configs', 'locales')) 
   Copy-Item (Join-Path $root $d) (Join-Path $resDir $d) -Recurse
 }
 Copy-Item (Join-Path $root 'docs\items') (Join-Path $resDir 'docs\items') -Recurse
+Copy-Item (Join-Path $root 'docs\GAMEPLAY-CN.md') (Join-Path $resDir 'docs\GAMEPLAY-CN.md')
 Copy-Item (Join-Path $root 'web\build') (Join-Path $resDir 'web\build') -Recurse
 
 # --- 2. every path fxmanifest.lua declares must be staged -------------------
@@ -85,6 +86,7 @@ Write-Output ("entries:  " + $names.Count)
 Write-Output ("backslash entries: " + ($names | Where-Object { $_ -match '\\' }).Count + "  (must be 0)")
 foreach ($probe in @('sd-computers/fxmanifest.lua', 'sd-computers/locales/cn.json',
                      'sd-computers/locales/en.json', 'sd-computers/README-CN.md',
+                     'sd-computers/docs/GAMEPLAY-CN.md',
                      'sd-computers/web/build/index.html', 'sd-computers/web/build/os.html',
                      'sd-computers/web/build/admin.html', 'sd-computers/web/build/screen.html',
                      'sd-computers/configs/config.lua')) {
