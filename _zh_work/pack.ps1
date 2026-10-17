@@ -25,7 +25,7 @@ New-Item -ItemType Directory -Path $resDir -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $resDir 'web') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $resDir 'docs') -Force | Out-Null
 
-foreach ($f in @('fxmanifest.lua', 'README.md', 'README-CN.md')) {
+foreach ($f in @('fxmanifest.lua', 'README.md', 'README-CN.md', 'THIRD_PARTY_NOTICES.md')) {
   Copy-Item (Join-Path $root $f) $resDir
 }
 foreach ($d in @('bridge', 'client', 'server', 'shared', 'configs', 'locales')) {
@@ -89,6 +89,9 @@ foreach ($probe in @('sd-computers/fxmanifest.lua', 'sd-computers/locales/cn.jso
                      'sd-computers/docs/GAMEPLAY-CN.md',
                      'sd-computers/web/build/index.html', 'sd-computers/web/build/os.html',
                      'sd-computers/web/build/admin.html', 'sd-computers/web/build/screen.html',
+                     'sd-computers/web/build/assets/mojave-starry.jpg',
+                     'sd-computers/web/build/assets/mail-icon.png',
+                     'sd-computers/web/build/assets/desktop-login.ogg',
                      'sd-computers/configs/config.lua')) {
   $hit = $names | Where-Object { $_ -eq $probe }
   Write-Output ("  " + $(if ($hit) { 'ok  ' } else { 'MISS' }) + " " + $probe)

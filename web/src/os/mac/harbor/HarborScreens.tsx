@@ -1,10 +1,15 @@
 import { useEffect } from 'react';
+import { FaApple } from 'react-icons/fa';
 import { useOS } from '@/store/os';
 import { t } from '@/i18n';
-import { Wallpaper } from '../Wallpaper';
-import { MacAvatar, MacSpinner, MarkMono } from './MacIcon';
+import { Wallpaper } from '../../Wallpaper';
+import { MacAvatar, MacSpinner } from '../MacIcon';
+import { resolveWallpaper } from './wallpapers';
 
-/** Power-on: black screen, the white SD mark, a thin bar filling underneath - then the lock screen. */
+// Boot / welcome / shutdown in the reference's language: black, the mark, a thin loader. sd's phase
+// timings and callbacks are kept (BootScreen onDone, WelcomeScreen onDone, ShutdownScreen onDone),
+// so Computer.tsx drives the same sequence as before.
+
 export function BootScreen({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     const h = window.setTimeout(onDone, 2700);
@@ -12,17 +17,16 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
   }, [onDone]);
   return (
     <div className="absolute inset-0 bg-black flex flex-col items-center justify-center">
-      <div className="mac-boot-mark text-white -mt-[4vh]">
-        <MarkMono size={92} />
+      <FaApple className="text-white -mt-[4vh]" style={{ width: 84, height: 84 }} aria-hidden />
+      <div className="mt-[9vh] h-1 w-[210px] rounded-full bg-white/20 overflow-hidden">
+        <div className="h-full bg-white/90" style={{ animation: 'harbor-boot-fill 2.5s cubic-bezier(0.3,0,0.2,1) forwards' }} />
       </div>
-      <div className="mac-boot-track mt-[9vh]">
-        <div className="mac-boot-fill" />
-      </div>
+      <style>{`@keyframes harbor-boot-fill { from { width: 0 } to { width: 100% } }`}</style>
     </div>
   );
 }
 
-/** After sign-in: the lock screen's blurred wallpaper clears into the desktop's. */
+/** After sign-in: the blurred lock-screen wallpaper clears into the desktop's. */
 export function WelcomeScreen({ onDone }: { onDone: () => void }) {
   const payload = useOS(s => s.payload)!;
   const settings = useOS(s => s.settings);
@@ -30,12 +34,22 @@ export function WelcomeScreen({ onDone }: { onDone: () => void }) {
     const h = window.setTimeout(onDone, 950);
     return () => window.clearTimeout(h);
   }, [onDone]);
+
+  const image = resolveWallpaper(settings.wallpaper);
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Wallpaper id={settings.wallpaper} accent={settings.accent} />
+      {image ? (
+        <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <Wallpaper id={settings.wallpaper} accent={settings.accent} />
+      )}
       <div className="absolute inset-0 mac-welcome-clear">
         <div className="absolute inset-0" style={{ filter: 'blur(22px) brightness(0.86)', transform: 'scale(1.08)' }}>
-          <Wallpaper id={settings.wallpaper} accent={settings.accent} />
+          {image ? (
+            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <Wallpaper id={settings.wallpaper} accent={settings.accent} />
+          )}
         </div>
         <div className="absolute inset-0 mac-lock-shade" />
       </div>

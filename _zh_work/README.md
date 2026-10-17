@@ -127,3 +127,47 @@ pack.ps1 产出：D:\car\sd-computers-cn.zip
 | `web/src/i18n/index.ts` | 前端语言底座 | 浏览器分支 |
 | `package.json` | 多了 `@fontsource-variable/noto-sans-sc` | 上游若也加了字体依赖，合并时留意锁版本 |
 | `web/src/styles/*.css`、`web/src/**/*.tsx` | 字体栈注入点 | `inject_font.py` / `inject_canvas_font.py` 可重跑，幂等 |
+
+---
+
+## 6. SD OS Harbor（mac 外观）用的是我们自己的外壳
+
+2026-10 起，mac 外观不再用上游那套 Harbor，而是移植了 `D:\FIVEMDEV\COMPUTER-AI-HANDOFF`
+（我们自己的笔记本/电脑资源）的 macOS 外壳。**应用、服务端、登录校验一律没动**——换的只是
+壳（窗口框体、程序坞、菜单栏、控制中心、通知、聚焦搜索、启动台、锁屏外观、壁纸、音效）。
+
+### 目录
+
+```
+web/src/os/mac/
+  index.ts                 ShellKit 接线（Desktop/LockScreen/Boot/Welcome/Shutdown）
+  harbor/
+    compat.tsx             ★ 适配层：把 sd 的 useOS/store 伪装成参考壳的 useMacOS()
+    types.ts / i18n.ts / prefs.ts / sounds.ts / icons.tsx / wallpapers.ts / utils.ts
+    HarborDesktop.tsx      壁纸、小组件、桌面图标、窗口层、菜单栏、坞、聚焦、启动台
+    HarborWindow.tsx       红绿灯框体、拖动/八区缩放/最大化、渲染 APPS[win.app]
+    HarborDock.tsx         放大式程序坞（Launchpad 第一格、运行/最小化指示、废纸篓）
+    HarborMenuBar.tsx      Apple 菜单 + 应用菜单 + 状态区（蓝牙/Wi-Fi/电池/搜索/控制中心/时钟）
+    HarborControlCenter.tsx / HarborNotifications.tsx
+    HarborSpotlight.tsx    只搜应用（文件在服务端，参考壳的 VFS 搜索没有搬）
+    HarborLaunchpad.tsx    全屏应用网格 + 搜索
+    HarborLockScreen.tsx   参考壳的锁屏视觉 + **sd 的 PIN 校验/锁定倒计时**
+    HarborScreens.tsx      开机 / 欢迎 / 关机
+    HarborModal/Help/Shortcuts
+    widgets/               天气（离线本地模型）/ 时钟 / 日历
+    assets/                壁纸(2560px, 2.9MB) / 图标(256px) / 音效(17 个实际引用)
+web/src/styles/mac-harbor.css   外壳样式，全部限定在 .harbor-root / .os-root[data-theme] 内
+```
+
+### 移植时的硬约束（都是踩过的）
+
+1. **窗口层 `pointer-events-none`**：`HarborWindow` 根节点必须 `pointer-events-auto`，否则整扇窗鼠标穿透。
+2. **close/minimize 只写 `exit`**：sd 的 store 等待壳体播完退场动画再调 `finalize()`；新壳必须自己在 190ms 后调用（`compat.finalizeWindow`），否则窗口关不掉、最小化不生效。
+3. **菜单 key 冲突**：sd 的 Files 应用名就叫「文件」，与「文件」菜单重名；菜单项 key 用 `${label}:${idx}`。
+4. **锁屏大钟**：`下午4:22` 在 140px 下太宽，用 `formatToParts` 把日间段拆出来单独小字。
+5. **样式作用域**：参考壳的 HSL 变量只能写在 `.harbor-root`（深色在 `.os-root[data-theme='dark'] .harbor-root`），别挂到 `:root`，否则串到现代/复古外观和管理面板。
+6. **素材要进 manifest**：`fxmanifest.lua` 的 `files{}` 新增了 `assets/*.png|jpg|svg|ogg`；Vite 产物文件名不带哈希（`mail-icon.png`、`mojave-starry.jpg`），打包校验可直接点名。
+7. **天气不联网**：参考壳的组件请求 open-meteo.com，已改成按本地时钟生成的固定模型；别再把它接回外网。
+8. **壁纸 id**：`configs/shared/desktop.lua` 的 mac `Wallpapers` 与 `web/src/nui/mock/payload.ts` 必须同步；图库外的 id 自动回退到 sd 画出来的壁纸。
+9. **道具屏幕的锁屏**：`web/src/screen/Idle.tsx` 仍用 `styles/mac.css` 里的 `mac-lock-*` 类，删 mac.css 会坏，别动。
+10. **上游合并**：`os/mac/harbor/**`、`styles/mac-harbor.css`、`os/mac/index.ts` 是我们的；若上游改了 `Win`/store，先改 `compat.tsx`，其余组件应无感知。

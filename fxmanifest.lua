@@ -44,7 +44,11 @@ files {
     'web/build/screen.html', -- what a computer's prop shows in the world: the page behind every screen (client/screens)
     'web/build/assets/*.js',
     'web/build/assets/*.css',
-    'web/build/assets/*.woff2', -- bundled open-licence fonts (Inter, JetBrains Mono)
+    'web/build/assets/*.woff2', -- bundled open-licence fonts (Inter, JetBrains Mono, Noto Sans SC)
+    'web/build/assets/*.png', -- Harbor's app icons (reference shell artwork)
+    'web/build/assets/*.jpg', -- Harbor's photographic wallpapers
+    'web/build/assets/*.svg', -- Control Center glyph
+    'web/build/assets/*.ogg', -- Harbor's system sounds
     'web/build/props/*.jpg', -- what each placeable prop looks like, for the admin panel (web/public/props)
 }
 
